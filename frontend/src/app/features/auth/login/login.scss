@@ -1,0 +1,49 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  background: var(--mat-sys-surface-container);
+
+  &__top {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  overflow: hidden;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+
+  &__error {
+    color: var(--mat-sys-error);
+    margin: 0 0 8px;
+  }
+}
+
+.login-divider {
+  height: 1px;
+  background: var(--mat-sys-outline-variant);
+  margin: 16px 0;
+}
+
+.login-google {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}

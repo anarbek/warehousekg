@@ -1,0 +1,16 @@
+<app-header (menuToggle)="toggleSidenav()" (logout)="logout()" />
+
+<mat-sidenav-container class="shell-container">
+  <mat-sidenav
+    class="shell-sidenav"
+    mode="side"
+    [opened]="sidenavOpen()"
+    [disableClose]="true"
+  >
+    <app-sidenav />
+  </mat-sidenav>
+
+  <mat-sidenav-content class="shell-content">
+    <router-outlet />
+  </mat-sidenav-content>
+</mat-sidenav-container>

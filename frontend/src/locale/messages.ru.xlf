@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="ru-RU" target-language="ru-RU" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="app.title" datatype="html">
+        <source>WarehouseKG</source>
+        <target>WarehouseKG</target>
+      </trans-unit>
+      <trans-unit id="nav.dashboard" datatype="html">
+        <source>Панель управления</source>
+        <target>Панель управления</target>
+      </trans-unit>
+      <trans-unit id="nav.inventory" datatype="html">
+        <source>Товары</source>
+        <target>Товары</target>
+      </trans-unit>
+      <trans-unit id="nav.logout" datatype="html">
+        <source>Выйти</source>
+        <target>Выйти</target>
+      </trans-unit>
+      <trans-unit id="lang.label" datatype="html">
+        <source>Язык</source>
+        <target>Язык</target>
+      </trans-unit>
+      <trans-unit id="login.title" datatype="html">
+        <source>Вход в систему</source>
+        <target>Вход в систему</target>
+      </trans-unit>
+      <trans-unit id="login.subtitle" datatype="html">
+        <source>Войдите, чтобы продолжить</source>
+        <target>Войдите, чтобы продолжить</target>
+      </trans-unit>
+      <trans-unit id="login.email" datatype="html">
+        <source>Электронная почта</source>
+        <target>Электронная почта</target>
+      </trans-unit>
+      <trans-unit id="login.password" datatype="html">
+        <source>Пароль</source>
+        <target>Пароль</target>
+      </trans-unit>
+      <trans-unit id="login.submit" datatype="html">
+        <source>Войти</source>
+        <target>Войти</target>
+      </trans-unit>
+      <trans-unit id="login.google" datatype="html">
+        <source>Войти через Google</source>
+        <target>Войти через Google</target>
+      </trans-unit>
+      <trans-unit id="login.emailRequired" datatype="html">
+        <source>Введите электронную почту</source>
+        <target>Введите электронную почту</target>
+      </trans-unit>
+      <trans-unit id="login.emailInvalid" datatype="html">
+        <source>Неверный формат электронной почты</source>
+        <target>Неверный формат электронной почты</target>
+      </trans-unit>
+      <trans-unit id="login.passwordRequired" datatype="html">
+        <source>Введите пароль</source>
+        <target>Введите пароль</target>
+      </trans-unit>
+      <trans-unit id="login.error" datatype="html">
+        <source>Неверный логин или пароль</source>
+        <target>Неверный логин или пароль</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

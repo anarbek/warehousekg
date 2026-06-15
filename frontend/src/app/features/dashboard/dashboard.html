@@ -1,0 +1,11 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title i18n="@@nav.dashboard">Панель управления</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    @if (user(); as currentUser) {
+      <p>{{ currentUser.userName }}</p>
+      <p>{{ currentUser.roles.join(', ') }}</p>
+    }
+  </mat-card-content>
+</mat-card>

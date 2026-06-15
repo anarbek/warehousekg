@@ -1,0 +1,18 @@
+<button
+  mat-button
+  [matMenuTriggerFor]="langMenu"
+  i18n-aria-label="@@lang.label"
+  aria-label="Язык"
+>
+  <mat-icon>language</mat-icon>
+  <span>{{ locale.current }}</span>
+  <mat-icon>arrow_drop_down</mat-icon>
+</button>
+
+<mat-menu #langMenu="matMenu">
+  @for (lang of locale.locales; track lang.code) {
+    <button mat-menu-item (click)="locale.switchTo(lang.code)" [disabled]="lang.code === locale.current">
+      <span>{{ lang.label }}</span>
+    </button>
+  }
+</mat-menu>

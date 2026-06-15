@@ -1,0 +1,20 @@
+<mat-toolbar color="primary" class="app-header">
+  <button
+    mat-icon-button
+    (click)="menuToggle.emit()"
+    i18n-aria-label="@@nav.dashboard"
+    aria-label="Меню"
+  >
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <span class="app-header__title" i18n="@@app.title">WarehouseKG</span>
+
+  <span class="app-header__spacer"></span>
+
+  <app-language-switcher />
+
+  <button mat-icon-button (click)="logout.emit()" i18n-aria-label="@@nav.logout" aria-label="Выйти">
+    <mat-icon>logout</mat-icon>
+  </button>
+</mat-toolbar>

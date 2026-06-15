@@ -1,0 +1,101 @@
+# ---------------------------------------------------------------------------
+# .NET
+# ---------------------------------------------------------------------------
+bin/
+obj/
+out/
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.pidb
+*.svclog
+*.userprefs
+project.lock.json
+artifacts/
+.vs/
+*.nupkg
+*.snupkg
+TestResults/
+coverage*.json
+coverage*.xml
+*.trx
+appsettings.*.local.json
+
+# ---------------------------------------------------------------------------
+# Node / Angular
+# ---------------------------------------------------------------------------
+node_modules/
+dist/
+tmp/
+.angular/
+.nx/cache
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm/
+.eslintcache
+coverage/
+e2e/coverage/
+
+# ---------------------------------------------------------------------------
+# Flutter / Dart
+# ---------------------------------------------------------------------------
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+*.iml
+.flutter-versions
+flutter_*.png
+**/ios/Flutter/.last_build_id
+**/ios/Pods/
+**/android/.gradle/
+**/android/captures/
+**/android/local.properties
+**/android/key.properties
+*.jks
+*.keystore
+*.g.dart
+*.freezed.dart
+*.mocks.dart
+
+# ---------------------------------------------------------------------------
+# Docker
+# ---------------------------------------------------------------------------
+docker-compose.override.yml
+*.env
+.env.*
+!.env.example
+
+# ---------------------------------------------------------------------------
+# IDE / Editor
+# ---------------------------------------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ---------------------------------------------------------------------------
+# OS
+# ---------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------------------------------------------------------------------------
+# Logs / temp
+# ---------------------------------------------------------------------------
+*.log
+logs/
+*.tmp
