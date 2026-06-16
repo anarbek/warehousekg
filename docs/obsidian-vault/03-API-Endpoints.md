@@ -16,6 +16,26 @@ Reference of REST/RPC endpoints: routes, request/response shapes, and status cod
 
 Entities are described in [[02-Database-Schema]].
 
+> **Frontend routes (Angular)** — The `InventoryModule` feature is lazy-loaded under `/inventory`:
+>
+> | Angular route                        | Component                |
+> | ------------------------------------ | ------------------------ |
+> | `/inventory/warehouses`              | `WarehouseList`          |
+> | `/inventory/warehouses/new`          | `WarehouseForm` (create) |
+> | `/inventory/warehouses/:id`          | `WarehouseDetail`        |
+> | `/inventory/warehouses/:id/edit`     | `WarehouseForm` (edit)   |
+> | `/inventory/items`                   | `InventoryItemList`      |
+> | `/inventory/items/new`               | `InventoryItemForm` (create) |
+> | `/inventory/items/:id`               | `InventoryItemDetail`    |
+> | `/inventory/items/:id/edit`          | `InventoryItemForm` (edit)|
+>
+> The shared `InventoryService` (`features/inventory/services/inventory.service.ts`) wraps both
+> `/api/v1/warehouses` and `/api/v1/inventory-items`.
+>
+> **Note on `categoryId` / `unitOfMeasureId`**: The current API has no dedicated list endpoints
+> for categories or units of measure. The inventory item form therefore accepts raw UUIDs.
+> When those endpoints are added, the form should be upgraded to proper `<select>` dropdowns.
+
 ### Warehouses — `/api/v1/warehouses`
 
 | Method | Route                       | Description              | Success         | Body |

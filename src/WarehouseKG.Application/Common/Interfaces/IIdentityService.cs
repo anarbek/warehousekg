@@ -23,4 +23,16 @@ public interface IIdentityService
         CancellationToken cancellationToken = default);
 
     Task<AuthUser?> FindByIdAsync(Guid userId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Finds an existing user by their external-login key (e.g. Google sub), or creates one
+    /// if no matching account exists.  The external login is linked to the user account.
+    /// </summary>
+    Task<AuthUser> FindOrCreateByExternalLoginAsync(
+        string provider,
+        string providerKey,
+        string? email,
+        string? displayName,
+        Guid tenantId,
+        CancellationToken cancellationToken = default);
 }

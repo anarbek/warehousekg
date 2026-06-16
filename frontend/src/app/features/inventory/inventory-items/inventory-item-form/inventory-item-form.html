@@ -1,0 +1,98 @@
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+<div class="form-page">
+  <mat-card class="form-page__card">
+    @if (saving()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+
+    <mat-card-header>
+      <mat-card-title>{{ title }}</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (error()) {
+        <p class="form-page__error">{{ error() }}</p>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="form-fields">
+        <mat-form-field appearance="outline">
+          <mat-label i18n="@@item.form.sku.label">Артикул (SKU)</mat-label>
+          <input matInput formControlName="sku" autocomplete="off" />
+          @if (form.controls.sku.hasError('required')) {
+            <mat-error i18n="@@item.form.sku.required">Артикул обязателен</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label i18n="@@item.form.name.label">Название</mat-label>
+          <input matInput formControlName="name" autocomplete="off" />
+          @if (form.controls.name.hasError('required')) {
+            <mat-error i18n="@@item.form.name.required">Название обязательно</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label i18n="@@item.form.description.label">Описание</mat-label>
+          <textarea matInput formControlName="description" rows="3"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label i18n="@@item.form.barcode.label">Штрихкод</mat-label>
+          <input matInput formControlName="barcode" autocomplete="off" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label i18n="@@item.form.categoryId.label">ID категории</mat-label>
+          <input matInput formControlName="categoryId" autocomplete="off" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+          @if (form.controls.categoryId.hasError('required')) {
+            <mat-error i18n="@@item.form.categoryId.required">ID категории обязателен</mat-error>
+          } @else if (form.controls.categoryId.hasError('pattern')) {
+            <mat-error i18n="@@item.form.uuid.invalid">Введите корректный UUID</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label i18n="@@item.form.unitOfMeasureId.label">ID ед. измерения</mat-label>
+          <input matInput formControlName="unitOfMeasureId" autocomplete="off" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+          @if (form.controls.unitOfMeasureId.hasError('required')) {
+            <mat-error i18n="@@item.form.unitOfMeasureId.required">ID ед. изм. обязателен</mat-error>
+          } @else if (form.controls.unitOfMeasureId.hasError('pattern')) {
+            <mat-error i18n="@@item.form.uuid.invalid">Введите корректный UUID</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label i18n="@@item.form.qty.label">Количество на складе</mat-label>
+          <input matInput type="number" formControlName="quantityOnHand" min="0" />
+          @if (form.controls.quantityOnHand.hasError('min')) {
+            <mat-error i18n="@@item.form.qty.min">Значение не может быть отрицательным</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label i18n="@@item.form.reorder.label">Уровень пополнения</mat-label>
+          <input matInput type="number" formControlName="reorderLevel" min="0" />
+          @if (form.controls.reorderLevel.hasError('min')) {
+            <mat-error i18n="@@item.form.reorder.min">Значение не может быть отрицательным</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-checkbox formControlName="isActive" i18n="@@item.form.isActive.label">
+          Активен
+        </mat-checkbox>
+
+        <div class="form-actions">
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || saving()">
+            <span i18n="@@common.save">Сохранить</span>
+          </button>
+          <button mat-stroked-button type="button" (click)="cancel()">
+            <span i18n="@@common.cancel">Отмена</span>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

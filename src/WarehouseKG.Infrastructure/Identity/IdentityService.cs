@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using WarehouseKG.Application.Common.Interfaces;
 using WarehouseKG.Application.Common.Models;
+using WarehouseKG.Domain.Identity;
 
 namespace WarehouseKG.Infrastructure.Identity;
 
@@ -73,6 +74,58 @@ public class IdentityService : IIdentityService
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
         return user is null ? null : await ToAuthUserAsync(user);
+    }
+
+    public async Task<AuthUser> FindOrCreateByExternalLoginAsync(
+        string provider,
+        string providerKey,
+        string? email,
+        string? displayName,
+        Guid tenantId,
+        CancellationToken cancellationToken = default)
+    {
+        // 1. Try to find by the external login link (e.g. Google sub).
+        var user = await _userManager.FindByLoginAsync(provider, providerKey);
+        if (user is not null)
+        {
+            return await ToAuthUserAsync(user);
+        }
+
+        // 2. If email is known, link to an existing local account instead of creating a duplicate.
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            user = await _userManager.FindByEmailAsync(email);
+        }
+
+        // 3. Create a new account if no match was found.
+        if (user is null)
+        {
+            user = new ApplicationUser
+            {
+                Id = Guid.NewGuid(),
+                UserName = !string.IsNullOrWhiteSpace(email)
+                    ? email
+                    : $"{provider.ToLowerInvariant()}_{providerKey}",
+                Email = email,
+                EmailConfirmed = true,
+                TenantId = tenantId
+            };
+
+            var createResult = await _userManager.CreateAsync(user);
+            if (!createResult.Succeeded)
+            {
+                var errors = string.Join("; ", createResult.Errors.Select(e => e.Description));
+                throw new InvalidOperationException($"Failed to create Google user: {errors}");
+            }
+
+            await _userManager.AddToRoleAsync(user, Roles.Viewer);
+        }
+
+        // 4. Persist the external login link so future sign-ins hit path 1.
+        var loginInfo = new UserLoginInfo(provider, providerKey, displayName ?? provider);
+        await _userManager.AddLoginAsync(user, loginInfo);
+
+        return await ToAuthUserAsync(user);
     }
 
     private async Task<AuthUser> ToAuthUserAsync(ApplicationUser user)

@@ -1,0 +1,57 @@
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+@if (error()) {
+  <div class="detail-page detail-page--error">
+    <p>{{ error() }}</p>
+    <button mat-stroked-button routerLink="../..">
+      <mat-icon>arrow_back</mat-icon>
+      <span i18n="@@common.back">Назад</span>
+    </button>
+  </div>
+}
+
+@if (warehouse(); as wh) {
+  <div class="detail-page">
+    <div class="detail-page__toolbar">
+      <button mat-icon-button routerLink="../.." [attr.aria-label]="'back'">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1 class="detail-page__title" i18n="@@warehouse.detail.title">Детали склада</h1>
+      <span class="detail-page__spacer"></span>
+      <button mat-stroked-button [routerLink]="['edit']">
+        <mat-icon>edit</mat-icon>
+        <span i18n="@@common.edit">Редактировать</span>
+      </button>
+      <button mat-stroked-button color="warn" (click)="delete()">
+        <mat-icon>delete</mat-icon>
+        <span i18n="@@common.delete">Удалить</span>
+      </button>
+    </div>
+
+    <mat-card class="detail-page__card">
+      <mat-card-content>
+        <dl class="detail-list">
+          <dt i18n="@@warehouse.detail.code">Код</dt>
+          <dd>{{ wh.code }}</dd>
+
+          <dt i18n="@@warehouse.detail.name">Название</dt>
+          <dd>{{ wh.name }}</dd>
+
+          <dt i18n="@@warehouse.detail.address">Адрес</dt>
+          <dd>{{ wh.address || '—' }}</dd>
+
+          <dt i18n="@@warehouse.detail.isActive">Статус</dt>
+          <dd>
+            @if (wh.isActive) {
+              <span class="badge badge--active" i18n="@@common.active">Активен</span>
+            } @else {
+              <span class="badge badge--inactive" i18n="@@common.inactive">Неактивен</span>
+            }
+          </dd>
+        </dl>
+      </mat-card-content>
+    </mat-card>
+  </div>
+}

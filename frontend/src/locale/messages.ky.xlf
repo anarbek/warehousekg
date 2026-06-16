@@ -10,6 +10,10 @@
         <source>Панель управления</source>
         <target>Башкаруу панели</target>
       </trans-unit>
+      <trans-unit id="nav.warehouses" datatype="html">
+        <source>Склады</source>
+        <target>Кампалар</target>
+      </trans-unit>
       <trans-unit id="nav.inventory" datatype="html">
         <source>Товары</source>
         <target>Товарлар</target>
@@ -30,9 +34,13 @@
         <source>Войдите, чтобы продолжить</source>
         <target>Улантуу үчүн кириңиз</target>
       </trans-unit>
-      <trans-unit id="login.email" datatype="html">
-        <source>Электронная почта</source>
-        <target>Электрондук почта</target>
+      <trans-unit id="login.username" datatype="html">
+        <source>Имя пользователя</source>
+        <target>Пайдалануучунун аты</target>
+      </trans-unit>
+      <trans-unit id="login.usernameRequired" datatype="html">
+        <source>Введите имя пользователя</source>
+        <target>Пайдалануучунун атын киргизиңиз</target>
       </trans-unit>
       <trans-unit id="login.password" datatype="html">
         <source>Пароль</source>
@@ -61,6 +69,292 @@
       <trans-unit id="login.error" datatype="html">
         <source>Неверный логин или пароль</source>
         <target>Логин же сырсөз туура эмес</target>
+      </trans-unit>
+      <trans-unit id="login.googleNotAvailable" datatype="html">
+        <source>Вход через Google ещё не доступен</source>
+        <target>Google аркылуу кирүү азырынча жеткиликтүү эмес</target>
+      </trans-unit>
+      <trans-unit id="login.authenticating" datatype="html">
+        <source>Выполняется вход…</source>
+        <target>Кирүү аткарылуда…</target>
+      </trans-unit>
+
+      <!-- Common -->
+      <trans-unit id="common.actions" datatype="html">
+        <source>Действия</source>
+        <target>Аракеттер</target>
+      </trans-unit>
+      <trans-unit id="common.edit" datatype="html">
+        <source>Редактировать</source>
+        <target>Түзөтүү</target>
+      </trans-unit>
+      <trans-unit id="common.delete" datatype="html">
+        <source>Удалить</source>
+        <target>Жок кылуу</target>
+      </trans-unit>
+      <trans-unit id="common.detail" datatype="html">
+        <source>Просмотр</source>
+        <target>Көрүү</target>
+      </trans-unit>
+      <trans-unit id="common.save" datatype="html">
+        <source>Сохранить</source>
+        <target>Сактоо</target>
+      </trans-unit>
+      <trans-unit id="common.cancel" datatype="html">
+        <source>Отмена</source>
+        <target>Жокко чыгаруу</target>
+      </trans-unit>
+      <trans-unit id="common.back" datatype="html">
+        <source>Назад</source>
+        <target>Артка</target>
+      </trans-unit>
+      <trans-unit id="common.active" datatype="html">
+        <source>Активен</source>
+        <target>Активдүү</target>
+      </trans-unit>
+      <trans-unit id="common.inactive" datatype="html">
+        <source>Неактивен</source>
+        <target>Активдүү эмес</target>
+      </trans-unit>
+      <trans-unit id="common.noData" datatype="html">
+        <source>Нет данных</source>
+        <target>Маалымат жок</target>
+      </trans-unit>
+      <trans-unit id="common.loadError" datatype="html">
+        <source>Не удалось загрузить данные</source>
+        <target>Маалыматтарды жүктөө мүмкүн болмоду</target>
+      </trans-unit>
+      <trans-unit id="common.saveError" datatype="html">
+        <source>Не удалось сохранить данные</source>
+        <target>Маалыматтарды сактоо мүмкүн болмоду</target>
+      </trans-unit>
+      <trans-unit id="common.confirmDelete" datatype="html">
+        <source>Вы уверены, что хотите удалить запись?</source>
+        <target>Жазманы жок кылгыңыз келеби?</target>
+      </trans-unit>
+
+      <!-- Warehouses -->
+      <trans-unit id="warehouse.list.title" datatype="html">
+        <source>Склады</source>
+        <target>Кампалар</target>
+      </trans-unit>
+      <trans-unit id="warehouse.list.add" datatype="html">
+        <source>Добавить склад</source>
+        <target>Кам кошуу</target>
+      </trans-unit>
+      <trans-unit id="warehouse.column.code" datatype="html">
+        <source>Код</source>
+        <target>Код</target>
+      </trans-unit>
+      <trans-unit id="warehouse.column.name" datatype="html">
+        <source>Название</source>
+        <target>Аты</target>
+      </trans-unit>
+      <trans-unit id="warehouse.column.address" datatype="html">
+        <source>Адрес</source>
+        <target>Дарек</target>
+      </trans-unit>
+      <trans-unit id="warehouse.column.status" datatype="html">
+        <source>Статус</source>
+        <target>Статус</target>
+      </trans-unit>
+      <trans-unit id="warehouse.detail.title" datatype="html">
+        <source>Детали склада</source>
+        <target>Кам маалыматтары</target>
+      </trans-unit>
+      <trans-unit id="warehouse.detail.code" datatype="html">
+        <source>Код</source>
+        <target>Код</target>
+      </trans-unit>
+      <trans-unit id="warehouse.detail.name" datatype="html">
+        <source>Название</source>
+        <target>Аты</target>
+      </trans-unit>
+      <trans-unit id="warehouse.detail.address" datatype="html">
+        <source>Адрес</source>
+        <target>Дарек</target>
+      </trans-unit>
+      <trans-unit id="warehouse.detail.isActive" datatype="html">
+        <source>Статус</source>
+        <target>Статус</target>
+      </trans-unit>
+      <trans-unit id="warehouse.form.create.title" datatype="html">
+        <source>Новый склад</source>
+        <target>Жаңы кам</target>
+      </trans-unit>
+      <trans-unit id="warehouse.form.edit.title" datatype="html">
+        <source>Редактировать склад</source>
+        <target>Камды түзөтүү</target>
+      </trans-unit>
+      <trans-unit id="warehouse.form.code.label" datatype="html">
+        <source>Код</source>
+        <target>Код</target>
+      </trans-unit>
+      <trans-unit id="warehouse.form.name.label" datatype="html">
+        <source>Название</source>
+        <target>Аты</target>
+      </trans-unit>
+      <trans-unit id="warehouse.form.address.label" datatype="html">
+        <source>Адрес</source>
+        <target>Дарек</target>
+      </trans-unit>
+      <trans-unit id="warehouse.form.isActive.label" datatype="html">
+        <source>Активен</source>
+        <target>Активдүү</target>
+      </trans-unit>
+      <trans-unit id="warehouse.form.code.required" datatype="html">
+        <source>Код обязателен</source>
+        <target>Код зарыл</target>
+      </trans-unit>
+      <trans-unit id="warehouse.form.name.required" datatype="html">
+        <source>Название обязательно</source>
+        <target>Аты зарыл</target>
+      </trans-unit>
+
+      <!-- Inventory Items -->
+      <trans-unit id="item.list.title" datatype="html">
+        <source>Товары</source>
+        <target>Товарлар</target>
+      </trans-unit>
+      <trans-unit id="item.list.add" datatype="html">
+        <source>Добавить товар</source>
+        <target>Товар кошуу</target>
+      </trans-unit>
+      <trans-unit id="item.column.sku" datatype="html">
+        <source>Артикул</source>
+        <target>Артикул</target>
+      </trans-unit>
+      <trans-unit id="item.column.name" datatype="html">
+        <source>Название</source>
+        <target>Аты</target>
+      </trans-unit>
+      <trans-unit id="item.column.barcode" datatype="html">
+        <source>Штрихкод</source>
+        <target>Штрихкод</target>
+      </trans-unit>
+      <trans-unit id="item.column.qty" datatype="html">
+        <source>Кол-во</source>
+        <target>Саны</target>
+      </trans-unit>
+      <trans-unit id="item.column.reorder" datatype="html">
+        <source>Мин. запас</source>
+        <target>Мин. запас</target>
+      </trans-unit>
+      <trans-unit id="item.column.status" datatype="html">
+        <source>Статус</source>
+        <target>Статус</target>
+      </trans-unit>
+      <trans-unit id="item.detail.title" datatype="html">
+        <source>Детали товара</source>
+        <target>Товар маалыматтары</target>
+      </trans-unit>
+      <trans-unit id="item.detail.sku" datatype="html">
+        <source>Артикул</source>
+        <target>Артикул</target>
+      </trans-unit>
+      <trans-unit id="item.detail.name" datatype="html">
+        <source>Название</source>
+        <target>Аты</target>
+      </trans-unit>
+      <trans-unit id="item.detail.description" datatype="html">
+        <source>Описание</source>
+        <target>Сүрөттөмө</target>
+      </trans-unit>
+      <trans-unit id="item.detail.barcode" datatype="html">
+        <source>Штрихкод</source>
+        <target>Штрихкод</target>
+      </trans-unit>
+      <trans-unit id="item.detail.categoryId" datatype="html">
+        <source>ID категории</source>
+        <target>Категория ID</target>
+      </trans-unit>
+      <trans-unit id="item.detail.unitOfMeasureId" datatype="html">
+        <source>Ед. изм. ID</source>
+        <target>Өлчөм бирдиги ID</target>
+      </trans-unit>
+      <trans-unit id="item.detail.quantityOnHand" datatype="html">
+        <source>Количество</source>
+        <target>Саны</target>
+      </trans-unit>
+      <trans-unit id="item.detail.reorderLevel" datatype="html">
+        <source>Мин. запас</source>
+        <target>Мин. запас</target>
+      </trans-unit>
+      <trans-unit id="item.detail.isActive" datatype="html">
+        <source>Статус</source>
+        <target>Статус</target>
+      </trans-unit>
+      <trans-unit id="item.form.create.title" datatype="html">
+        <source>Новый товар</source>
+        <target>Жаңы товар</target>
+      </trans-unit>
+      <trans-unit id="item.form.edit.title" datatype="html">
+        <source>Редактировать товар</source>
+        <target>Товарды түзөтүү</target>
+      </trans-unit>
+      <trans-unit id="item.form.sku.label" datatype="html">
+        <source>Артикул (SKU)</source>
+        <target>Артикул (SKU)</target>
+      </trans-unit>
+      <trans-unit id="item.form.name.label" datatype="html">
+        <source>Название</source>
+        <target>Аты</target>
+      </trans-unit>
+      <trans-unit id="item.form.description.label" datatype="html">
+        <source>Описание</source>
+        <target>Сүрөттөмө</target>
+      </trans-unit>
+      <trans-unit id="item.form.barcode.label" datatype="html">
+        <source>Штрихкод</source>
+        <target>Штрихкод</target>
+      </trans-unit>
+      <trans-unit id="item.form.categoryId.label" datatype="html">
+        <source>ID категории</source>
+        <target>Категория ID</target>
+      </trans-unit>
+      <trans-unit id="item.form.unitOfMeasureId.label" datatype="html">
+        <source>ID ед. измерения</source>
+        <target>Өлчөм бирдиги ID</target>
+      </trans-unit>
+      <trans-unit id="item.form.qty.label" datatype="html">
+        <source>Количество на складе</source>
+        <target>Склад саны</target>
+      </trans-unit>
+      <trans-unit id="item.form.reorder.label" datatype="html">
+        <source>Уровень пополнения</source>
+        <target>Толтуруу деңгээли</target>
+      </trans-unit>
+      <trans-unit id="item.form.isActive.label" datatype="html">
+        <source>Активен</source>
+        <target>Активдүү</target>
+      </trans-unit>
+      <trans-unit id="item.form.sku.required" datatype="html">
+        <source>Артикул обязателен</source>
+        <target>Артикул зарыл</target>
+      </trans-unit>
+      <trans-unit id="item.form.name.required" datatype="html">
+        <source>Название обязательно</source>
+        <target>Аты зарыл</target>
+      </trans-unit>
+      <trans-unit id="item.form.categoryId.required" datatype="html">
+        <source>ID категории обязателен</source>
+        <target>Категория ID зарыл</target>
+      </trans-unit>
+      <trans-unit id="item.form.unitOfMeasureId.required" datatype="html">
+        <source>ID ед. изм. обязателен</source>
+        <target>Өлчөм бирдиги ID зарыл</target>
+      </trans-unit>
+      <trans-unit id="item.form.uuid.invalid" datatype="html">
+        <source>Введите корректный UUID</source>
+        <target>Туура UUID киргизиңиз</target>
+      </trans-unit>
+      <trans-unit id="item.form.qty.min" datatype="html">
+        <source>Значение не может быть отрицательным</source>
+        <target>Маани терс болушу мүмкүн эмес</target>
+      </trans-unit>
+      <trans-unit id="item.form.reorder.min" datatype="html">
+        <source>Значение не может быть отрицательным</source>
+        <target>Маани терс болушу мүмкүн эмес</target>
       </trans-unit>
     </body>
   </file>

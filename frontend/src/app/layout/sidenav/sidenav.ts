@@ -18,6 +18,7 @@ interface NavItem {
 export class Sidenav {
   protected readonly items: NavItem[] = [
     { route: '/dashboard', icon: 'dashboard', label: $localize`:@@nav.dashboard:Панель управления` },
-    { route: '/inventory', icon: 'inventory_2', label: $localize`:@@nav.inventory:Товары` },
+    { route: '/inventory/warehouses', icon: 'warehouse', label: $localize`:@@nav.warehouses:Склады` },
+    { route: '/inventory/items', icon: 'inventory_2', label: $localize`:@@nav.inventory:Товары` },
   ];
 }

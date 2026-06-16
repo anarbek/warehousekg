@@ -7,6 +7,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/login/login').then((m) => m.Login),
   },
   {
+    path: 'auth/callback',
+    loadComponent: () =>
+      import('./features/auth/callback/auth-callback').then((m) => m.AuthCallback),
+  },
+  {
     path: '',
     loadComponent: () => import('./layout/shell/shell').then((m) => m.Shell),
     canActivate: [authGuard],
@@ -15,6 +20,11 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),
+      },
+      {
+        path: 'inventory',
+        loadChildren: () =>
+          import('./features/inventory/inventory.routes').then((m) => m.inventoryRoutes),
       },
     ],
   },

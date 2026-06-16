@@ -30,11 +30,6 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthResul
 
     public async Task<AuthResult> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        if (request.TenantId == Guid.Empty)
-        {
-            return AuthResult.Fail("A tenant id is required to register a user.");
-        }
-
         var role = string.IsNullOrWhiteSpace(request.Role) ? Roles.Viewer : request.Role;
         if (!Roles.IsValid(role))
         {

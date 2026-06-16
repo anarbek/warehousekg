@@ -7,5 +7,5 @@ export const AppSettings = {
   apiBaseUrl: '/api/v1',
 
   /** Fallback tenant id used for the `X-Tenant-Id` header until multi-tenant onboarding exists. */
-  defaultTenantId: '00000000-0000-0000-0000-000000000000',
+  defaultTenantId: 'ffffffff-ffff-ffff-ffff-ffffffffffff',
 } as const;

@@ -1,6 +1,9 @@
 using MediatR;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using WarehouseKG.Application.Features.Auth.Commands;
 using WarehouseKG.Application.Features.Auth.Dtos;
 
@@ -60,20 +63,77 @@ public class AuthController : ApiControllerBase
     }
 
     /// <summary>
-    /// Placeholder for Google OAuth sign-in. ClientId/ClientSecret are read from the
-    /// <c>Authentication:Google</c> configuration section; the flow is not yet implemented.
+    /// Initiates Google OAuth sign-in by challenging the Google authentication scheme.
+    /// The browser is redirected to Google's consent screen; after the user approves,
+    /// Google redirects back to <c>/api/v1/auth/google-callback</c> (handled by the
+    /// middleware) which then redirects to <c>/api/v1/auth/google-complete</c>.
     /// </summary>
-    [HttpPost("google")]
-    [ProducesResponseType(StatusCodes.Status501NotImplemented)]
+    [HttpGet("google")]
+    [ProducesResponseType(StatusCodes.Status302Found)]
     public IActionResult Google()
     {
-        var clientId = _configuration["Authentication:Google:ClientId"];
-        var configured = !string.IsNullOrWhiteSpace(clientId) && clientId != "__PLACEHOLDER__";
-
-        return StatusCode(StatusCodes.Status501NotImplemented, new
+        var properties = new AuthenticationProperties
         {
-            error = "Google OAuth login is not implemented yet.",
-            configured
-        });
+            RedirectUri = Url.Action(nameof(GoogleComplete))
+        };
+        return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+    }
+
+    /// <summary>
+    /// Called by the Google OAuth middleware after a successful authorization code exchange.
+    /// Finds or creates a local user from the Google identity, issues a JWT pair, and
+    /// redirects the browser to the Angular frontend with the tokens in the query string.
+    /// </summary>
+    [HttpGet("google-complete")]
+    [ProducesResponseType(StatusCodes.Status302Found)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GoogleComplete(CancellationToken cancellationToken)
+    {
+        // Authenticate against the short-lived OAuth cookie set by the Google middleware.
+        var authResult = await HttpContext.AuthenticateAsync("GoogleOAuth");
+        if (!authResult.Succeeded || authResult.Principal is null)
+        {
+            return Unauthorized(new { error = "Google authentication failed." });
+        }
+
+        var principal = authResult.Principal;
+        var sub = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+        var email = principal.FindFirstValue(ClaimTypes.Email);
+        var name = principal.FindFirstValue(ClaimTypes.Name);
+
+        if (string.IsNullOrWhiteSpace(sub))
+        {
+            return Unauthorized(new { error = "Google did not return a subject claim." });
+        }
+
+        // Parse the tenant to use; fall back to the configured default or Guid.Empty.
+        var tenantIdStr = _configuration["Authentication:Google:DefaultTenantId"];
+        var tenantId = Guid.TryParse(tenantIdStr, out var tid) ? tid : Guid.Empty;
+
+        var command = new LoginWithGoogleCommand(sub, email, name, tenantId);
+        var result = await _sender.Send(command, cancellationToken);
+
+        // Clear the temporary OAuth cookie – it is no longer needed.
+        await HttpContext.SignOutAsync("GoogleOAuth");
+
+        if (!result.Succeeded || result.Response is null)
+        {
+            return Unauthorized(new { errors = result.Errors });
+        }
+
+        var r = result.Response;
+        var frontendBase = _configuration["Frontend:BaseUrl"] ?? "http://localhost:4200";
+
+        var qs = System.Web.HttpUtility.ParseQueryString(string.Empty);
+        qs["accessToken"] = r.AccessToken;
+        qs["refreshToken"] = r.RefreshToken;
+        qs["userId"] = r.UserId.ToString();
+        qs["userName"] = r.UserName;
+        qs["email"] = r.Email ?? string.Empty;
+        qs["tenantId"] = r.TenantId.ToString();
+        qs["roles"] = string.Join(",", r.Roles);
+        qs["expiresAt"] = r.AccessTokenExpiresAtUtc.ToString("O");
+
+        return Redirect($"{frontendBase}/auth/callback?{qs}");
     }
 }

@@ -38,11 +38,17 @@ export class AuthService {
   }
 
   /**
-   * Starts the Google OAuth sign-in. The backend endpoint is currently a placeholder
-   * (`501 Not Implemented`); this redirects the browser so the flow is ready to wire up.
+   * Initiates Google OAuth sign-in by navigating the browser to the backend challenge endpoint.
+   * The backend redirects to Google, and after approval Google calls the backend callback,
+   * which issues a JWT and redirects to /auth/callback in the Angular app.
    */
   loginWithGoogle(): void {
-    window.location.href = `${this.authBase}/google`;
+    window.location.href = '/api/v1/auth/google';
+  }
+
+  /** Called by the OAuth callback route to hydrate the auth state from external-provider tokens. */
+  loginFromExternal(response: AuthResponse): void {
+    this.handleAuthSuccess(response);
   }
 
   logout(): void {

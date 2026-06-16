@@ -25,6 +25,7 @@ coverage*.json
 coverage*.xml
 *.trx
 appsettings.*.local.json
+appsettings.Development.json
 
 # ---------------------------------------------------------------------------
 # Node / Angular

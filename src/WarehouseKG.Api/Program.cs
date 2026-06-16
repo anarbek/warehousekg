@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
@@ -10,6 +11,9 @@ using WarehouseKG.Infrastructure;
 using WarehouseKG.Infrastructure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Scheme name for the short-lived cookie used during the Google OAuth dance only.
+const string GoogleOAuthScheme = "GoogleOAuth";
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -34,6 +38,24 @@ builder.Services
             NameClaimType = "unique_name",
             RoleClaimType = ClaimTypes.Role
         };
+    })
+    // Temporary cookie used only to carry the Google identity during the OAuth dance.
+    // It is consumed and cleared in the google-complete endpoint.
+    .AddCookie(GoogleOAuthScheme, options =>
+    {
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+    })
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? string.Empty;
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? string.Empty;
+        options.SignInScheme = GoogleOAuthScheme;
+        // The middleware handles this path; it is NOT a controller action.
+        options.CallbackPath = "/api/v1/auth/google-callback";
+        options.Scope.Add("email");
+        options.Scope.Add("profile");
     });
 
 builder.Services.AddWarehouseAuthorization();
