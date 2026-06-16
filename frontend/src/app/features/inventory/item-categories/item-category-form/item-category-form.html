@@ -1,0 +1,49 @@
+<div class="form-page">
+  <mat-card class="form-page__card">
+    @if (saving()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+
+    <mat-card-header>
+      <mat-card-title>{{ title }}</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (error()) {
+        <p class="form-page__error">{{ error() }}</p>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="form-fields">
+        <mat-form-field appearance="outline">
+          <mat-label i18n="@@cat.form.code.label">Код</mat-label>
+          <input matInput formControlName="code" autocomplete="off" placeholder="ELEC" />
+          @if (form.controls.code.hasError('required')) {
+            <mat-error i18n="@@cat.form.code.required">Код обязателен</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label i18n="@@cat.form.name.label">Название</mat-label>
+          <input matInput formControlName="name" autocomplete="off" />
+          @if (form.controls.name.hasError('required')) {
+            <mat-error i18n="@@cat.form.name.required">Название обязательно</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label i18n="@@cat.form.description.label">Описание</mat-label>
+          <textarea matInput formControlName="description" rows="3"></textarea>
+        </mat-form-field>
+
+        <div class="form-actions">
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || saving()">
+            <span i18n="@@common.save">Сохранить</span>
+          </button>
+          <button mat-stroked-button type="button" (click)="cancel()">
+            <span i18n="@@common.cancel">Отмена</span>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

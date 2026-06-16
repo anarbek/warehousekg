@@ -4,8 +4,14 @@ import { Observable } from 'rxjs';
 import { AppSettings } from '../../../core/config/app-settings';
 import {
   CreateInventoryItemRequest,
+  CreateItemCategoryRequest,
+  CreateUnitOfMeasureRequest,
   InventoryItem,
+  ItemCategory,
+  UnitOfMeasure,
   UpdateInventoryItemRequest,
+  UpdateItemCategoryRequest,
+  UpdateUnitOfMeasureRequest,
 } from '../models/inventory-item.model';
 import {
   CreateWarehouseRequest,
@@ -18,6 +24,8 @@ export class InventoryService {
   private readonly http = inject(HttpClient);
   private readonly warehousesUrl = `${AppSettings.apiBaseUrl}/warehouses`;
   private readonly itemsUrl = `${AppSettings.apiBaseUrl}/inventory-items`;
+  private readonly categoriesUrl = `${AppSettings.apiBaseUrl}/item-categories`;
+  private readonly uomsUrl = `${AppSettings.apiBaseUrl}/units-of-measure`;
 
   // ─── Warehouses ────────────────────────────────────────────────────────────
 
@@ -61,5 +69,49 @@ export class InventoryService {
 
   deleteInventoryItem(id: string): Observable<void> {
     return this.http.delete<void>(`${this.itemsUrl}/${id}`);
+  }
+
+  // ─── Item Categories ───────────────────────────────────────────────────────
+
+  getItemCategories(): Observable<ItemCategory[]> {
+    return this.http.get<ItemCategory[]>(this.categoriesUrl);
+  }
+
+  getItemCategoryById(id: string): Observable<ItemCategory> {
+    return this.http.get<ItemCategory>(`${this.categoriesUrl}/${id}`);
+  }
+
+  createItemCategory(request: CreateItemCategoryRequest): Observable<string> {
+    return this.http.post<string>(this.categoriesUrl, request);
+  }
+
+  updateItemCategory(id: string, request: UpdateItemCategoryRequest): Observable<void> {
+    return this.http.put<void>(`${this.categoriesUrl}/${id}`, request);
+  }
+
+  deleteItemCategory(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.categoriesUrl}/${id}`);
+  }
+
+  // ─── Units of Measure ──────────────────────────────────────────────────────
+
+  getUnitsOfMeasure(): Observable<UnitOfMeasure[]> {
+    return this.http.get<UnitOfMeasure[]>(this.uomsUrl);
+  }
+
+  getUnitOfMeasureById(id: string): Observable<UnitOfMeasure> {
+    return this.http.get<UnitOfMeasure>(`${this.uomsUrl}/${id}`);
+  }
+
+  createUnitOfMeasure(request: CreateUnitOfMeasureRequest): Observable<string> {
+    return this.http.post<string>(this.uomsUrl, request);
+  }
+
+  updateUnitOfMeasure(id: string, request: UpdateUnitOfMeasureRequest): Observable<void> {
+    return this.http.put<void>(`${this.uomsUrl}/${id}`, request);
+  }
+
+  deleteUnitOfMeasure(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.uomsUrl}/${id}`);
   }
 }

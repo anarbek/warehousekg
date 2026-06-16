@@ -29,12 +29,56 @@ Entities are described in [[02-Database-Schema]].
 > | `/inventory/items/:id`               | `InventoryItemDetail`    |
 > | `/inventory/items/:id/edit`          | `InventoryItemForm` (edit)|
 >
-> The shared `InventoryService` (`features/inventory/services/inventory.service.ts`) wraps both
-> `/api/v1/warehouses` and `/api/v1/inventory-items`.
+> The shared `InventoryService` (`features/inventory/services/inventory.service.ts`) wraps
+> `/api/v1/warehouses`, `/api/v1/inventory-items`, `/api/v1/item-categories`, and `/api/v1/units-of-measure`.
 >
-> **Note on `categoryId` / `unitOfMeasureId`**: The current API has no dedicated list endpoints
-> for categories or units of measure. The inventory item form therefore accepts raw UUIDs.
-> When those endpoints are added, the form should be upgraded to proper `<select>` dropdowns.
+> **`categoryId` / `unitOfMeasureId`**: The inventory item form uses `<mat-select>` dropdowns
+> populated from `/api/v1/item-categories` and `/api/v1/units-of-measure`. The detail and
+> list views display resolved names (`categoryName`, `unitOfMeasureName`) from navigation properties.
+
+### Item Categories — `/api/v1/item-categories`
+
+Standard CRUD. Read models return `{ id, code, name, description }`.
+
+| Method | Route                             | Description              | Success          |
+| ------ | --------------------------------- | ------------------------ | ---------------- |
+| GET    | `/api/v1/item-categories`         | List all categories      | `200 OK`         |
+| GET    | `/api/v1/item-categories/{id}`    | Get category by id       | `200 OK` / `404` |
+| POST   | `/api/v1/item-categories`         | Create a category        | `201 Created`    |
+| PUT    | `/api/v1/item-categories/{id}`    | Update a category        | `204` / `404`    |
+| DELETE | `/api/v1/item-categories/{id}`    | Delete a category        | `204` / `404`    |
+
+**Create/Update body**
+
+```json
+{
+  "code": "ELEC",
+  "name": "Electronics",
+  "description": "Electronic devices and accessories"
+}
+```
+
+### Units of Measure — `/api/v1/units-of-measure`
+
+Standard CRUD. Read models return `{ id, code, name, description }`.
+
+| Method | Route                              | Description              | Success          |
+| ------ | ---------------------------------- | ------------------------ | ---------------- |
+| GET    | `/api/v1/units-of-measure`         | List all units           | `200 OK`         |
+| GET    | `/api/v1/units-of-measure/{id}`    | Get unit by id           | `200 OK` / `404` |
+| POST   | `/api/v1/units-of-measure`         | Create a unit            | `201 Created`    |
+| PUT    | `/api/v1/units-of-measure/{id}`    | Update a unit            | `204` / `404`    |
+| DELETE | `/api/v1/units-of-measure/{id}`    | Delete a unit            | `204` / `404`    |
+
+**Create/Update body**
+
+```json
+{
+  "code": "PCS",
+  "name": "Pieces",
+  "description": "Individual units"
+}
+```
 
 ### Warehouses — `/api/v1/warehouses`
 
@@ -96,6 +140,33 @@ Document-style operations (see [[02-Database-Schema]]). All four follow the same
 - `POST /...` — create a **Draft**; returns the new `Guid` (`201 Created`)
 - `POST /.../{id}/complete` — transition Draft → Completed; `204`, `404`, or `409 Conflict` (not in Draft)
 - `POST /.../{id}/cancel` — transition Draft → Cancelled; `204`, `404`, or `409 Conflict`
+
+> **Frontend routes (Angular)** — The `StockOperationsModule` feature is lazy-loaded under `/stock-operations`:
+>
+> | Angular route                          | Component                |
+> | -------------------------------------- | ------------------------ |
+> | `/stock-operations/receiving`          | `StockOperationList`     |
+> | `/stock-operations/receiving/new`      | `ReceivingForm`          |
+> | `/stock-operations/receiving/:id`      | `StockOperationDetail`   |
+> | `/stock-operations/picking`            | `StockOperationList`     |
+> | `/stock-operations/picking/new`        | `PickingForm`            |
+> | `/stock-operations/picking/:id`        | `StockOperationDetail`   |
+> | `/stock-operations/packing`            | `StockOperationList`     |
+> | `/stock-operations/packing/new`        | `PackingForm`            |
+> | `/stock-operations/packing/:id`        | `StockOperationDetail`   |
+> | `/stock-operations/transfer`           | `StockOperationList`     |
+> | `/stock-operations/transfer/new`       | `TransferForm`           |
+> | `/stock-operations/transfer/:id`       | `StockOperationDetail`   |
+>
+> The shared `StockOperationsService` (`features/stock-operations/services/stock-operations.service.ts`)
+> wraps all four endpoints (`/api/v1/stock-receipts`, `/api/v1/pick-orders`, `/api/v1/pack-orders`,
+> `/api/v1/stock-transfers`). Both `StockOperationList` and `StockOperationDetail` are single
+> configurable components driven by the `operationType` route data (`receiving` / `picking` / `packing` / `transfer`).
+> The detail view shows an editable inline table for line items when the document is in Draft status,
+> with **Complete** and **Cancel** action buttons.
+>
+> **Status mapping** — Backend uses `Draft`, `Completed`, `Cancelled`. The UI displays these with
+> colour-coded badges (amber/green/red). A status dropdown filter is available on each list view.
 
 | Operation  | Base route                  | Complete stock effect            |
 | ---------- | --------------------------- | -------------------------------- |

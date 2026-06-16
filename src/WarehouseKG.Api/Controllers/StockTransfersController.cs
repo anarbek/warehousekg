@@ -38,7 +38,7 @@ public class StockTransfersController : ApiControllerBase
     /// <summary>Creates a draft stock transfer.</summary>
     [HttpPost]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
-    public async Task<ActionResult<Guid>> Create(CreateStockTransferCommand command, CancellationToken cancellationToken)
+    public async Task<ActionResult<Guid>> Create([FromBody] CreateStockTransferCommand command, CancellationToken cancellationToken)
     {
         var id = await _sender.Send(command, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id }, id);

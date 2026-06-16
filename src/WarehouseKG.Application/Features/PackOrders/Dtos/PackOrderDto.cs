@@ -10,6 +10,8 @@ public class PackOrderDto
 
     public Guid WarehouseId { get; set; }
 
+    public string? WarehouseName { get; set; }
+
     public Guid? PickOrderId { get; set; }
 
     public StockOperationStatus Status { get; set; }
@@ -39,6 +41,8 @@ public class PackOrderSummaryDto
     public string Number { get; set; } = string.Empty;
 
     public Guid WarehouseId { get; set; }
+
+    public string? WarehouseName { get; set; }
 
     public StockOperationStatus Status { get; set; }
 

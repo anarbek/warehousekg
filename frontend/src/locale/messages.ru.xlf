@@ -232,6 +232,10 @@
         <source>Штрихкод</source>
         <target>Штрихкод</target>
       </trans-unit>
+      <trans-unit id="item.column.category" datatype="html">
+        <source>Категория</source>
+        <target>Категория</target>
+      </trans-unit>
       <trans-unit id="item.column.qty" datatype="html">
         <source>Кол-во</source>
         <target>Кол-во</target>
@@ -265,12 +269,12 @@
         <target>Штрихкод</target>
       </trans-unit>
       <trans-unit id="item.detail.categoryId" datatype="html">
-        <source>ID категории</source>
-        <target>ID категории</target>
+        <source>Категория</source>
+        <target>Категория</target>
       </trans-unit>
       <trans-unit id="item.detail.unitOfMeasureId" datatype="html">
-        <source>Ед. изм. ID</source>
-        <target>Ед. изм. ID</target>
+        <source>Ед. измерения</source>
+        <target>Ед. измерения</target>
       </trans-unit>
       <trans-unit id="item.detail.quantityOnHand" datatype="html">
         <source>Количество</source>
@@ -309,12 +313,12 @@
         <target>Штрихкод</target>
       </trans-unit>
       <trans-unit id="item.form.categoryId.label" datatype="html">
-        <source>ID категории</source>
-        <target>ID категории</target>
+        <source>Категория</source>
+        <target>Категория</target>
       </trans-unit>
       <trans-unit id="item.form.unitOfMeasureId.label" datatype="html">
-        <source>ID ед. измерения</source>
-        <target>ID ед. измерения</target>
+        <source>Ед. измерения</source>
+        <target>Ед. измерения</target>
       </trans-unit>
       <trans-unit id="item.form.qty.label" datatype="html">
         <source>Количество на складе</source>
@@ -337,12 +341,12 @@
         <target>Название обязательно</target>
       </trans-unit>
       <trans-unit id="item.form.categoryId.required" datatype="html">
-        <source>ID категории обязателен</source>
-        <target>ID категории обязателен</target>
+        <source>Выберите категорию</source>
+        <target>Выберите категорию</target>
       </trans-unit>
       <trans-unit id="item.form.unitOfMeasureId.required" datatype="html">
-        <source>ID ед. изм. обязателен</source>
-        <target>ID ед. изм. обязателен</target>
+        <source>Выберите единицу измерения</source>
+        <target>Выберите единицу измерения</target>
       </trans-unit>
       <trans-unit id="item.form.uuid.invalid" datatype="html">
         <source>Введите корректный UUID</source>
@@ -356,6 +360,539 @@
         <source>Значение не может быть отрицательным</source>
         <target>Значение не может быть отрицательным</target>
       </trans-unit>
+
+      <!-- Nav -->
+      <trans-unit id="nav.categories" datatype="html">
+        <source>Категории</source>
+        <target>Категории</target>
+      </trans-unit>
+      <trans-unit id="nav.uoms" datatype="html">
+        <source>Ед. измерения</source>
+        <target>Ед. измерения</target>
+      </trans-unit>
+
+      <!-- Item Categories -->
+      <trans-unit id="cat.list.title" datatype="html">
+        <source>Категории товаров</source>
+        <target>Категории товаров</target>
+      </trans-unit>
+      <trans-unit id="cat.list.add" datatype="html">
+        <source>Добавить категорию</source>
+        <target>Добавить категорию</target>
+      </trans-unit>
+      <trans-unit id="cat.column.code" datatype="html">
+        <source>Код</source>
+        <target>Код</target>
+      </trans-unit>
+      <trans-unit id="cat.column.name" datatype="html">
+        <source>Название</source>
+        <target>Название</target>
+      </trans-unit>
+      <trans-unit id="cat.column.description" datatype="html">
+        <source>Описание</source>
+        <target>Описание</target>
+      </trans-unit>
+      <trans-unit id="cat.form.create.title" datatype="html">
+        <source>Новая категория</source>
+        <target>Новая категория</target>
+      </trans-unit>
+      <trans-unit id="cat.form.edit.title" datatype="html">
+        <source>Редактировать категорию</source>
+        <target>Редактировать категорию</target>
+      </trans-unit>
+      <trans-unit id="cat.form.code.label" datatype="html">
+        <source>Код</source>
+        <target>Код</target>
+      </trans-unit>
+      <trans-unit id="cat.form.code.required" datatype="html">
+        <source>Код обязателен</source>
+        <target>Код обязателен</target>
+      </trans-unit>
+      <trans-unit id="cat.form.name.label" datatype="html">
+        <source>Название</source>
+        <target>Название</target>
+      </trans-unit>
+      <trans-unit id="cat.form.name.required" datatype="html">
+        <source>Название обязательно</source>
+        <target>Название обязательно</target>
+      </trans-unit>
+      <trans-unit id="cat.form.description.label" datatype="html">
+        <source>Описание</source>
+        <target>Описание</target>
+      </trans-unit>
+
+      <!-- Units of Measure -->
+      <trans-unit id="uom.list.title" datatype="html">
+        <source>Единицы измерения</source>
+        <target>Единицы измерения</target>
+      </trans-unit>
+      <trans-unit id="uom.list.add" datatype="html">
+        <source>Добавить единицу</source>
+        <target>Добавить единицу</target>
+      </trans-unit>
+      <trans-unit id="uom.column.code" datatype="html">
+        <source>Код</source>
+        <target>Код</target>
+      </trans-unit>
+      <trans-unit id="uom.column.name" datatype="html">
+        <source>Название</source>
+        <target>Название</target>
+      </trans-unit>
+      <trans-unit id="uom.column.description" datatype="html">
+        <source>Описание</source>
+        <target>Описание</target>
+      </trans-unit>
+      <trans-unit id="uom.form.create.title" datatype="html">
+        <source>Новая ед. измерения</source>
+        <target>Новая ед. измерения</target>
+      </trans-unit>
+      <trans-unit id="uom.form.edit.title" datatype="html">
+        <source>Редактировать ед. измерения</source>
+        <target>Редактировать ед. измерения</target>
+      </trans-unit>
+      <trans-unit id="uom.form.code.label" datatype="html">
+        <source>Код</source>
+        <target>Код</target>
+      </trans-unit>
+      <trans-unit id="uom.form.code.required" datatype="html">
+        <source>Код обязателен</source>
+        <target>Код обязателен</target>
+      </trans-unit>
+      <trans-unit id="uom.form.name.label" datatype="html">
+        <source>Название</source>
+        <target>Название</target>
+      </trans-unit>
+      <trans-unit id="uom.form.name.required" datatype="html">
+        <source>Название обязательно</source>
+        <target>Название обязательно</target>
+      </trans-unit>
+      <trans-unit id="uom.form.description.label" datatype="html">
+        <source>Описание</source>
+        <target>Описание</target>
+      </trans-unit>
+
+      <!-- Stock Operations Nav -->
+      <trans-unit id="nav.receiving" datatype="html">
+        <source>Поступления</source>
+        <target>Поступления</target>
+      </trans-unit>
+      <trans-unit id="nav.picking" datatype="html">
+        <source>Сборка</source>
+        <target>Сборка</target>
+      </trans-unit>
+      <trans-unit id="nav.packing" datatype="html">
+        <source>Упаковка</source>
+        <target>Упаковка</target>
+      </trans-unit>
+      <trans-unit id="nav.transfer" datatype="html">
+        <source>Перемещения</source>
+        <target>Перемещения</target>
+      </trans-unit>
+
+      <!-- Stock Operations: Shared -->
+      <trans-unit id="stockOp.complete" datatype="html">
+        <source>Завершить</source>
+        <target>Завершить</target>
+      </trans-unit>
+      <trans-unit id="stockOp.cancel" datatype="html">
+        <source>Отменить</source>
+        <target>Отменить</target>
+      </trans-unit>
+      <trans-unit id="stockOp.completeError" datatype="html">
+        <source>Не удалось завершить операцию</source>
+        <target>Не удалось завершить операцию</target>
+      </trans-unit>
+      <trans-unit id="stockOp.cancelError" datatype="html">
+        <source>Не удалось отменить операцию</source>
+        <target>Не удалось отменить операцию</target>
+      </trans-unit>
+      <trans-unit id="stockOp.filter.status" datatype="html">
+        <source>Статус</source>
+        <target>Статус</target>
+      </trans-unit>
+      <trans-unit id="stockOp.filter.all" datatype="html">
+        <source>Все</source>
+        <target>Все</target>
+      </trans-unit>
+      <trans-unit id="stockOp.column.number" datatype="html">
+        <source>Номер</source>
+        <target>Номер</target>
+      </trans-unit>
+      <trans-unit id="stockOp.column.warehouse" datatype="html">
+        <source>Склад</source>
+        <target>Склад</target>
+      </trans-unit>
+      <trans-unit id="stockOp.column.status" datatype="html">
+        <source>Статус</source>
+        <target>Статус</target>
+      </trans-unit>
+      <trans-unit id="stockOp.column.lines" datatype="html">
+        <source>Позиций</source>
+        <target>Позиций</target>
+      </trans-unit>
+      <trans-unit id="stockOp.column.created" datatype="html">
+        <source>Создан</source>
+        <target>Создан</target>
+      </trans-unit>
+      <trans-unit id="stockOp.column.reference" datatype="html">
+        <source>Ссылка</source>
+        <target>Ссылка</target>
+      </trans-unit>
+
+      <!-- Receiving -->
+      <trans-unit id="stockOp.receiving.list.title" datatype="html">
+        <source>Поступления</source>
+        <target>Поступления</target>
+      </trans-unit>
+      <trans-unit id="stockOp.receiving.list.add" datatype="html">
+        <source>Новое поступление</source>
+        <target>Новое поступление</target>
+      </trans-unit>
+      <trans-unit id="stockOp.receiving.detail.title" datatype="html">
+        <source>Поступление</source>
+        <target>Поступление</target>
+      </trans-unit>
+      <trans-unit id="stockOp.receiving.form.title" datatype="html">
+        <source>Новое поступление</source>
+        <target>Новое поступление</target>
+      </trans-unit>
+
+      <!-- Picking -->
+      <trans-unit id="stockOp.picking.list.title" datatype="html">
+        <source>Сборка</source>
+        <target>Сборка</target>
+      </trans-unit>
+      <trans-unit id="stockOp.picking.list.add" datatype="html">
+        <source>Новый заказ на сборку</source>
+        <target>Новый заказ на сборку</target>
+      </trans-unit>
+      <trans-unit id="stockOp.picking.detail.title" datatype="html">
+        <source>Заказ на сборку</source>
+        <target>Заказ на сборку</target>
+      </trans-unit>
+      <trans-unit id="stockOp.picking.form.title" datatype="html">
+        <source>Новый заказ на сборку</source>
+        <target>Новый заказ на сборку</target>
+      </trans-unit>
+
+      <!-- Packing -->
+      <trans-unit id="stockOp.packing.list.title" datatype="html">
+        <source>Упаковка</source>
+        <target>Упаковка</target>
+      </trans-unit>
+      <trans-unit id="stockOp.packing.list.add" datatype="html">
+        <source>Новый заказ на упаковку</source>
+        <target>Новый заказ на упаковку</target>
+      </trans-unit>
+      <trans-unit id="stockOp.packing.detail.title" datatype="html">
+        <source>Заказ на упаковку</source>
+        <target>Заказ на упаковку</target>
+      </trans-unit>
+      <trans-unit id="stockOp.packing.form.title" datatype="html">
+        <source>Новый заказ на упаковку</source>
+        <target>Новый заказ на упаковку</target>
+      </trans-unit>
+
+      <!-- Transfer -->
+      <trans-unit id="stockOp.transfer.list.title" datatype="html">
+        <source>Перемещения</source>
+        <target>Перемещения</target>
+      </trans-unit>
+      <trans-unit id="stockOp.transfer.list.add" datatype="html">
+        <source>Новое перемещение</source>
+        <target>Новое перемещение</target>
+      </trans-unit>
+      <trans-unit id="stockOp.transfer.detail.title" datatype="html">
+        <source>Перемещение</source>
+        <target>Перемещение</target>
+      </trans-unit>
+      <trans-unit id="stockOp.transfer.form.title" datatype="html">
+        <source>Новое перемещение</source>
+        <target>Новое перемещение</target>
+      </trans-unit>
+
+      <!-- Detail view shared -->
+      <trans-unit id="stockOp.detail.number" datatype="html">
+        <source>Номер</source>
+        <target>Номер</target>
+      </trans-unit>
+      <trans-unit id="stockOp.detail.warehouse" datatype="html">
+        <source>Склад</source>
+        <target>Склад</target>
+      </trans-unit>
+      <trans-unit id="stockOp.detail.reference" datatype="html">
+        <source>Основание</source>
+        <target>Основание</target>
+      </trans-unit>
+      <trans-unit id="stockOp.detail.pickOrder" datatype="html">
+        <source>Заказ на сборку</source>
+        <target>Заказ на сборку</target>
+      </trans-unit>
+      <trans-unit id="stockOp.detail.notes" datatype="html">
+        <source>Примечание</source>
+        <target>Примечание</target>
+      </trans-unit>
+      <trans-unit id="stockOp.detail.status" datatype="html">
+        <source>Статус</source>
+        <target>Статус</target>
+      </trans-unit>
+      <trans-unit id="stockOp.detail.created" datatype="html">
+        <source>Создан</source>
+        <target>Создан</target>
+      </trans-unit>
+      <trans-unit id="stockOp.detail.lines.title" datatype="html">
+        <source>Позиции</source>
+        <target>Позиции</target>
+      </trans-unit>
+      <trans-unit id="stockOp.detail.lines.item" datatype="html">
+        <source>Товар</source>
+        <target>Товар</target>
+      </trans-unit>
+      <trans-unit id="stockOp.detail.lines.quantity" datatype="html">
+        <source>Кол-во</source>
+        <target>Кол-во</target>
+      </trans-unit>
+      <trans-unit id="stockOp.detail.lines.location" datatype="html">
+        <source>Ячейка</source>
+        <target>Ячейка</target>
+      </trans-unit>
+      <trans-unit id="stockOp.detail.lines.package" datatype="html">
+        <source>Упаковка</source>
+        <target>Упаковка</target>
+      </trans-unit>
+      <trans-unit id="stockOp.detail.lines.add" datatype="html">
+        <source>Добавить позицию</source>
+        <target>Добавить позицию</target>
+      </trans-unit>
+
+      <!-- Form shared -->
+      <trans-unit id="stockOp.form.number.label" datatype="html">
+        <source>Номер</source>
+        <target>Номер</target>
+      </trans-unit>
+      <trans-unit id="stockOp.form.number.required" datatype="html">
+        <source>Номер обязателен</source>
+        <target>Номер обязателен</target>
+      </trans-unit>
+      <trans-unit id="stockOp.form.warehouseId.label" datatype="html">
+        <source>Склад</source>
+        <target>Склад</target>
+      </trans-unit>
+      <trans-unit id="stockOp.form.warehouseId.required" datatype="html">
+        <source>Выберите склад</source>
+        <target>Выберите склад</target>
+      </trans-unit>
+      <trans-unit id="stockOp.form.supplierReference.label" datatype="html">
+        <source>Ссылка на поставщика</source>
+        <target>Ссылка на поставщика</target>
+      </trans-unit>
+      <trans-unit id="stockOp.form.reference.label" datatype="html">
+        <source>Основание</source>
+        <target>Основание</target>
+      </trans-unit>
+      <trans-unit id="stockOp.form.pickOrderId.label" datatype="html">
+        <source>ID заказа на сборку</source>
+        <target>ID заказа на сборку</target>
+      </trans-unit>
+      <trans-unit id="stockOp.form.sourceWarehouseId.label" datatype="html">
+        <source>Склад-источник</source>
+        <target>Склад-источник</target>
+      </trans-unit>
+      <trans-unit id="stockOp.form.sourceWarehouseId.required" datatype="html">
+        <source>Выберите склад-источник</source>
+        <target>Выберите склад-источник</target>
+      </trans-unit>
+      <trans-unit id="stockOp.form.destWarehouseId.label" datatype="html">
+        <source>Склад-назначение</source>
+        <target>Склад-назначение</target>
+      </trans-unit>
+      <trans-unit id="stockOp.form.destWarehouseId.required" datatype="html">
+        <source>Выберите склад-назначение</source>
+        <target>Выберите склад-назначение</target>
+      </trans-unit>
+      <trans-unit id="stockOp.form.notes.label" datatype="html">
+        <source>Примечание</source>
+        <target>Примечание</target>
+      </trans-unit>
+      <trans-unit id="stockOp.form.lines.title" datatype="html">
+        <source>Позиции</source>
+        <target>Позиции</target>
+      </trans-unit>
+      <trans-unit id="stockOp.form.line.itemId" datatype="html">
+        <source>Товар</source>
+        <target>Товар</target>
+      </trans-unit>
+      <trans-unit id="stockOp.form.line.qty" datatype="html">
+        <source>Кол-во</source>
+        <target>Кол-во</target>
+      </trans-unit>
+      <trans-unit id="stockOp.form.line.location" datatype="html">
+        <source>Ячейка</source>
+        <target>Ячейка</target>
+      </trans-unit>
+      <trans-unit id="stockOp.form.line.packageLabel" datatype="html">
+        <source>Метка упаковки</source>
+        <target>Метка упаковки</target>
+      </trans-unit>
+      <trans-unit id="stockOp.form.line.add" datatype="html">
+        <source>Добавить позицию</source>
+        <target>Добавить позицию</target>
+      </trans-unit>
+      <trans-unit id="stockOp.form.uuid.invalid" datatype="html">
+        <source>Введите корректный UUID</source>
+        <target>Введите корректный UUID</target>
+      </trans-unit>
+
+      <!-- Suppliers & Purchase Orders Nav -->
+      <trans-unit id="nav.suppliers" datatype="html"><source>Поставщики</source><target>Поставщики</target></trans-unit>
+      <trans-unit id="nav.purchaseOrders" datatype="html"><source>Заказы поставщикам</source><target>Заказы поставщикам</target></trans-unit>
+
+      <!-- Suppliers -->
+      <trans-unit id="sup.list.title" datatype="html"><source>Поставщики</source><target>Поставщики</target></trans-unit>
+      <trans-unit id="sup.list.add" datatype="html"><source>Добавить поставщика</source><target>Добавить поставщика</target></trans-unit>
+      <trans-unit id="sup.col.code" datatype="html"><source>Код</source><target>Код</target></trans-unit>
+      <trans-unit id="sup.col.name" datatype="html"><source>Название</source><target>Название</target></trans-unit>
+      <trans-unit id="sup.col.contact" datatype="html"><source>Контакт</source><target>Контакт</target></trans-unit>
+      <trans-unit id="sup.col.email" datatype="html"><source>Email</source><target>Email</target></trans-unit>
+      <trans-unit id="sup.col.status" datatype="html"><source>Статус</source><target>Статус</target></trans-unit>
+      <trans-unit id="sup.form.create" datatype="html"><source>Новый поставщик</source><target>Новый поставщик</target></trans-unit>
+      <trans-unit id="sup.form.edit" datatype="html"><source>Редактировать поставщика</source><target>Редактировать поставщика</target></trans-unit>
+      <trans-unit id="sup.form.code" datatype="html"><source>Код</source><target>Код</target></trans-unit>
+      <trans-unit id="sup.form.codeReq" datatype="html"><source>Код обязателен</source><target>Код обязателен</target></trans-unit>
+      <trans-unit id="sup.form.name" datatype="html"><source>Название</source><target>Название</target></trans-unit>
+      <trans-unit id="sup.form.nameReq" datatype="html"><source>Название обязательно</source><target>Название обязательно</target></trans-unit>
+      <trans-unit id="sup.form.contact" datatype="html"><source>Контактное лицо</source><target>Контактное лицо</target></trans-unit>
+      <trans-unit id="sup.form.email" datatype="html"><source>Email</source><target>Email</target></trans-unit>
+      <trans-unit id="sup.form.phone" datatype="html"><source>Телефон</source><target>Телефон</target></trans-unit>
+      <trans-unit id="sup.form.address" datatype="html"><source>Адрес</source><target>Адрес</target></trans-unit>
+      <trans-unit id="sup.form.taxId" datatype="html"><source>Tax ID</source><target>Tax ID</target></trans-unit>
+      <trans-unit id="sup.form.active" datatype="html"><source>Активен</source><target>Активен</target></trans-unit>
+
+      <!-- Purchase Orders -->
+      <trans-unit id="po.list.title" datatype="html"><source>Заказы поставщикам</source><target>Заказы поставщикам</target></trans-unit>
+      <trans-unit id="po.list.add" datatype="html"><source>Новый заказ</source><target>Новый заказ</target></trans-unit>
+      <trans-unit id="po.col.number" datatype="html"><source>Номер</source><target>Номер</target></trans-unit>
+      <trans-unit id="po.col.supplier" datatype="html"><source>Поставщик</source><target>Поставщик</target></trans-unit>
+      <trans-unit id="po.col.status" datatype="html"><source>Статус</source><target>Статус</target></trans-unit>
+      <trans-unit id="po.col.total" datatype="html"><source>Сумма</source><target>Сумма</target></trans-unit>
+      <trans-unit id="po.col.lines" datatype="html"><source>Позиций</source><target>Позиций</target></trans-unit>
+      <trans-unit id="po.col.date" datatype="html"><source>Дата</source><target>Дата</target></trans-unit>
+      <trans-unit id="po.detail.title" datatype="html"><source>Заказ поставщику: </source><target>Заказ поставщику: </target></trans-unit>
+      <trans-unit id="po.detail.number" datatype="html"><source>Номер</source><target>Номер</target></trans-unit>
+      <trans-unit id="po.detail.supplier" datatype="html"><source>Поставщик</source><target>Поставщик</target></trans-unit>
+      <trans-unit id="po.detail.warehouse" datatype="html"><source>Склад</source><target>Склад</target></trans-unit>
+      <trans-unit id="po.detail.status" datatype="html"><source>Статус</source><target>Статус</target></trans-unit>
+      <trans-unit id="po.detail.currency" datatype="html"><source>Валюта</source><target>Валюта</target></trans-unit>
+      <trans-unit id="po.detail.orderDate" datatype="html"><source>Дата заказа</source><target>Дата заказа</target></trans-unit>
+      <trans-unit id="po.detail.total" datatype="html"><source>Сумма</source><target>Сумма</target></trans-unit>
+      <trans-unit id="po.detail.notes" datatype="html"><source>Примечание</source><target>Примечание</target></trans-unit>
+      <trans-unit id="po.detail.lines" datatype="html"><source>Позиции</source><target>Позиции</target></trans-unit>
+      <trans-unit id="po.action.submit" datatype="html"><source>Отправить</source><target>Отправить</target></trans-unit>
+      <trans-unit id="po.action.receive" datatype="html"><source>Принять</source><target>Принять</target></trans-unit>
+      <trans-unit id="po.action.cancel" datatype="html"><source>Отменить</source><target>Отменить</target></trans-unit>
+      <trans-unit id="po.line.item" datatype="html"><source>Товар</source><target>Товар</target></trans-unit>
+      <trans-unit id="po.line.qty" datatype="html"><source>Кол-во</source><target>Кол-во</target></trans-unit>
+      <trans-unit id="po.line.price" datatype="html"><source>Цена</source><target>Цена</target></trans-unit>
+      <trans-unit id="po.line.total" datatype="html"><source>Сумма</source><target>Сумма</target></trans-unit>
+      <trans-unit id="po.form.title" datatype="html"><source>Новый заказ поставщику</source><target>Новый заказ поставщику</target></trans-unit>
+      <trans-unit id="po.form.number" datatype="html"><source>Номер</source><target>Номер</target></trans-unit>
+      <trans-unit id="po.form.numberReq" datatype="html"><source>Номер обязателен</source><target>Номер обязателен</target></trans-unit>
+      <trans-unit id="po.form.supplier" datatype="html"><source>Поставщик</source><target>Поставщик</target></trans-unit>
+      <trans-unit id="po.form.supplierReq" datatype="html"><source>Выберите поставщика</source><target>Выберите поставщика</target></trans-unit>
+      <trans-unit id="po.form.warehouse" datatype="html"><source>Склад (опц.)</source><target>Склад (опц.)</target></trans-unit>
+      <trans-unit id="po.form.currency" datatype="html"><source>Валюта</source><target>Валюта</target></trans-unit>
+      <trans-unit id="po.form.expectedDate" datatype="html"><source>Ожидаемая дата</source><target>Ожидаемая дата</target></trans-unit>
+      <trans-unit id="po.form.notes" datatype="html"><source>Примечание</source><target>Примечание</target></trans-unit>
+      <trans-unit id="po.form.lines" datatype="html"><source>Позиции</source><target>Позиции</target></trans-unit>
+      <trans-unit id="po.form.line.item" datatype="html"><source>Товар</source><target>Товар</target></trans-unit>
+      <trans-unit id="po.form.line.qty" datatype="html"><source>Кол-во</source><target>Кол-во</target></trans-unit>
+      <trans-unit id="po.form.line.price" datatype="html"><source>Цена</source><target>Цена</target></trans-unit>
+      <trans-unit id="po.form.line.add" datatype="html"><source>Добавить позицию</source><target>Добавить позицию</target></trans-unit>
+
+      <!-- Adjustments & Audits Nav -->
+      <trans-unit id="nav.adjustments" datatype="html"><source>Корректировки</source><target>Корректировки</target></trans-unit>
+      <trans-unit id="nav.audits" datatype="html"><source>Аудиты</source><target>Аудиты</target></trans-unit>
+      <trans-unit id="nav.reports" datatype="html"><source>Отчёты</source><target>Отчёты</target></trans-unit>
+
+      <!-- Adjustments -->
+      <trans-unit id="adj.list.title" datatype="html"><source>Корректировки</source><target>Корректировки</target></trans-unit>
+      <trans-unit id="adj.list.add" datatype="html"><source>Новая корректировка</source><target>Новая корректировка</target></trans-unit>
+      <trans-unit id="adj.col.number" datatype="html"><source>Номер</source><target>Номер</target></trans-unit>
+      <trans-unit id="adj.col.warehouse" datatype="html"><source>Склад</source><target>Склад</target></trans-unit>
+      <trans-unit id="adj.col.reason" datatype="html"><source>Причина</source><target>Причина</target></trans-unit>
+      <trans-unit id="adj.col.status" datatype="html"><source>Статус</source><target>Статус</target></trans-unit>
+      <trans-unit id="adj.col.lines" datatype="html"><source>Позиций</source><target>Позиций</target></trans-unit>
+      <trans-unit id="adj.col.date" datatype="html"><source>Дата</source><target>Дата</target></trans-unit>
+      <trans-unit id="adj.detail.title" datatype="html"><source>Корректировка: </source><target>Корректировка: </target></trans-unit>
+      <trans-unit id="adj.detail.number" datatype="html"><source>Номер</source><target>Номер</target></trans-unit>
+      <trans-unit id="adj.detail.warehouse" datatype="html"><source>Склад</source><target>Склад</target></trans-unit>
+      <trans-unit id="adj.detail.reason" datatype="html"><source>Причина</source><target>Причина</target></trans-unit>
+      <trans-unit id="adj.detail.status" datatype="html"><source>Статус</source><target>Статус</target></trans-unit>
+      <trans-unit id="adj.detail.date" datatype="html"><source>Дата</source><target>Дата</target></trans-unit>
+      <trans-unit id="adj.detail.notes" datatype="html"><source>Примечание</source><target>Примечание</target></trans-unit>
+      <trans-unit id="adj.detail.lines" datatype="html"><source>Позиции</source><target>Позиции</target></trans-unit>
+      <trans-unit id="adj.action.complete" datatype="html"><source>Завершить</source><target>Завершить</target></trans-unit>
+      <trans-unit id="adj.action.cancel" datatype="html"><source>Отменить</source><target>Отменить</target></trans-unit>
+      <trans-unit id="adj.line.item" datatype="html"><source>Товар</source><target>Товар</target></trans-unit>
+      <trans-unit id="adj.line.change" datatype="html"><source>Изменение</source><target>Изменение</target></trans-unit>
+      <trans-unit id="adj.line.notes" datatype="html"><source>Примечание</source><target>Примечание</target></trans-unit>
+      <trans-unit id="adj.form.title" datatype="html"><source>Новая корректировка</source><target>Новая корректировка</target></trans-unit>
+      <trans-unit id="adj.form.number" datatype="html"><source>Номер</source><target>Номер</target></trans-unit>
+      <trans-unit id="adj.form.numberReq" datatype="html"><source>Номер обязателен</source><target>Номер обязателен</target></trans-unit>
+      <trans-unit id="adj.form.warehouse" datatype="html"><source>Склад</source><target>Склад</target></trans-unit>
+      <trans-unit id="adj.form.warehouseReq" datatype="html"><source>Выберите склад</source><target>Выберите склад</target></trans-unit>
+      <trans-unit id="adj.form.reason" datatype="html"><source>Причина</source><target>Причина</target></trans-unit>
+      <trans-unit id="adj.form.notes" datatype="html"><source>Примечание</source><target>Примечание</target></trans-unit>
+      <trans-unit id="adj.form.lines" datatype="html"><source>Позиции</source><target>Позиции</target></trans-unit>
+      <trans-unit id="adj.form.line.item" datatype="html"><source>Товар</source><target>Товар</target></trans-unit>
+      <trans-unit id="adj.form.line.change" datatype="html"><source>Изменение</source><target>Изменение</target></trans-unit>
+      <trans-unit id="adj.form.line.notes" datatype="html"><source>Примечание</source><target>Примечание</target></trans-unit>
+      <trans-unit id="adj.form.line.add" datatype="html"><source>Добавить позицию</source><target>Добавить позицию</target></trans-unit>
+
+      <!-- Audits -->
+      <trans-unit id="aud.list.title" datatype="html"><source>Аудиты</source><target>Аудиты</target></trans-unit>
+      <trans-unit id="aud.col.number" datatype="html"><source>Номер</source><target>Номер</target></trans-unit>
+      <trans-unit id="aud.col.warehouse" datatype="html"><source>Склад</source><target>Склад</target></trans-unit>
+      <trans-unit id="aud.col.status" datatype="html"><source>Статус</source><target>Статус</target></trans-unit>
+      <trans-unit id="aud.col.lines" datatype="html"><source>Позиций</source><target>Позиций</target></trans-unit>
+      <trans-unit id="aud.col.variance" datatype="html"><source>Расхождение</source><target>Расхождение</target></trans-unit>
+      <trans-unit id="aud.col.date" datatype="html"><source>Дата</source><target>Дата</target></trans-unit>
+      <trans-unit id="aud.detail.title" datatype="html"><source>Аудит: </source><target>Аудит: </target></trans-unit>
+      <trans-unit id="aud.detail.number" datatype="html"><source>Номер</source><target>Номер</target></trans-unit>
+      <trans-unit id="aud.detail.warehouse" datatype="html"><source>Склад</source><target>Склад</target></trans-unit>
+      <trans-unit id="aud.detail.status" datatype="html"><source>Статус</source><target>Статус</target></trans-unit>
+      <trans-unit id="aud.detail.variance" datatype="html"><source>Общее расхождение</source><target>Общее расхождение</target></trans-unit>
+      <trans-unit id="aud.detail.notes" datatype="html"><source>Примечание</source><target>Примечание</target></trans-unit>
+      <trans-unit id="aud.detail.lines" datatype="html"><source>Сравнение</source><target>Сравнение</target></trans-unit>
+      <trans-unit id="aud.line.item" datatype="html"><source>Товар</source><target>Товар</target></trans-unit>
+      <trans-unit id="aud.line.system" datatype="html"><source>Система</source><target>Система</target></trans-unit>
+      <trans-unit id="aud.line.counted" datatype="html"><source>Факт</source><target>Факт</target></trans-unit>
+      <trans-unit id="aud.line.variance" datatype="html"><source>Расхождение</source><target>Расхождение</target></trans-unit>
+
+      <!-- Reports -->
+      <trans-unit id="rpt.dash.title" datatype="html"><source>Панель отчётов</source><target>Панель отчётов</target></trans-unit>
+      <trans-unit id="rpt.dash.inventory" datatype="html"><source>Инвентарь</source><target>Инвентарь</target></trans-unit>
+      <trans-unit id="rpt.dash.totalItems" datatype="html"><source>Всего товаров</source><target>Всего товаров</target></trans-unit>
+      <trans-unit id="rpt.dash.qtyOnHand" datatype="html"><source>На складе</source><target>На складе</target></trans-unit>
+      <trans-unit id="rpt.dash.belowReorder" datatype="html"><source>Ниже мин. запаса</source><target>Ниже мин. запаса</target></trans-unit>
+      <trans-unit id="rpt.dash.outOfStock" datatype="html"><source>Нет в наличии</source><target>Нет в наличии</target></trans-unit>
+      <trans-unit id="rpt.dash.sales" datatype="html"><source>Продажи</source><target>Продажи</target></trans-unit>
+      <trans-unit id="rpt.dash.salesOrders" datatype="html"><source>Заказов</source><target>Заказов</target></trans-unit>
+      <trans-unit id="rpt.dash.purchases" datatype="html"><source>Закупки</source><target>Закупки</target></trans-unit>
+      <trans-unit id="rpt.dash.purchaseOrders" datatype="html"><source>Заказов</source><target>Заказов</target></trans-unit>
+      <trans-unit id="rpt.dash.movements" datatype="html"><source>Движения</source><target>Движения</target></trans-unit>
+      <trans-unit id="rpt.lowStock.title" datatype="html"><source>Товары ниже мин. запаса</source><target>Товары ниже мин. запаса</target></trans-unit>
+      <trans-unit id="rpt.lowStock.sku" datatype="html"><source>Артикул</source><target>Артикул</target></trans-unit>
+      <trans-unit id="rpt.lowStock.name" datatype="html"><source>Название</source><target>Название</target></trans-unit>
+      <trans-unit id="rpt.lowStock.qty" datatype="html"><source>Кол-во</source><target>Кол-во</target></trans-unit>
+      <trans-unit id="rpt.lowStock.reorder" datatype="html"><source>Мин. запас</source><target>Мин. запас</target></trans-unit>
+      <trans-unit id="rpt.lowStock.deficit" datatype="html"><source>Дефицит</source><target>Дефицит</target></trans-unit>
+      <trans-unit id="rpt.movements.title" datatype="html"><source>История движений</source><target>История движений</target></trans-unit>
+      <trans-unit id="rpt.movements.op" datatype="html"><source>Операция</source><target>Операция</target></trans-unit>
+      <trans-unit id="rpt.movements.draft" datatype="html"><source>Черновик</source><target>Черновик</target></trans-unit>
+      <trans-unit id="rpt.movements.completed" datatype="html"><source>Завершено</source><target>Завершено</target></trans-unit>
+      <trans-unit id="rpt.movements.cancelled" datatype="html"><source>Отменено</source><target>Отменено</target></trans-unit>
+      <trans-unit id="rpt.movements.total" datatype="html"><source>Всего</source><target>Всего</target></trans-unit>
     </body>
   </file>
 </xliff>

@@ -30,6 +30,8 @@ public class GetStockReceiptsQueryHandler
                 Id = r.Id,
                 Number = r.Number,
                 WarehouseId = r.WarehouseId,
+                WarehouseName = r.Warehouse != null ? r.Warehouse.Name : null,
+                SupplierReference = r.SupplierReference,
                 Status = r.Status,
                 ReceivedAtUtc = r.ReceivedAtUtc,
                 LineCount = r.Lines.Count
@@ -62,6 +64,7 @@ public class GetStockReceiptByIdQueryHandler
                 Id = r.Id,
                 Number = r.Number,
                 WarehouseId = r.WarehouseId,
+                WarehouseName = r.Warehouse != null ? r.Warehouse.Name : null,
                 SupplierReference = r.SupplierReference,
                 Status = r.Status,
                 ReceivedAtUtc = r.ReceivedAtUtc,

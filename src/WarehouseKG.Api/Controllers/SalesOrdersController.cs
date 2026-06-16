@@ -38,7 +38,7 @@ public class SalesOrdersController : ApiControllerBase
     /// <summary>Creates a draft sales order.</summary>
     [HttpPost]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
-    public async Task<ActionResult<Guid>> Create(CreateSalesOrderCommand command, CancellationToken cancellationToken)
+    public async Task<ActionResult<Guid>> Create([FromBody] CreateSalesOrderCommand command, CancellationToken cancellationToken)
     {
         var id = await _sender.Send(command, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id }, id);

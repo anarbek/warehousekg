@@ -10,6 +10,8 @@ public class StockReceiptDto
 
     public Guid WarehouseId { get; set; }
 
+    public string? WarehouseName { get; set; }
+
     public string? SupplierReference { get; set; }
 
     public StockOperationStatus Status { get; set; }
@@ -39,6 +41,10 @@ public class StockReceiptSummaryDto
     public string Number { get; set; } = string.Empty;
 
     public Guid WarehouseId { get; set; }
+
+    public string? WarehouseName { get; set; }
+
+    public string? SupplierReference { get; set; }
 
     public StockOperationStatus Status { get; set; }
 

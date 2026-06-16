@@ -30,6 +30,7 @@ public class GetPackOrdersQueryHandler
                 Id = p.Id,
                 Number = p.Number,
                 WarehouseId = p.WarehouseId,
+                WarehouseName = p.Warehouse != null ? p.Warehouse.Name : null,
                 Status = p.Status,
                 PackedAtUtc = p.PackedAtUtc,
                 LineCount = p.Lines.Count
@@ -62,6 +63,7 @@ public class GetPackOrderByIdQueryHandler
                 Id = p.Id,
                 Number = p.Number,
                 WarehouseId = p.WarehouseId,
+                WarehouseName = p.Warehouse != null ? p.Warehouse.Name : null,
                 PickOrderId = p.PickOrderId,
                 Status = p.Status,
                 PackedAtUtc = p.PackedAtUtc,

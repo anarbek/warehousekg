@@ -45,22 +45,26 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label i18n="@@item.form.categoryId.label">ID категории</mat-label>
-          <input matInput formControlName="categoryId" autocomplete="off" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+          <mat-label i18n="@@item.form.categoryId.label">Категория</mat-label>
+          <mat-select formControlName="categoryId">
+            @for (cat of categories(); track cat.id) {
+              <mat-option [value]="cat.id">{{ cat.code }} — {{ cat.name }}</mat-option>
+            }
+          </mat-select>
           @if (form.controls.categoryId.hasError('required')) {
-            <mat-error i18n="@@item.form.categoryId.required">ID категории обязателен</mat-error>
-          } @else if (form.controls.categoryId.hasError('pattern')) {
-            <mat-error i18n="@@item.form.uuid.invalid">Введите корректный UUID</mat-error>
+            <mat-error i18n="@@item.form.categoryId.required">Выберите категорию</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label i18n="@@item.form.unitOfMeasureId.label">ID ед. измерения</mat-label>
-          <input matInput formControlName="unitOfMeasureId" autocomplete="off" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+          <mat-label i18n="@@item.form.unitOfMeasureId.label">Ед. измерения</mat-label>
+          <mat-select formControlName="unitOfMeasureId">
+            @for (uom of unitsOfMeasure(); track uom.id) {
+              <mat-option [value]="uom.id">{{ uom.code }} — {{ uom.name }}</mat-option>
+            }
+          </mat-select>
           @if (form.controls.unitOfMeasureId.hasError('required')) {
-            <mat-error i18n="@@item.form.unitOfMeasureId.required">ID ед. изм. обязателен</mat-error>
-          } @else if (form.controls.unitOfMeasureId.hasError('pattern')) {
-            <mat-error i18n="@@item.form.uuid.invalid">Введите корректный UUID</mat-error>
+            <mat-error i18n="@@item.form.unitOfMeasureId.required">Выберите единицу измерения</mat-error>
           }
         </mat-form-field>
 

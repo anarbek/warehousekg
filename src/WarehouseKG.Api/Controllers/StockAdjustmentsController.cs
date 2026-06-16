@@ -38,7 +38,7 @@ public class StockAdjustmentsController : ApiControllerBase
     /// <summary>Creates a draft stock adjustment.</summary>
     [HttpPost]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
-    public async Task<ActionResult<Guid>> Create(CreateStockAdjustmentCommand command, CancellationToken cancellationToken)
+    public async Task<ActionResult<Guid>> Create([FromBody] CreateStockAdjustmentCommand command, CancellationToken cancellationToken)
     {
         var id = await _sender.Send(command, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id }, id);

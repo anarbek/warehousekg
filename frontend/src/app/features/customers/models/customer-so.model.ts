@@ -1,0 +1,8 @@
+export interface Customer { id: string; code: string; name: string; contactName?: string|null; email?: string|null; phone?: string|null; address?: string|null; taxId?: string|null; isActive: boolean; }
+export interface CreateCustomerRequest { code: string; name: string; contactName?: string|null; email?: string|null; phone?: string|null; address?: string|null; taxId?: string|null; isActive: boolean; }
+export type UpdateCustomerRequest = CreateCustomerRequest;
+export type SalesOrderStatus = 'Draft'|'Confirmed'|'Shipped'|'Cancelled';
+export interface SalesOrderLine { id?: string; inventoryItemId: string; inventoryItemName?: string|null; quantity: number; unitPrice: number; lineTotal: number; }
+export interface SalesOrder { id: string; number: string; customerId: string; customerName?: string|null; warehouseId?: string|null; warehouseName?: string|null; status: SalesOrderStatus; currency: string; orderDateUtc: string; expectedDateUtc?: string|null; confirmedAtUtc?: string|null; shippedAtUtc?: string|null; notes?: string|null; totalAmount: number; lines: SalesOrderLine[]; }
+export interface SalesOrderSummary { id: string; number: string; customerId: string; customerName?: string|null; warehouseName?: string|null; status: SalesOrderStatus; currency: string; orderDateUtc: string; totalAmount: number; lineCount: number; }
+export interface CreateSalesOrderRequest { number: string; customerId: string; warehouseId?: string|null; currency?: string|null; expectedDateUtc?: string|null; notes?: string|null; lines: { inventoryItemId: string; quantity: number; unitPrice: number }[]; }

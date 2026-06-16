@@ -1,0 +1,75 @@
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using WarehouseKG.Application.Features.ItemCategories.Commands;
+using WarehouseKG.Application.Features.ItemCategories.Dtos;
+using WarehouseKG.Application.Features.ItemCategories.Queries;
+
+namespace WarehouseKG.Api.Controllers;
+
+/// <summary>
+/// Manages item categories for the current tenant.
+/// </summary>
+[ApiController]
+[Route("api/v1/item-categories")]
+[Produces("application/json")]
+public class ItemCategoriesController : ControllerBase
+{
+    private readonly ISender _sender;
+
+    public ItemCategoriesController(ISender sender)
+    {
+        _sender = sender;
+    }
+
+    /// <summary>Returns all item categories.</summary>
+    [HttpGet]
+    [ProducesResponseType(typeof(IReadOnlyList<ItemCategoryDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<ItemCategoryDto>>> GetAll(CancellationToken cancellationToken)
+        => Ok(await _sender.Send(new GetItemCategoriesQuery(), cancellationToken));
+
+    /// <summary>Returns a single category by id.</summary>
+    [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(ItemCategoryDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ItemCategoryDto>> GetById(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new GetItemCategoryByIdQuery(id), cancellationToken);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    /// <summary>Creates a new item category.</summary>
+    [HttpPost]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+    public async Task<ActionResult<Guid>> Create(CreateItemCategoryCommand command, CancellationToken cancellationToken)
+    {
+        var id = await _sender.Send(command, cancellationToken);
+        return CreatedAtAction(nameof(GetById), new { id }, id);
+    }
+
+    /// <summary>Updates an existing item category.</summary>
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Update(Guid id, UpdateItemCategoryRequest request, CancellationToken cancellationToken)
+    {
+        var command = new UpdateItemCategoryCommand(id, request.Code, request.Name, request.Description);
+        var updated = await _sender.Send(command, cancellationToken);
+        return updated ? NoContent() : NotFound();
+    }
+
+    /// <summary>Deletes an item category.</summary>
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    {
+        var deleted = await _sender.Send(new DeleteItemCategoryCommand(id), cancellationToken);
+        return deleted ? NoContent() : NotFound();
+    }
+}
+
+/// <summary>Request body for updating an item category.</summary>
+public record UpdateItemCategoryRequest(
+    string Code,
+    string Name,
+    string? Description);

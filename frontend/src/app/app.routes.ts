@@ -26,6 +26,33 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/inventory/inventory.routes').then((m) => m.inventoryRoutes),
       },
+      {
+        path: 'stock-operations',
+        loadChildren: () =>
+          import('./features/stock-operations/stock-operations.routes').then(
+            (m) => m.stockOperationsRoutes,
+          ),
+      },
+      {
+        path: 'suppliers',
+        loadChildren: () =>
+          import('./features/suppliers/supplier-po.routes').then((m) => m.supplierRoutes),
+      },
+      {
+        path: 'customers',
+        loadChildren: () =>
+          import('./features/customers/customer-so.routes').then((m) => m.customerRoutes),
+      },
+      {
+        path: 'adjustments',
+        loadChildren: () =>
+          import('./features/adjustments/adjustments.routes').then((m) => m.adjustmentRoutes),
+      },
+      {
+        path: 'reports',
+        loadChildren: () =>
+          import('./features/reports/reports.routes').then((m) => m.reportRoutes),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

@@ -45,11 +45,11 @@
           <dt i18n="@@item.detail.barcode">Штрихкод</dt>
           <dd>{{ it.barcode || '—' }}</dd>
 
-          <dt i18n="@@item.detail.categoryId">ID категории</dt>
-          <dd>{{ it.categoryId }}</dd>
+          <dt i18n="@@item.detail.categoryId">Категория</dt>
+          <dd>{{ it.categoryName || it.categoryId || '—' }}</dd>
 
-          <dt i18n="@@item.detail.unitOfMeasureId">Ед. изм. ID</dt>
-          <dd>{{ it.unitOfMeasureId }}</dd>
+          <dt i18n="@@item.detail.unitOfMeasureId">Ед. измерения</dt>
+          <dd>{{ it.unitOfMeasureName || it.unitOfMeasureId || '—' }}</dd>
 
           <dt i18n="@@item.detail.quantityOnHand">Количество</dt>
           <dd>{{ it.quantityOnHand }}</dd>

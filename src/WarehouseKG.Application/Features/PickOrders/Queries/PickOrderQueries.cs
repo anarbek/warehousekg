@@ -30,6 +30,8 @@ public class GetPickOrdersQueryHandler
                 Id = p.Id,
                 Number = p.Number,
                 WarehouseId = p.WarehouseId,
+                WarehouseName = p.Warehouse != null ? p.Warehouse.Name : null,
+                Reference = p.Reference,
                 Status = p.Status,
                 PickedAtUtc = p.PickedAtUtc,
                 LineCount = p.Lines.Count
@@ -62,6 +64,7 @@ public class GetPickOrderByIdQueryHandler
                 Id = p.Id,
                 Number = p.Number,
                 WarehouseId = p.WarehouseId,
+                WarehouseName = p.Warehouse != null ? p.Warehouse.Name : null,
                 Reference = p.Reference,
                 Status = p.Status,
                 PickedAtUtc = p.PickedAtUtc,

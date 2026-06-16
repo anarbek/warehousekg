@@ -54,4 +54,44 @@ export const inventoryRoutes: Routes = [
         (m) => m.InventoryItemDetail,
       ),
   },
+
+  // ─── Item Categories ─────────────────────────────────────────────────────
+  {
+    path: 'categories',
+    loadComponent: () =>
+      import('./item-categories/item-category-list/item-category-list').then(
+        (m) => m.ItemCategoryList,
+      ),
+  },
+  {
+    path: 'categories/new',
+    loadComponent: () =>
+      import('./item-categories/item-category-form/item-category-form').then(
+        (m) => m.ItemCategoryForm,
+      ),
+  },
+  {
+    path: 'categories/:id/edit',
+    loadComponent: () =>
+      import('./item-categories/item-category-form/item-category-form').then(
+        (m) => m.ItemCategoryForm,
+      ),
+  },
+
+  // ─── Units of Measure ────────────────────────────────────────────────────
+  {
+    path: 'units-of-measure',
+    loadComponent: () =>
+      import('./units-of-measure/uom-list/uom-list').then((m) => m.UomList),
+  },
+  {
+    path: 'units-of-measure/new',
+    loadComponent: () =>
+      import('./units-of-measure/uom-form/uom-form').then((m) => m.UomForm),
+  },
+  {
+    path: 'units-of-measure/:id/edit',
+    loadComponent: () =>
+      import('./units-of-measure/uom-form/uom-form').then((m) => m.UomForm),
+  },
 ];

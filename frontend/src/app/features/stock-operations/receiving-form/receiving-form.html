@@ -1,0 +1,89 @@
+<div class="form-page">
+  <mat-card class="form-page__card">
+    @if (saving()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+
+    <mat-card-header>
+      <mat-card-title i18n="@@stockOp.receiving.form.title">Новое поступление</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (error()) {
+        <p class="form-page__error">{{ error() }}</p>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="form-fields">
+        <mat-form-field appearance="outline">
+          <mat-label i18n="@@stockOp.form.number.label">Номер</mat-label>
+          <input matInput formControlName="number" autocomplete="off" placeholder="RCV-0001" />
+          @if (form.controls.number.hasError('required')) {
+            <mat-error i18n="@@stockOp.form.number.required">Номер обязателен</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label i18n="@@stockOp.form.warehouseId.label">Склад</mat-label>
+          <mat-select formControlName="warehouseId">
+            @for (wh of warehouses(); track wh.id) {
+              <mat-option [value]="wh.id">{{ wh.code }} — {{ wh.name }}</mat-option>
+            }
+          </mat-select>
+          @if (form.controls.warehouseId.hasError('required')) {
+            <mat-error i18n="@@stockOp.form.warehouseId.required">Выберите склад</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label i18n="@@stockOp.form.supplierReference.label">Ссылка на поставщика</mat-label>
+          <input matInput formControlName="supplierReference" autocomplete="off" placeholder="PO-12345" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label i18n="@@stockOp.form.notes.label">Примечание</mat-label>
+          <textarea matInput formControlName="notes" rows="2"></textarea>
+        </mat-form-field>
+
+        <h3 i18n="@@stockOp.form.lines.title">Позиции</h3>
+        <div formArrayName="lines" class="form-lines">
+          @for (line of lines.controls; track $index) {
+            <div [formGroupName]="$index" class="form-lines__row">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label i18n="@@stockOp.form.line.itemId">Товар</mat-label>
+                <mat-select [formControlName]="'inventoryItemId'">
+                  @for (it of items(); track it.id) {
+                    <mat-option [value]="it.id">{{ it.sku }} — {{ it.name }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label i18n="@@stockOp.form.line.qty">Кол-во</mat-label>
+                <input matInput type="number" min="1" formControlName="quantity" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label i18n="@@stockOp.form.line.location">Ячейка</mat-label>
+                <input matInput formControlName="warehouseLocationId" placeholder="UUID (опц.)" />
+              </mat-form-field>
+              <button mat-icon-button color="warn" type="button" (click)="removeLine($index)">
+                <mat-icon>remove_circle</mat-icon>
+              </button>
+            </div>
+          }
+          <button mat-stroked-button type="button" (click)="addLine()">
+            <mat-icon>add</mat-icon>
+            <span i18n="@@stockOp.form.line.add">Добавить позицию</span>
+          </button>
+        </div>
+
+        <div class="form-actions">
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || saving()">
+            <span i18n="@@common.save">Сохранить</span>
+          </button>
+          <button mat-stroked-button type="button" (click)="cancel()">
+            <span i18n="@@common.cancel">Отмена</span>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

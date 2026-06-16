@@ -26,10 +26,8 @@ export class LocaleService {
   }
 
   switchTo(code: string): void {
-    if (code === this.activeLocale) {
-      return;
-    }
+    if (code === this.activeLocale) return;
     localStorage.setItem(LOCALE_STORAGE_KEY, code);
-    window.location.href = `/${code}/`;
+    window.location.reload();
   }
 }

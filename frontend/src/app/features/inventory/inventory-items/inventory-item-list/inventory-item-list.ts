@@ -32,6 +32,7 @@ export class InventoryItemList implements OnInit, AfterViewInit {
     'sku',
     'name',
     'barcode',
+    'categoryName',
     'quantityOnHand',
     'reorderLevel',
     'isActive',

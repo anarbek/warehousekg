@@ -10,7 +10,11 @@ public class StockTransferDto
 
     public Guid SourceWarehouseId { get; set; }
 
+    public string? SourceWarehouseName { get; set; }
+
     public Guid DestinationWarehouseId { get; set; }
+
+    public string? DestinationWarehouseName { get; set; }
 
     public StockOperationStatus Status { get; set; }
 
@@ -38,7 +42,11 @@ public class StockTransferSummaryDto
 
     public Guid SourceWarehouseId { get; set; }
 
+    public string? SourceWarehouseName { get; set; }
+
     public Guid DestinationWarehouseId { get; set; }
+
+    public string? DestinationWarehouseName { get; set; }
 
     public StockOperationStatus Status { get; set; }
 

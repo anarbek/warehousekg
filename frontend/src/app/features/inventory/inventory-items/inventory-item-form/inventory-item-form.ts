@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { Observable } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -8,11 +8,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CreateInventoryItemRequest } from '../../models/inventory-item.model';
+import { CreateInventoryItemRequest, ItemCategory, UnitOfMeasure } from '../../models/inventory-item.model';
 import { InventoryService } from '../../services/inventory.service';
-
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 @Component({
   selector: 'app-inventory-item-form',
@@ -21,6 +20,7 @@ const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
     MatButtonModule,
     MatCheckboxModule,
     MatIconModule,
@@ -41,6 +41,9 @@ export class InventoryItemForm implements OnInit {
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
 
+  protected readonly categories = signal<ItemCategory[]>([]);
+  protected readonly unitsOfMeasure = signal<UnitOfMeasure[]>([]);
+
   protected readonly title = this.isEditMode
     ? $localize`:@@item.form.edit.title:Редактировать товар`
     : $localize`:@@item.form.create.title:Новый товар`;
@@ -50,14 +53,25 @@ export class InventoryItemForm implements OnInit {
     name: ['', Validators.required],
     description: [''],
     barcode: [''],
-    categoryId: ['', [Validators.required, Validators.pattern(UUID_PATTERN)]],
-    unitOfMeasureId: ['', [Validators.required, Validators.pattern(UUID_PATTERN)]],
+    categoryId: ['', Validators.required],
+    unitOfMeasureId: ['', Validators.required],
     quantityOnHand: [0, [Validators.required, Validators.min(0)]],
     reorderLevel: [0, [Validators.required, Validators.min(0)]],
     isActive: [true],
   });
 
   ngOnInit(): void {
+    // Always load dropdown data
+    forkJoin({
+      categories: this.service.getItemCategories(),
+      uoms: this.service.getUnitsOfMeasure(),
+    }).subscribe({
+      next: ({ categories, uoms }) => {
+        this.categories.set(categories);
+        this.unitsOfMeasure.set(uoms);
+      },
+    });
+
     if (!this.isEditMode) return;
     this.loading.set(true);
     this.service.getInventoryItemById(this.editId!).subscribe({

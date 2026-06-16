@@ -14,7 +14,11 @@ public class InventoryItemDto
 
     public Guid CategoryId { get; set; }
 
+    public string? CategoryName { get; set; }
+
     public Guid UnitOfMeasureId { get; set; }
+
+    public string? UnitOfMeasureName { get; set; }
 
     public decimal QuantityOnHand { get; set; }
 

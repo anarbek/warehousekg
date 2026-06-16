@@ -32,7 +32,9 @@ public class GetInventoryItemsQueryHandler
                 Description = i.Description,
                 Barcode = i.Barcode,
                 CategoryId = i.CategoryId,
+                CategoryName = i.Category != null ? i.Category.Name : null,
                 UnitOfMeasureId = i.UnitOfMeasureId,
+                UnitOfMeasureName = i.UnitOfMeasure != null ? i.UnitOfMeasure.Name : null,
                 QuantityOnHand = i.QuantityOnHand,
                 ReorderLevel = i.ReorderLevel,
                 IsActive = i.IsActive

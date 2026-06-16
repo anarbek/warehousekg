@@ -10,7 +10,11 @@ public class PurchaseOrderDto
 
     public Guid SupplierId { get; set; }
 
+    public string? SupplierName { get; set; }
+
     public Guid? WarehouseId { get; set; }
+
+    public string? WarehouseName { get; set; }
 
     public PurchaseOrderStatus Status { get; set; }
 
@@ -51,6 +55,8 @@ public class PurchaseOrderSummaryDto
     public string Number { get; set; } = string.Empty;
 
     public Guid SupplierId { get; set; }
+
+    public string? SupplierName { get; set; }
 
     public PurchaseOrderStatus Status { get; set; }
 

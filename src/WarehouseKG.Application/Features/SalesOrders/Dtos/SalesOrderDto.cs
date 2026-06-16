@@ -10,7 +10,11 @@ public class SalesOrderDto
 
     public Guid CustomerId { get; set; }
 
+    public string? CustomerName { get; set; }
+
     public Guid? WarehouseId { get; set; }
+
+    public string? WarehouseName { get; set; }
 
     public SalesOrderStatus Status { get; set; }
 
@@ -51,6 +55,8 @@ public class SalesOrderSummaryDto
     public string Number { get; set; } = string.Empty;
 
     public Guid CustomerId { get; set; }
+
+    public string? CustomerName { get; set; }
 
     public SalesOrderStatus Status { get; set; }
 
