@@ -185,11 +185,21 @@ Document-style operations (see [[02-Database-Schema]]). All four follow the same
   "warehouseId": "00000000-0000-0000-0000-000000000000",
   "supplierReference": "PO-12345",
   "notes": "Inbound from supplier",
+  "transactionDate": "2026-06-17T00:00:00Z",
   "lines": [
     { "inventoryItemId": "00000000-0000-0000-0000-000000000000", "warehouseLocationId": null, "quantity": 100 }
   ]
 }
 ```
+
+`transactionDate` is the user-selected operation date. If in the past, the `add-items-back-in-time`
+scenario permission is checked (see [[04-Auth-Flow]]). Defaults to now in the UI.
+
+**Delete stock receipt** — `DELETE /api/v1/stock-receipts/{id}`
+
+Deletes a receipt. If completed, reverses stock quantities. Requires `stock-receipts:delete`.
+**Completed** receipts additionally require the `stock-receipts-delete-completed` scenario permission
+(checked against the `TenantPermissions` table). Returns `403` without it.
 
 **Pick order** — `POST /api/v1/pick-orders`
 

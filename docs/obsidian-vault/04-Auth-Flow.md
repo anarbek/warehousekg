@@ -43,20 +43,24 @@ Higher roles inherit lower-privilege system policies:
 
 Every controller action uses **resource-level policies** checked by `TenantPermissionHandler`:
 
-| Policy Format       | Example                    | Allowed Actions |
-| ------------------- | -------------------------- | --------------- |
-| `{resource}:read`   | `warehouses:read`          | GET requests    |
-| `{resource}:write`  | `stock-receipts:write`     | POST, PUT, DELETE |
+| Policy Format       | Example                          | Allowed Actions |
+| ------------------- | -------------------------------- | --------------- |
+| `{resource}:read`   | `warehouses:read`                | GET requests    |
+| `{resource}:write`  | `stock-receipts:write`           | POST, PUT       |
+| `{resource}:delete` | `inventory-items:delete`         | DELETE          |
 
-**16 resources** are defined in `Resources.All`:
+**18 resources** are defined in `Resources.All` (16 CRUD + 2 scenario):
 
 ```
 warehouses, inventory-items, item-categories, units-of-measure,
 stock-receipts, pick-orders, pack-orders, stock-transfers,
 stock-adjustments, stock-audits,
 suppliers, purchase-orders, customers, sales-orders,
-reports, users
+reports, users,
+add-items-back-in-time, stock-receipts-delete-completed
 ```
+
+The last two are **scenario permissions** — they appear in the matrix but are not standard CRUD resources.
 
 ### Authorization Flow
 
@@ -66,14 +70,15 @@ Request → [Authorize(Policy = "warehouses:write")]
             ├── Admin role? → Allowed (bypass)
             │
             ├── TenantPermission exists for this role + resource?
-            │     ├── YES → Check CanRead/CanWrite
+            │     ├── YES → Check CanRead/CanWrite/CanDelete (switch)
             │     │         ├── Allowed → Succeed
             │     │         └── Denied → 403
             │     │
             │     └── NO → Fallback to system role hierarchy
-            │               ├── Viewer has only read
-            │               ├── WarehouseOperator can read+write
-            │               └── Manager can read+write
+            │               ├── Viewer: read only
+            │               ├── WarehouseOperator: read + write
+            │               ├── Manager: read + write + delete
+            │               └── Admin: all (bypass)
             │
             └── Not authenticated → 401
 ```
@@ -82,47 +87,62 @@ Request → [Authorize(Policy = "warehouses:write")]
 
 Stored in `TenantPermissions` table:
 
-| Column      | Description |
-| ----------- | ----------- |
-| `TenantId`  | Tenant that owns this override |
-| `RoleName`  | ASP.NET Identity role (e.g. "WarehouseOperator") |
-| `Resource`  | Resource key (e.g. "warehouses") |
-| `CanRead`   | Allow GET |
-| `CanWrite`  | Allow POST/PUT/DELETE |
-| `CanDelete` | Allow DELETE (reserved) |
+| Column           | Description |
+| ---------------- | ----------- |
+| `TenantId`       | Tenant that owns this override |
+| `RoleName`       | ASP.NET Identity role (e.g. "WarehouseOperator") |
+| `Resource`       | Resource key (e.g. "warehouses") |
+| `CanRead`        | Allow GET |
+| `CanWrite`       | Allow POST/PUT |
+| `CanDelete`      | Allow DELETE |
+| `MaxBackdateDays`| (nullable) For `add-items-back-in-time`: max days back for transaction dates |
 
 **Admin API:** `PUT /api/v1/tenant-permissions/bulk` — saves the entire matrix in one request.
 
 **Admin UI:** `/admin/permissions` — checkbox grid (roles × resources), grouped by role with bulk save.
+For `add-items-back-in-time`: a numeric spinner replaces checkboxes for the "Макс. дней назад" column.
 
 **Default behavior** (no TenantPermission rows): system role hierarchy applies unchanged.
 
 **Example override:** Add a row `{WarehouseOperator, warehouses, CanRead=true, CanWrite=false}` →
-WarehouseOperator can view warehouses but cannot create/edit/delete them in that tenant.
+WarehouseOperator can view warehouses but cannot create/edit them in that tenant.
 
 ## Controller Authorization Map
 
-| Controllers | Resource | GET Policy | Write Policy |
-|---|---|---|---|
-| WarehousesController | `warehouses` | `warehouses:read` | `warehouses:write` |
-| InventoryItemsController | `inventory-items` | `inventory-items:read` | `inventory-items:write` |
-| ItemCategoriesController | `item-categories` | `item-categories:read` | `item-categories:write` |
-| UnitsOfMeasureController | `units-of-measure` | `units-of-measure:read` | `units-of-measure:write` |
-| StockReceiptsController | `stock-receipts` | `stock-receipts:read` | `stock-receipts:write` |
-| PickOrdersController | `pick-orders` | `pick-orders:read` | `pick-orders:write` |
-| PackOrdersController | `pack-orders` | `pack-orders:read` | `pack-orders:write` |
-| StockTransfersController | `stock-transfers` | `stock-transfers:read` | `stock-transfers:write` |
-| StockAdjustmentsController | `stock-adjustments` | `stock-adjustments:read` | `stock-adjustments:write` |
-| StockAuditsController | `stock-audits` | `stock-audits:read` | `stock-audits:write` |
-| SuppliersController | `suppliers` | `suppliers:read` | `suppliers:write` |
-| PurchaseOrdersController | `purchase-orders` | `purchase-orders:read` | `purchase-orders:write` |
-| CustomersController | `customers` | `customers:read` | `customers:write` |
-| SalesOrdersController | `sales-orders` | `sales-orders:read` | `sales-orders:write` |
-| ReportsController | `reports` | `reports:read` | — |
-| UsersController | `users` | `users:read` | `users:write` |
-| TenantPermissionsController | — | — | `RequireAdmin` |
+| Controllers | Resource | GET Policy | Write Policy | Delete Policy |
+|---|---|---|---|---|
+| WarehousesController | `warehouses` | `warehouses:read` | `warehouses:write` | `warehouses:delete` |
+| InventoryItemsController | `inventory-items` | `inventory-items:read` | `inventory-items:write` | `inventory-items:delete` |
+| ItemCategoriesController | `item-categories` | `[Authorize]` (any) | `item-categories:write` | `item-categories:delete` |
+| UnitsOfMeasureController | `units-of-measure` | `[Authorize]` (any) | `units-of-measure:write` | `units-of-measure:delete` |
+| StockReceiptsController | `stock-receipts` | `stock-receipts:read` | `stock-receipts:write` | `stock-receipts:delete`¹ |
+| PickOrdersController | `pick-orders` | `pick-orders:read` | `pick-orders:write` | `pick-orders:delete` |
+| PackOrdersController | `pack-orders` | `pack-orders:read` | `pack-orders:write` | `pack-orders:delete` |
+| StockTransfersController | `stock-transfers` | `stock-transfers:read` | `stock-transfers:write` | `stock-transfers:delete` |
+| StockAdjustmentsController | `stock-adjustments` | `stock-adjustments:read` | `stock-adjustments:write` | `stock-adjustments:delete` |
+| StockAuditsController | `stock-audits` | `stock-audits:read` | `stock-audits:write` | `stock-audits:delete` |
+| SuppliersController | `suppliers` | `suppliers:read` | `suppliers:write` | `suppliers:delete` |
+| PurchaseOrdersController | `purchase-orders` | `purchase-orders:read` | `purchase-orders:write` | `purchase-orders:delete` |
+| CustomersController | `customers` | `customers:read` | `customers:write` | `customers:delete` |
+| SalesOrdersController | `sales-orders` | `sales-orders:read` | `sales-orders:write` | `sales-orders:delete` |
+| ReportsController² | various | varies | — | — |
+| UsersController | `users` | `users:read` | `users:write` | `users:delete` |
+| TenantPermissionsController | — | — | — | `RequireAdmin` |
+
+¹ **StockReceipts DELETE**: completed receipts additionally require the `stock-receipts-delete-completed` scenario permission. Reverses stock quantities on deletion.
+
+² **Reports policies**: `warehouse-stock` → `warehouses:read`, `item-movements` → `inventory-items:read`, all other report endpoints → `reports:read`. This allows operators to view stock/movement data inline on detail pages without needing the full `reports:read` permission.
 
 **AuthController** remains `[AllowAnonymous]`.
+
+### Scenario Permissions
+
+Beyond CRUD, two special resources add business-logic permissions:
+
+| Resource | Column Used | Purpose |
+|---|---|---|
+| `add-items-back-in-time` | `MaxBackdateDays` (int?) | Max days an operator can backdate a receiving transaction. `null` = not configured (0 days). Checked in `CreateStockReceiptCommandHandler`. |
+| `stock-receipts-delete-completed` | `CanDelete` (bool) | Whether a role can delete a *completed* stock receipt (which reverses quantities). Checked in `StockReceiptsController.Delete`. |
 
 ## User Management
 
@@ -141,18 +161,37 @@ WarehouseOperator can view warehouses but cannot create/edit/delete them in that
 
 ## Sidebar Navigation
 
-The sidebar filters menu items by the logged-in user's roles:
+The sidebar loads permissions from `GET /api/v1/auth/my-permissions` on init and filters menu items
+by `canRead` on the associated resource. Items without a resource (e.g. Dashboard) are always visible.
 
-| Role | Visible Items |
-|---|---|
-| `Admin` | All items including Admin |
-| `Manager` | Dashboard, catalog, operations, orders, reports (no Admin) |
-| `WarehouseOperator` | Dashboard, operations, reports (no catalog, orders, admin) |
-| `Viewer` | Dashboard, reports only |
+A shared `PermissionsService` (`core/services/permissions.service.ts`) holds the resolved permissions
+and is consumed by detail components to conditionally show/hide action buttons (e.g. delete, edit).
 
-Implementation in `Sidenav` component — uses `computed()` signal filtered by `AuthService.currentUser().roles`.
+## Endpoint: `GET /api/v1/auth/my-permissions`
 
-## Endpoints — `/api/v1/auth`
+Returns the effective permissions per resource for the current user, combining tenant overrides with
+role fallbacks:
+
+```json
+{
+  "resources": {
+    "warehouses": { "canRead": true, "canWrite": true, "canDelete": false },
+    "inventory-items": { "canRead": true, "canWrite": true, "canDelete": false },
+    "add-items-back-in-time": { "canRead": false, "canWrite": false, "canDelete": false },
+    "stock-receipts-delete-completed": { "canRead": false, "canWrite": false, "canDelete": true }
+  },
+  "roles": ["WarehouseOperator"]
+}
+```
+
+## Error Handling (Frontend)
+
+A centralized `ErrorToastService` (`core/services/error-toast.service.ts`) extracts the actual business
+error message from HTTP 400/403 responses and displays a red DevExtreme toast notification. All forms,
+lists, and detail pages use `this.toast.showSave(err)` / `this.toast.showLoad(err)` instead of generic
+inline error text.
+
+## User Management
 
 All are anonymous; see [[03-API-Endpoints]] for the wider API conventions.
 
