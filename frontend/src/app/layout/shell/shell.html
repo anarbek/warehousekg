@@ -1,16 +1,20 @@
 <app-header (menuToggle)="toggleSidenav()" (logout)="logout()" />
 
-<mat-sidenav-container class="shell-container">
-  <mat-sidenav
-    class="shell-sidenav"
-    mode="side"
-    [opened]="sidenavOpen()"
-    [disableClose]="true"
-  >
+<dx-drawer
+  class="shell-container"
+  [opened]="sidenavOpen()"
+  [openedStateMode]="'shrink'"
+  [revealMode]="'slide'"
+  [minSize]="40"
+  [maxSize]="240"
+  template="sidenav"
+  height="calc(100vh - 48px)"
+>
+  <div *dxTemplate="let _ of 'sidenav'" class="shell-sidenav">
     <app-sidenav />
-  </mat-sidenav>
+  </div>
 
-  <mat-sidenav-content class="shell-content">
+  <div class="shell-content">
     <router-outlet />
-  </mat-sidenav-content>
-</mat-sidenav-container>
+  </div>
+</dx-drawer>

@@ -1,31 +1,31 @@
-@if(loading()){<mat-progress-bar mode="indeterminate"/>}
-@if(error()&&!po()){<div class="detail-page detail-page--error"><p>{{error()}}</p><button mat-stroked-button (click)="goBack()"><mat-icon>arrow_back</mat-icon><span i18n="@@common.back">Назад</span></button></div>}
-@if(po(); as p){
+@if(loading()){<dx-progress-bar [visible]="true"/>}
+@if(error()&&!po()){<div class="detail-page detail-page--error"><p>{{error()}}</p><dx-button text="Назад" icon="arrowleft" stylingMode="outlined" (onClick)="goBack()"/></div>}
+@if(po();as p){
 <div class="detail-page">
-  <div class="detail-page__toolbar"><button mat-icon-button (click)="goBack()"><mat-icon>arrow_back</mat-icon></button><h1 class="detail-page__title" i18n="@@po.detail.title">Заказ поставщику: {{p.number}}</h1><span class="detail-page__spacer"></span>
-    @if(canTransition('Submitted')){<button mat-flat-button color="primary" (click)="transition('submit')" [disabled]="saving()"><mat-icon>send</mat-icon><span i18n="@@po.action.submit">Отправить</span></button>}
-    @if(canTransition('Received')){<button mat-flat-button color="primary" (click)="transition('receive')" [disabled]="saving()"><mat-icon>inventory</mat-icon><span i18n="@@po.action.receive">Принять</span></button>}
-    @if(canTransition('Cancelled')){<button mat-stroked-button color="warn" (click)="transition('cancel')" [disabled]="saving()"><mat-icon>cancel</mat-icon><span i18n="@@po.action.cancel">Отменить</span></button>}
+  <div class="detail-page__toolbar">
+    <dx-button icon="arrowleft" stylingMode="text" (onClick)="goBack()"/>
+    <h1 class="detail-page__title">Заказ поставщику: {{p.number}}</h1><span class="detail-page__spacer"></span>
+    @if(canTransition('Submitted')){<dx-button text="Отправить" icon="send" type="default" stylingMode="contained" (onClick)="transition('submit')" [disabled]="saving()"/>}
+    @if(canTransition('Received')){<dx-button text="Принять" icon="box" type="default" stylingMode="contained" (onClick)="transition('receive')" [disabled]="saving()"/>}
+    @if(canTransition('Cancelled')){<dx-button text="Отменить" icon="trash" type="danger" stylingMode="outlined" (onClick)="transition('cancel')" [disabled]="saving()"/>}
   </div>
-  @if(saving()){<mat-progress-bar mode="indeterminate"/>}
-  <mat-card class="detail-page__card"><mat-card-content><dl class="detail-list">
-    <dt i18n="@@po.detail.number">Номер</dt><dd>{{p.number}}</dd>
-    <dt i18n="@@po.detail.supplier">Поставщик</dt><dd>{{p.supplierName||p.supplierId}}</dd>
-    <dt i18n="@@po.detail.warehouse">Склад</dt><dd>{{p.warehouseName||p.warehouseId||'—'}}</dd>
-    <dt i18n="@@po.detail.status">Статус</dt><dd><span class="badge badge--{{p.status|lowercase}}">{{p.status}}</span></dd>
-    <dt i18n="@@po.detail.currency">Валюта</dt><dd>{{p.currency}}</dd>
-    <dt i18n="@@po.detail.orderDate">Дата заказа</dt><dd>{{p.orderDateUtc|date:'medium'}}</dd>
-    <dt i18n="@@po.detail.total">Сумма</dt><dd>{{p.totalAmount|number:'1.2-2'}} {{p.currency}}</dd>
-    @if(p.notes){<dt i18n="@@po.detail.notes">Примечание</dt><dd>{{p.notes}}</dd>}
-  </dl></mat-card-content></mat-card>
-  <mat-card class="detail-page__card detail-page__card--table"><mat-card-header><mat-card-title i18n="@@po.detail.lines">Позиции</mat-card-title></mat-card-header><mat-card-content>
-    <div class="table-container mat-elevation-z2"><table mat-table [dataSource]="p.lines">
-      <ng-container matColumnDef="inventoryItemId"><th mat-header-cell *matHeaderCellDef i18n="@@po.line.item">Товар</th><td mat-cell *matCellDef="let l">{{getItemName(l.inventoryItemId)}}</td></ng-container>
-      <ng-container matColumnDef="quantity"><th mat-header-cell *matHeaderCellDef i18n="@@po.line.qty">Кол-во</th><td mat-cell *matCellDef="let l">{{l.quantity}}</td></ng-container>
-      <ng-container matColumnDef="unitPrice"><th mat-header-cell *matHeaderCellDef i18n="@@po.line.price">Цена</th><td mat-cell *matCellDef="let l">{{l.unitPrice|number:'1.2-2'}}</td></ng-container>
-      <ng-container matColumnDef="lineTotal"><th mat-header-cell *matHeaderCellDef i18n="@@po.line.total">Сумма</th><td mat-cell *matCellDef="let l">{{l.lineTotal|number:'1.2-2'}}</td></ng-container>
-      <ng-container matColumnDef="actions"><th mat-header-cell *matHeaderCellDef></th><td mat-cell *matCellDef="let l; let i=index"></td></ng-container>
-      <tr mat-header-row *matHeaderRowDef="lineColumns"></tr><tr mat-row *matRowDef="let r; columns: lineColumns"></tr>
-    </table></div>
-  </mat-card-content></mat-card>
+  @if(saving()){<dx-progress-bar [visible]="true"/>}
+  <div class="dx-card"><dl class="detail-list">
+    <dt>Номер</dt><dd>{{p.number}}</dd>
+    <dt>Поставщик</dt><dd>{{p.supplierName||p.supplierId}}</dd>
+    <dt>Склад</dt><dd>{{p.warehouseName||p.warehouseId||'—'}}</dd>
+    <dt>Статус</dt><dd><span class="badge">{{p.status}}</span></dd>
+    <dt>Валюта</dt><dd>{{p.currency}}</dd>
+    <dt>Дата</dt><dd>{{p.orderDateUtc|date:'medium'}}</dd>
+    <dt>Сумма</dt><dd>{{p.totalAmount|number:'1.2-2'}} {{p.currency}}</dd>
+    @if(p.notes){<dt>Примечание</dt><dd>{{p.notes}}</dd>}
+  </dl></div>
+  <div class="dx-card"><h3>Позиции</h3>
+    <dx-data-grid [dataSource]="getLines()" [showBorders]="true" [hoverStateEnabled]="true">
+      <dxi-column dataField="inventoryItemName" caption="Товар"/>
+      <dxi-column dataField="quantity" caption="Кол-во" [width]="100"/>
+      <dxi-column dataField="unitPrice" caption="Цена" [width]="120"/>
+      <dxi-column dataField="lineTotal" caption="Сумма" [width]="120"/>
+    </dx-data-grid>
+  </div>
 </div>}

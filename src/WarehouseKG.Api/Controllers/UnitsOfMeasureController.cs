@@ -52,7 +52,7 @@ public class UnitsOfMeasureController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(Guid id, UpdateUnitOfMeasureRequest request, CancellationToken cancellationToken)
     {
-        var command = new UpdateUnitOfMeasureCommand(id, request.Code, request.Name, request.Description);
+        var command = new UpdateUnitOfMeasureCommand(id, request.Code, request.Name, request.Description, request.IsActive);
         var updated = await _sender.Send(command, cancellationToken);
         return updated ? NoContent() : NotFound();
     }
@@ -72,4 +72,5 @@ public class UnitsOfMeasureController : ControllerBase
 public record UpdateUnitOfMeasureRequest(
     string Code,
     string Name,
-    string? Description);
+    string? Description,
+    bool IsActive);

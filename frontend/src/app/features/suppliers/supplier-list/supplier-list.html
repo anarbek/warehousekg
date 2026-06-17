@@ -1,21 +1,12 @@
-<div class="list-page">
-  <div class="list-page__toolbar">
-    <h1 i18n="@@sup.list.title">Поставщики</h1>
-    <button mat-flat-button color="primary" routerLink="new"><mat-icon>add</mat-icon><span i18n="@@sup.list.add">Добавить поставщика</span></button>
-  </div>
-  @if (loading()) { <mat-progress-bar mode="indeterminate" class="list-page__progress" /> }
-  @if (error()) { <p class="list-page__error">{{ error() }}</p> }
-  <div class="table-container mat-elevation-z2">
-    <table mat-table [dataSource]="dataSource" matSort>
-      <ng-container matColumnDef="code"><th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@sup.col.code">Код</th><td mat-cell *matCellDef="let r">{{ r.code }}</td></ng-container>
-      <ng-container matColumnDef="name"><th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@sup.col.name">Название</th><td mat-cell *matCellDef="let r">{{ r.name }}</td></ng-container>
-      <ng-container matColumnDef="contactName"><th mat-header-cell *matHeaderCellDef i18n="@@sup.col.contact">Контакт</th><td mat-cell *matCellDef="let r">{{ r.contactName || '—' }}</td></ng-container>
-      <ng-container matColumnDef="email"><th mat-header-cell *matHeaderCellDef i18n="@@sup.col.email">Email</th><td mat-cell *matCellDef="let r">{{ r.email || '—' }}</td></ng-container>
-      <ng-container matColumnDef="isActive"><th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@sup.col.status">Статус</th><td mat-cell *matCellDef="let r">@if(r.isActive){<mat-icon class="active">check_circle</mat-icon>}@else{<mat-icon class="inactive">cancel</mat-icon>}</td></ng-container>
-      <ng-container matColumnDef="actions"><th mat-header-cell *matHeaderCellDef i18n="@@common.actions">Действия</th><td mat-cell *matCellDef="let r"><button mat-icon-button [routerLink]="[r.id,'edit']" [matTooltip]="editLabel"><mat-icon>edit</mat-icon></button><button mat-icon-button color="warn" (click)="deleteItem(r.id)" [matTooltip]="deleteLabel"><mat-icon>delete</mat-icon></button></td></ng-container>
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr><tr mat-row *matRowDef="let r; columns: displayedColumns"></tr>
-      <tr class="mat-row" *matNoDataRow><td class="mat-cell table-empty" [attr.colspan]="displayedColumns.length" i18n="@@common.noData">Нет данных</td></tr>
-    </table>
-    <mat-paginator [pageSizeOptions]="[10,25,50]" showFirstLastButtons />
-  </div>
-</div>
+<div class="list-page"><div class="list-page__toolbar"><h1>Поставщики</h1><dx-button text="Добавить" icon="add" type="default" stylingMode="contained" [routerLink]="['new']"/></div>
+@if(loading()){<dx-progress-bar [visible]="true"/>} @if(error()){<p class="list-page__error">{{error()}}</p>}
+<dx-data-grid [dataSource]="items()" [showBorders]="true" [hoverStateEnabled]="true" [showColumnLines]="true" [showRowLines]="true">
+    <dxi-column dataField="code" caption="Код" [sortOrder]="'asc'" />
+    <dxi-column dataField="name" caption="Название" />
+    <dxi-column dataField="email" caption="Email" />
+    <dxi-column dataField="phone" caption="Телефон" />
+    <dxi-column dataField="isActive" caption="Статус" [width]="120" cellTemplate="activeCell" />
+    <dxi-column caption="" [width]="100" cellTemplate="actionsCell" />
+    <div *dxTemplate="let cell of 'activeCell'">{{cell.value?"Активен":"Неактивен"}}</div>
+    <div *dxTemplate="let cell of 'actionsCell'"><a [routerLink]="[cell.data.id]"><dx-button icon="info" hint="View" stylingMode="text"/></a><a [routerLink]="[cell.data.id,'edit']"><dx-button icon="edit" hint="Edit" stylingMode="text"/></a></div>
+</dx-data-grid></div>

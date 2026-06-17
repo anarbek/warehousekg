@@ -1,92 +1,22 @@
 <div class="list-page">
-  <div class="list-page__toolbar">
-    <h1>{{ cfg()?.title }}</h1>
-      <button mat-flat-button color="primary" [routerLink]="getNewRoute()">
-      <mat-icon>add</mat-icon>
-      <span>{{ cfg()?.addLabel }}</span>
-    </button>
-  </div>
-
-  @if (loading()) {
-    <mat-progress-bar mode="indeterminate" class="list-page__progress" />
-  }
-
-  @if (error()) {
-    <p class="list-page__error">{{ error() }}</p>
-  }
-
+  <div class="list-page__toolbar"><h1>{{cfg()?.title||''}}</h1><dx-button [text]="(cfg()?.addLabel||'')" icon="add" type="default" stylingMode="contained" [routerLink]="[getNewRoute()]"/></div>
+  @if(loading()){<dx-progress-bar [visible]="true"/>}
+  @if(err()){<p class="list-page__error">{{err()}}</p>}
   <div class="list-page__filters">
-    <mat-form-field appearance="outline" subscriptSizing="dynamic">
-      <mat-label>{{ cfg()?.statusFilterLabel }}</mat-label>
-      <mat-select
-        [value]="selectedStatus()"
-        (selectionChange)="applyStatusFilter($event.value)"
-      >
-        <mat-option value="">{{ cfg()?.statusFilterAll }}</mat-option>
-        @for (s of statuses; track s) {
-          <mat-option [value]="s">
-            <span class="status-badge status-badge--{{ s | lowercase }}">{{ s }}</span>
-          </mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+    <dx-select-box [items]="statuses" [value]="selStatus()" placeholder="Все" stylingMode="outlined" [width]="200" (onValueChanged)="selStatus.set($event.value)"/>
   </div>
-
-  <div class="table-container mat-elevation-z2">
-    <table mat-table [dataSource]="dataSource" matSort>
-      <ng-container matColumnDef="number">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ cfg()?.columnNumber }}</th>
-        <td mat-cell *matCellDef="let row">
-          <a [routerLink]="[row.id]" class="link">{{ row.number }}</a>
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="warehouseName">
-        <th mat-header-cell *matHeaderCellDef>{{ cfg()?.columnWarehouse }}</th>
-        <td mat-cell *matCellDef="let row">{{ getWarehouseName(row) }}</td>
-      </ng-container>
-
-      @if (cfg()?.showReference) {
-        <ng-container matColumnDef="reference">
-          <th mat-header-cell *matHeaderCellDef>{{ cfg()?.referenceLabel }}</th>
-          <td mat-cell *matCellDef="let row">{{ getReference(row) || '—' }}</td>
-        </ng-container>
-      }
-
-      <ng-container matColumnDef="lineCount">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ cfg()?.columnLines }}</th>
-        <td mat-cell *matCellDef="let row">{{ row.lineCount }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ cfg()?.columnStatus }}</th>
-        <td mat-cell *matCellDef="let row">
-          <span class="status-badge status-badge--{{ row.status | lowercase }}">{{ row.status }}</span>
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="createdAtUtc">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ cfg()?.columnCreated }}</th>
-        <td mat-cell *matCellDef="let row">{{ getDate(row) | date:'short' }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>{{ cfg()?.columnActions }}</th>
-        <td mat-cell *matCellDef="let row">
-          <button mat-icon-button [routerLink]="[row.id]" [matTooltip]="detailLabel">
-            <mat-icon>visibility</mat-icon>
-          </button>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns()"></tr>
-
-      <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell table-empty" [attr.colspan]="displayedColumns().length" i18n="@@common.noData">Нет данных</td>
-      </tr>
-    </table>
-
-    <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons aria-label="Pagination" />
-  </div>
+  <dx-data-grid [dataSource]="filteredData" [showBorders]="true" [hoverStateEnabled]="true" [showColumnLines]="true" [showRowLines]="true">
+    <dxi-column dataField="number" caption="Номер" cellTemplate="numCell"/>
+    <dxi-column caption="Склад" cellTemplate="whCell"/>
+    @if(cfg()?.showRef){<dxi-column caption="{{cfg()?.refLabel||''}}" cellTemplate="refCell"/>}
+    <dxi-column dataField="lineCount" caption="Позиций" [width]="80"/>
+    <dxi-column dataField="status" caption="Статус" [width]="120"/>
+    <dxi-column caption="Создан" [width]="160" cellTemplate="dateCell"/>
+    <dxi-column caption="" [width]="60" cellTemplate="actCell"/>
+    <div *dxTemplate="let c of 'numCell'"><a [routerLink]="[c.data.id]">{{c.value}}</a></div>
+    <div *dxTemplate="let c of 'whCell'">{{getWh(c.data)}}</div>
+    <div *dxTemplate="let c of 'refCell'">{{getRef(c.data)}}</div>
+    <div *dxTemplate="let c of 'dateCell'">{{getDate(c.data)|date:'short'}}</div>
+    <div *dxTemplate="let c of 'actCell'"><a [routerLink]="[c.data.id]"><dx-button icon="info" hint="View" stylingMode="text"/></a></div>
+  </dx-data-grid>
 </div>

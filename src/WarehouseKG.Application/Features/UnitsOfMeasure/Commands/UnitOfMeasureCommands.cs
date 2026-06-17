@@ -39,7 +39,8 @@ public record UpdateUnitOfMeasureCommand(
     Guid Id,
     string Code,
     string Name,
-    string? Description) : IRequest<bool>;
+    string? Description,
+    bool IsActive) : IRequest<bool>;
 
 public class UpdateUnitOfMeasureCommandHandler : IRequestHandler<UpdateUnitOfMeasureCommand, bool>
 {
@@ -61,6 +62,7 @@ public class UpdateUnitOfMeasureCommandHandler : IRequestHandler<UpdateUnitOfMea
         uom.Code = request.Code;
         uom.Name = request.Name;
         uom.Description = request.Description;
+        uom.IsActive = request.IsActive;
 
         await _context.SaveChangesAsync(cancellationToken);
         return true;

@@ -39,7 +39,8 @@ public record UpdateItemCategoryCommand(
     Guid Id,
     string Code,
     string Name,
-    string? Description) : IRequest<bool>;
+    string? Description,
+    bool IsActive) : IRequest<bool>;
 
 public class UpdateItemCategoryCommandHandler : IRequestHandler<UpdateItemCategoryCommand, bool>
 {
@@ -61,6 +62,7 @@ public class UpdateItemCategoryCommandHandler : IRequestHandler<UpdateItemCatego
         category.Code = request.Code;
         category.Name = request.Name;
         category.Description = request.Description;
+        category.IsActive = request.IsActive;
 
         await _context.SaveChangesAsync(cancellationToken);
         return true;

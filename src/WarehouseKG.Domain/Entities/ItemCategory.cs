@@ -10,5 +10,7 @@ public class ItemCategory : BaseEntity
 
     public string? Description { get; set; }
 
+    public bool IsActive { get; set; } = true;
+
     public ICollection<InventoryItem> Items { get; set; } = new List<InventoryItem>();
 }

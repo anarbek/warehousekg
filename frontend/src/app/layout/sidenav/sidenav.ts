@@ -1,37 +1,46 @@
-import { Component } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { DxTreeViewModule } from 'devextreme-angular';
+import { Router } from '@angular/router';
 
 interface NavItem {
-  route: string;
+  id: string;
+  text: string;
   icon: string;
-  label: string;
+  path: string;
 }
 
 @Component({
   selector: 'app-sidenav',
-  imports: [MatListModule, MatIconModule, RouterLink, RouterLinkActive],
+  imports: [DxTreeViewModule],
   templateUrl: './sidenav.html',
   styleUrl: './sidenav.scss',
 })
 export class Sidenav {
+  private readonly router = inject(Router);
+
   protected readonly items: NavItem[] = [
-    { route: '/dashboard', icon: 'dashboard', label: $localize`:@@nav.dashboard:Панель управления` },
-    { route: '/inventory/warehouses', icon: 'warehouse', label: $localize`:@@nav.warehouses:Склады` },
-    { route: '/inventory/items', icon: 'inventory_2', label: $localize`:@@nav.inventory:Товары` },
-    { route: '/inventory/categories', icon: 'category', label: $localize`:@@nav.categories:Категории` },
-    { route: '/inventory/units-of-measure', icon: 'straighten', label: $localize`:@@nav.uoms:Ед. измерения` },
-    { route: '/stock-operations/receiving', icon: 'move_to_inbox', label: $localize`:@@nav.receiving:Поступления` },
-    { route: '/stock-operations/picking', icon: 'outbound', label: $localize`:@@nav.picking:Сборка` },
-    { route: '/stock-operations/packing', icon: 'inventory', label: $localize`:@@nav.packing:Упаковка` },
-    { route: '/stock-operations/transfer', icon: 'swap_horiz', label: $localize`:@@nav.transfer:Перемещения` },
-    { route: '/suppliers/suppliers', icon: 'local_shipping', label: $localize`:@@nav.suppliers:Поставщики` },
-    { route: '/suppliers/purchase-orders', icon: 'shopping_cart', label: $localize`:@@nav.purchaseOrders:Заказы поставщикам` },
-    { route: '/customers/customers', icon: 'people', label: $localize`:@@nav.customers:Клиенты` },
-    { route: '/customers/sales-orders', icon: 'sell', label: $localize`:@@nav.salesOrders:Заказы клиентов` },
-    { route: '/adjustments/adjustments', icon: 'tune', label: $localize`:@@nav.adjustments:Корректировки` },
-    { route: '/adjustments/audits', icon: 'fact_check', label: $localize`:@@nav.audits:Аудиты` },
-    { route: '/reports', icon: 'bar_chart', label: $localize`:@@nav.reports:Отчёты` },
+    { id: 'dashboard', icon: 'chart', text: $localize`:@@nav.dashboard:Панель управления`, path: '/dashboard' },
+    { id: 'warehouses', icon: 'home', text: $localize`:@@nav.warehouses:Склады`, path: '/inventory/warehouses' },
+    { id: 'items', icon: 'product', text: $localize`:@@nav.inventory:Товары`, path: '/inventory/items' },
+    { id: 'categories', icon: 'folder', text: $localize`:@@nav.categories:Категории`, path: '/inventory/categories' },
+    { id: 'uoms', icon: 'info', text: $localize`:@@nav.uoms:Ед. измерения`, path: '/inventory/units-of-measure' },
+    { id: 'receiving', icon: 'download', text: $localize`:@@nav.receiving:Поступления`, path: '/stock-operations/receiving' },
+    { id: 'picking', icon: 'export', text: $localize`:@@nav.picking:Сборка`, path: '/stock-operations/picking' },
+    { id: 'packing', icon: 'box', text: $localize`:@@nav.packing:Упаковка`, path: '/stock-operations/packing' },
+    { id: 'transfer', icon: 'movetofolder', text: $localize`:@@nav.transfer:Перемещения`, path: '/stock-operations/transfer' },
+    { id: 'suppliers', icon: 'group', text: $localize`:@@nav.suppliers:Поставщики`, path: '/suppliers/suppliers' },
+    { id: 'po', icon: 'cart', text: $localize`:@@nav.purchaseOrders:Заказы поставщикам`, path: '/suppliers/purchase-orders' },
+    { id: 'customers', icon: 'user', text: $localize`:@@nav.customers:Клиенты`, path: '/customers/customers' },
+    { id: 'so', icon: 'money', text: $localize`:@@nav.salesOrders:Заказы клиентов`, path: '/customers/sales-orders' },
+    { id: 'adjustments', icon: 'preferences', text: $localize`:@@nav.adjustments:Корректировки`, path: '/adjustments/adjustments' },
+    { id: 'audits', icon: 'checklist', text: $localize`:@@nav.audits:Аудиты`, path: '/adjustments/audits' },
+    { id: 'reports', icon: 'chart', text: $localize`:@@nav.reports:Отчёты`, path: '/reports' },
   ];
+
+  protected onItemClick(e: any): void {
+    const item = e.itemData as NavItem;
+    if (item?.path) {
+      void this.router.navigate([item.path]);
+    }
+  }
 }

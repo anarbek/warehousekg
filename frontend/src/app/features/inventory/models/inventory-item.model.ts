@@ -45,6 +45,7 @@ export interface CreateItemCategoryRequest {
   code: string;
   name: string;
   description?: string | null;
+  isActive: boolean;
 }
 
 export type UpdateItemCategoryRequest = CreateItemCategoryRequest;
@@ -53,6 +54,7 @@ export interface CreateUnitOfMeasureRequest {
   code: string;
   name: string;
   description?: string | null;
+  isActive: boolean;
 }
 
 export type UpdateUnitOfMeasureRequest = CreateUnitOfMeasureRequest;

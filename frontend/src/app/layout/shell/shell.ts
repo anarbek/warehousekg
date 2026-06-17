@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { MatSidenavModule } from '@angular/material/sidenav';
+import { DxDrawerModule, DxToolbarModule } from 'devextreme-angular';
 import { Router, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { Header } from '../header/header';
@@ -7,7 +7,7 @@ import { Sidenav } from '../sidenav/sidenav';
 
 @Component({
   selector: 'app-shell',
-  imports: [MatSidenavModule, RouterOutlet, Header, Sidenav],
+  imports: [DxDrawerModule, DxToolbarModule, RouterOutlet, Header, Sidenav],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
 })

@@ -1,175 +1,28 @@
-@if (loading()) {
-  <mat-progress-bar mode="indeterminate" />
-}
-
-@if (error() && !doc()) {
-  <div class="detail-page detail-page--error">
-    <p>{{ error() }}</p>
-    <button mat-stroked-button (click)="goBack()">
-      <mat-icon>arrow_back</mat-icon>
-      <span i18n="@@common.back">Назад</span>
-    </button>
+@if(loading()){<dx-progress-bar [visible]="true"/>}
+@if(err()&&!doc()){<div class="detail-page detail-page--error"><p>{{err()}}</p><dx-button text="Назад" icon="arrowleft" stylingMode="outlined" (onClick)="goBack()"/></div>}
+@if(doc();as d){
+<div class="detail-page">
+  <div class="detail-page__toolbar">
+    <dx-button icon="arrowleft" stylingMode="text" (onClick)="goBack()"/>
+    <h1 class="detail-page__title">{{titleKey}}: {{d.number}}</h1><span class="detail-page__spacer"></span>
+    @if(isDraft()){<dx-button text="Завершить" icon="check" type="default" stylingMode="contained" (onClick)="complete()" [disabled]="saving()"/><dx-button text="Отменить" icon="trash" type="danger" stylingMode="outlined" (onClick)="cancelOp()" [disabled]="saving()"/>}
   </div>
-}
-
-@if (doc(); as d) {
-  <div class="detail-page">
-    <div class="detail-page__toolbar">
-      <button mat-icon-button (click)="goBack()" [attr.aria-label]="'back'">
-        <mat-icon>arrow_back</mat-icon>
-      </button>
-      <h1 class="detail-page__title">{{ titleKey }}: {{ d.number }}</h1>
-      <span class="detail-page__spacer"></span>
-
-      @if (isDraft()) {
-        <button mat-flat-button color="primary" (click)="complete()" [disabled]="saving()">
-          <mat-icon>check_circle</mat-icon>
-          <span i18n="@@stockOp.complete">Завершить</span>
-        </button>
-        <button mat-stroked-button color="warn" (click)="cancel()" [disabled]="saving()">
-          <mat-icon>cancel</mat-icon>
-          <span i18n="@@stockOp.cancel">Отменить</span>
-        </button>
-      }
-    </div>
-
-    @if (saving()) {
-      <mat-progress-bar mode="indeterminate" />
-    }
-    @if (error()) {
-      <p class="detail-page__error">{{ error() }}</p>
-    }
-
-    <mat-card class="detail-page__card">
-      <mat-card-content>
-        <dl class="detail-list">
-          <dt i18n="@@stockOp.detail.number">Номер</dt>
-          <dd>{{ d.number }}</dd>
-
-          <dt i18n="@@stockOp.detail.warehouse">Склад</dt>
-          <dd>{{ warehouseInfo }}</dd>
-
-          @if (referenceInfo) {
-            <dt i18n="@@stockOp.detail.reference">Основание</dt>
-            <dd>{{ referenceInfo }}</dd>
-          }
-
-          @if (pickOrderIdInfo) {
-            <dt i18n="@@stockOp.detail.pickOrder">Заказ на сборку</dt>
-            <dd>{{ pickOrderIdInfo }}</dd>
-          }
-
-          @if (d.notes) {
-            <dt i18n="@@stockOp.detail.notes">Примечание</dt>
-            <dd>{{ d.notes }}</dd>
-          }
-
-          <dt i18n="@@stockOp.detail.status">Статус</dt>
-          <dd>
-            <span class="status-badge status-badge--{{ d.status | lowercase }}">{{ d.status }}</span>
-          </dd>
-
-          <dt i18n="@@stockOp.detail.created">Создан</dt>
-          <dd>{{ d.createdAtUtc | date:'medium' }}</dd>
-        </dl>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="detail-page__card detail-page__card--table">
-      <mat-card-header>
-        <mat-card-title i18n="@@stockOp.detail.lines.title">Позиции</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="table-container mat-elevation-z2">
-          <table mat-table [dataSource]="editableLines()" class="lines-table">
-            <ng-container matColumnDef="inventoryItemName">
-              <th mat-header-cell *matHeaderCellDef i18n="@@stockOp.detail.lines.item">Товар</th>
-              <td mat-cell *matCellDef="let line; let i = index">
-                @if (isDraft()) {
-                  <input
-                    matInput
-                    [(ngModel)]="line.inventoryItemName"
-                    placeholder="Item ID/Name"
-                    class="inline-input"
-                  />
-                } @else {
-                  {{ line.inventoryItemName || line.inventoryItemId }}
-                }
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="quantity">
-              <th mat-header-cell *matHeaderCellDef i18n="@@stockOp.detail.lines.quantity">Кол-во</th>
-              <td mat-cell *matCellDef="let line; let i = index">
-                @if (isDraft()) {
-                  <input
-                    matInput
-                    type="number"
-                    min="0"
-                    [(ngModel)]="line.quantity"
-                    class="inline-input inline-input--narrow"
-                  />
-                } @else {
-                  {{ line.quantity }}
-                }
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="warehouseLocationName">
-              <th mat-header-cell *matHeaderCellDef i18n="@@stockOp.detail.lines.location">Ячейка</th>
-              <td mat-cell *matCellDef="let line; let i = index">
-                @if (isDraft()) {
-                  <input
-                    matInput
-                    [(ngModel)]="line.warehouseLocationName"
-                    placeholder="Location"
-                    class="inline-input"
-                  />
-                } @else {
-                  {{ line.warehouseLocationName || '—' }}
-                }
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="packageLabel">
-              <th mat-header-cell *matHeaderCellDef i18n="@@stockOp.detail.lines.package">Упаковка</th>
-              <td mat-cell *matCellDef="let line; let i = index">
-                @if (isDraft()) {
-                  <input
-                    matInput
-                    [(ngModel)]="line.packageLabel"
-                    placeholder="Package"
-                    class="inline-input"
-                  />
-                } @else {
-                  {{ line.packageLabel || '—' }}
-                }
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef i18n="@@common.actions">Действия</th>
-              <td mat-cell *matCellDef="let line; let i = index">
-                @if (isDraft()) {
-                  <button mat-icon-button color="warn" (click)="removeLine(i)" matTooltip="Remove">
-                    <mat-icon>remove_circle</mat-icon>
-                  </button>
-                }
-              </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="lineColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: lineColumns"></tr>
-          </table>
-        </div>
-
-        @if (isDraft()) {
-          <button mat-stroked-button (click)="addLine()" class="add-line-btn">
-            <mat-icon>add</mat-icon>
-            <span i18n="@@stockOp.detail.lines.add">Добавить позицию</span>
-          </button>
-        }
-      </mat-card-content>
-    </mat-card>
+  @if(saving()){<dx-progress-bar [visible]="true"/>}
+  @if(err()){<p class="detail-page__error">{{err()}}</p>}
+  <div class="dx-card"><dl class="detail-list">
+    <dt>Номер</dt><dd>{{d.number}}</dd>
+    <dt>Склад</dt><dd>{{warehouseInfo}}</dd>
+    @if(referenceInfo){<dt>Основание</dt><dd>{{referenceInfo}}</dd>}
+    @if(pickOrderIdInfo){<dt>Заказ на сборку</dt><dd>{{pickOrderIdInfo}}</dd>}
+    <dt>Статус</dt><dd><span class="badge">{{d.status}}</span></dd>
+    @if(d.notes){<dt>Примечание</dt><dd>{{d.notes}}</dd>}
+  </dl></div>
+  <div class="dx-card"><h3>Позиции</h3>
+    <dx-data-grid [dataSource]="editableLines()" [showBorders]="true" [hoverStateEnabled]="true">
+      <dxi-column dataField="inventoryItemName" caption="Товар"/>
+      <dxi-column dataField="quantity" caption="Кол-во" [width]="100"/>
+      <dxi-column dataField="warehouseLocationName" caption="Ячейка" [width]="120"/>
+      <dxi-column dataField="packageLabel" caption="Упаковка" [width]="120"/>
+    </dx-data-grid>
   </div>
-}
+</div>}

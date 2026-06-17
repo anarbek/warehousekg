@@ -1,14 +1,11 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { DecimalPipe } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTableModule } from '@angular/material/table';
+import { DxProgressBarModule } from 'devextreme-angular';
 import { InventorySummary, PurchaseSummary, SalesSummary, StockMovementSummary } from '../models/report.model';
 import { ReportsService } from '../services/reports.service';
 
-@Component({selector:'app-dashboard',imports:[DecimalPipe,MatCardModule,MatIconModule,MatProgressBarModule,MatTableModule],templateUrl:'./dashboard.html',styleUrl:'./dashboard.scss'})
+@Component({selector:'app-dashboard',imports:[DecimalPipe,DxProgressBarModule],templateUrl:'./dashboard.html',styleUrl:'./dashboard.scss'})
 export class Dashboard implements OnInit {
   private readonly svc=inject(ReportsService);
   protected readonly inv=signal<InventorySummary|null>(null);

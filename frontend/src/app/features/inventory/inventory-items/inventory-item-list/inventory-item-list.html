@@ -1,93 +1,23 @@
 <div class="list-page">
   <div class="list-page__toolbar">
-    <h1 i18n="@@item.list.title">Товары</h1>
-    <button mat-flat-button color="primary" routerLink="new">
-      <mat-icon>add</mat-icon>
-      <span i18n="@@item.list.add">Добавить товар</span>
-    </button>
+    <h1 i18n="@@inventory.list.title">Товары</h1>
+    <dx-button text="Добавить товар" icon="add" type="default" stylingMode="contained" [routerLink]="['new']" />
   </div>
-
-  @if (loading()) {
-    <mat-progress-bar mode="indeterminate" class="list-page__progress" />
-  }
-
-  @if (error()) {
-    <p class="list-page__error">{{ error() }}</p>
-  }
-
-  <div class="table-container mat-elevation-z2">
-    <table mat-table [dataSource]="dataSource" matSort>
-      <ng-container matColumnDef="sku">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@item.column.sku">Артикул</th>
-        <td mat-cell *matCellDef="let row">{{ row.sku }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@item.column.name">Название</th>
-        <td mat-cell *matCellDef="let row">{{ row.name }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="barcode">
-        <th mat-header-cell *matHeaderCellDef i18n="@@item.column.barcode">Штрихкод</th>
-        <td mat-cell *matCellDef="let row">{{ row.barcode }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="categoryName">
-        <th mat-header-cell *matHeaderCellDef i18n="@@item.column.category">Категория</th>
-        <td mat-cell *matCellDef="let row">{{ row.categoryName || '—' }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="quantityOnHand">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@item.column.qty">Кол-во</th>
-        <td mat-cell *matCellDef="let row">{{ row.quantityOnHand }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="reorderLevel">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@item.column.reorder">Мин. запас</th>
-        <td mat-cell *matCellDef="let row">{{ row.reorderLevel }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="isActive">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@item.column.status">Статус</th>
-        <td mat-cell *matCellDef="let row">
-          @if (row.isActive) {
-            <mat-icon class="status-icon status-icon--active">check_circle</mat-icon>
-          } @else {
-            <mat-icon class="status-icon status-icon--inactive">cancel</mat-icon>
-          }
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef i18n="@@common.actions">Действия</th>
-        <td mat-cell *matCellDef="let row">
-          <button mat-icon-button [routerLink]="[row.id]" [matTooltip]="detailLabel">
-            <mat-icon>visibility</mat-icon>
-          </button>
-          <button mat-icon-button [routerLink]="[row.id, 'edit']" [matTooltip]="editLabel">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button
-            mat-icon-button
-            color="warn"
-            (click)="deleteItem(row.id)"
-            [matTooltip]="deleteLabel"
-          >
-            <mat-icon>delete</mat-icon>
-          </button>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-
-      <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell table-empty" [attr.colspan]="displayedColumns.length" i18n="@@common.noData">
-          Нет данных
-        </td>
-      </tr>
-    </table>
-
-    <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons />
-  </div>
+  @if (loading()) { <dx-progress-bar [visible]="true" /> }
+  @if (error()) { <p class="list-page__error">{{ error() }}</p> }
+  <dx-data-grid [dataSource]="items()" [showBorders]="true" [allowColumnResizing]="true" [hoverStateEnabled]="true" [showColumnLines]="true" [showRowLines]="true">
+    <dxi-column dataField="sku" caption="SKU" [sortOrder]="'asc'" />
+    <dxi-column dataField="name" caption="Название" />
+    <dxi-column dataField="categoryName" caption="Категория" />
+    <dxi-column dataField="unitOfMeasureName" caption="Ед. изм." [width]="100" />
+    <dxi-column dataField="quantityOnHand" caption="На складе" [width]="100" />
+    <dxi-column dataField="reorderLevel" caption="Мин. остаток" [width]="100" />
+    <dxi-column dataField="isActive" caption="Статус" [width]="120" cellTemplate="activeCell" />
+    <dxi-column caption="" [width]="100" cellTemplate="actionsCell" />
+    <div *dxTemplate="let cell of 'activeCell'">{{ cell.value ? 'Активен' : 'Неактивен' }}</div>
+    <div *dxTemplate="let cell of 'actionsCell'">
+      <a [routerLink]="[cell.data.id]"><dx-button icon="info" hint="View" stylingMode="text" /></a>
+      <a [routerLink]="[cell.data.id, 'edit']"><dx-button icon="edit" hint="Edit" stylingMode="text" /></a>
+    </div>
+  </dx-data-grid>
 </div>

@@ -29,7 +29,8 @@ public class GetItemCategoriesQueryHandler
                 Id = c.Id,
                 Code = c.Code,
                 Name = c.Name,
-                Description = c.Description
+                Description = c.Description,
+                IsActive = c.IsActive
             })
             .ToListAsync(cancellationToken);
     }
@@ -59,7 +60,8 @@ public class GetItemCategoryByIdQueryHandler
                 Id = c.Id,
                 Code = c.Code,
                 Name = c.Name,
-                Description = c.Description
+                Description = c.Description,
+                IsActive = c.IsActive
             })
             .FirstOrDefaultAsync(cancellationToken);
     }

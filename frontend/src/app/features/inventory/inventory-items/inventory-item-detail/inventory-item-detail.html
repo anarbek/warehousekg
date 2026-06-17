@@ -1,72 +1,26 @@
-@if (loading()) {
-  <mat-progress-bar mode="indeterminate" />
-}
-
-@if (error()) {
-  <div class="detail-page detail-page--error">
-    <p>{{ error() }}</p>
-    <button mat-stroked-button routerLink="../..">
-      <mat-icon>arrow_back</mat-icon>
-      <span i18n="@@common.back">Назад</span>
-    </button>
-  </div>
-}
-
+@if (loading()) { <dx-progress-bar [visible]="true" /> }
+@if (error()) { <div class="detail-page detail-page--error"><p>{{ error() }}</p><dx-button text="Назад" icon="arrowleft" stylingMode="outlined" [routerLink]="['../..']" /></div> }
 @if (item(); as it) {
   <div class="detail-page">
     <div class="detail-page__toolbar">
-      <button mat-icon-button routerLink="../.." [attr.aria-label]="'back'">
-        <mat-icon>arrow_back</mat-icon>
-      </button>
-      <h1 class="detail-page__title" i18n="@@item.detail.title">Детали товара</h1>
+      <dx-button icon="arrowleft" stylingMode="text" [routerLink]="['../..']" />
+      <h1 class="detail-page__title">Детали товара</h1>
       <span class="detail-page__spacer"></span>
-      <button mat-stroked-button [routerLink]="['edit']">
-        <mat-icon>edit</mat-icon>
-        <span i18n="@@common.edit">Редактировать</span>
-      </button>
-      <button mat-stroked-button color="warn" (click)="delete()">
-        <mat-icon>delete</mat-icon>
-        <span i18n="@@common.delete">Удалить</span>
-      </button>
+      <dx-button text="Редактировать" icon="edit" stylingMode="outlined" [routerLink]="['edit']" />
+      <dx-button text="Удалить" icon="trash" stylingMode="outlined" type="danger" (onClick)="delete()" />
     </div>
-
-    <mat-card class="detail-page__card">
-      <mat-card-content>
-        <dl class="detail-list">
-          <dt i18n="@@item.detail.sku">Артикул</dt>
-          <dd>{{ it.sku }}</dd>
-
-          <dt i18n="@@item.detail.name">Название</dt>
-          <dd>{{ it.name }}</dd>
-
-          <dt i18n="@@item.detail.description">Описание</dt>
-          <dd>{{ it.description || '—' }}</dd>
-
-          <dt i18n="@@item.detail.barcode">Штрихкод</dt>
-          <dd>{{ it.barcode || '—' }}</dd>
-
-          <dt i18n="@@item.detail.categoryId">Категория</dt>
-          <dd>{{ it.categoryName || it.categoryId || '—' }}</dd>
-
-          <dt i18n="@@item.detail.unitOfMeasureId">Ед. измерения</dt>
-          <dd>{{ it.unitOfMeasureName || it.unitOfMeasureId || '—' }}</dd>
-
-          <dt i18n="@@item.detail.quantityOnHand">Количество</dt>
-          <dd>{{ it.quantityOnHand }}</dd>
-
-          <dt i18n="@@item.detail.reorderLevel">Мин. запас</dt>
-          <dd>{{ it.reorderLevel }}</dd>
-
-          <dt i18n="@@item.detail.isActive">Статус</dt>
-          <dd>
-            @if (it.isActive) {
-              <span class="badge badge--active" i18n="@@common.active">Активен</span>
-            } @else {
-              <span class="badge badge--inactive" i18n="@@common.inactive">Неактивен</span>
-            }
-          </dd>
-        </dl>
-      </mat-card-content>
-    </mat-card>
+    <div class="dx-card">
+      <dl class="detail-list">
+        <dt>SKU</dt><dd>{{ it.sku }}</dd>
+        <dt>Название</dt><dd>{{ it.name }}</dd>
+        <dt>Описание</dt><dd>{{ it.description || '—' }}</dd>
+        <dt>Штрихкод</dt><dd>{{ it.barcode || '—' }}</dd>
+        <dt>Категория</dt><dd>{{ it.categoryName || '—' }}</dd>
+        <dt>Ед. изм.</dt><dd>{{ it.unitOfMeasureName || '—' }}</dd>
+        <dt>На складе</dt><dd>{{ it.quantityOnHand }}</dd>
+        <dt>Мин. остаток</dt><dd>{{ it.reorderLevel }}</dd>
+        <dt>Статус</dt><dd>{{ it.isActive ? 'Активен' : 'Неактивен' }}</dd>
+      </dl>
+    </div>
   </div>
 }

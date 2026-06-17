@@ -29,7 +29,8 @@ public class GetUnitsOfMeasureQueryHandler
                 Id = u.Id,
                 Code = u.Code,
                 Name = u.Name,
-                Description = u.Description
+                Description = u.Description,
+                IsActive = u.IsActive
             })
             .ToListAsync(cancellationToken);
     }
@@ -59,7 +60,8 @@ public class GetUnitOfMeasureByIdQueryHandler
                 Id = u.Id,
                 Code = u.Code,
                 Name = u.Name,
-                Description = u.Description
+                Description = u.Description,
+                IsActive = u.IsActive
             })
             .FirstOrDefaultAsync(cancellationToken);
     }

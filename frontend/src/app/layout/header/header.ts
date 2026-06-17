@@ -1,12 +1,10 @@
 import { Component, output } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import { DxToolbarModule, DxButtonModule } from 'devextreme-angular';
 import { LanguageSwitcher } from '../language-switcher/language-switcher';
 
 @Component({
   selector: 'app-header',
-  imports: [MatToolbarModule, MatButtonModule, MatIconModule, LanguageSwitcher],
+  imports: [DxToolbarModule, DxButtonModule, LanguageSwitcher],
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })

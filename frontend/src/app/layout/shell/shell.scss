@@ -10,9 +10,12 @@
 
 .shell-sidenav {
   width: 240px;
-  border-right: 1px solid var(--mat-sys-outline-variant);
+  border-right: 1px solid #ddd;
+  background: #fff;
+  height: 100%;
 }
 
 .shell-content {
   padding: 24px;
+  overflow: auto;
 }
