@@ -11,7 +11,6 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Manages purchase orders for the current tenant.
 /// </summary>
-[Authorize(Policy = AuthorizationPolicies.RequireManager)]
 [Route("api/v1/purchase-orders")]
 public class PurchaseOrdersController : ApiControllerBase
 {
@@ -24,12 +23,14 @@ public class PurchaseOrdersController : ApiControllerBase
 
     /// <summary>Returns all purchase orders.</summary>
     [HttpGet]
+    [Authorize(Policy = "purchase-orders:read")]
     [ProducesResponseType(typeof(IReadOnlyList<PurchaseOrderSummaryDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<PurchaseOrderSummaryDto>>> GetAll(CancellationToken cancellationToken)
         => Ok(await _sender.Send(new GetPurchaseOrdersQuery(), cancellationToken));
 
     /// <summary>Returns a single purchase order by id.</summary>
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = "purchase-orders:read")]
     [ProducesResponseType(typeof(PurchaseOrderDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PurchaseOrderDto>> GetById(Guid id, CancellationToken cancellationToken)
@@ -40,6 +41,7 @@ public class PurchaseOrdersController : ApiControllerBase
 
     /// <summary>Creates a draft purchase order.</summary>
     [HttpPost]
+    [Authorize(Policy = "purchase-orders:write")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     public async Task<ActionResult<Guid>> Create([FromBody] CreatePurchaseOrderCommand command, CancellationToken cancellationToken)
     {
@@ -49,6 +51,7 @@ public class PurchaseOrdersController : ApiControllerBase
 
     /// <summary>Submits a draft purchase order to the supplier.</summary>
     [HttpPost("{id:guid}/submit")]
+    [Authorize(Policy = "purchase-orders:write")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -57,6 +60,7 @@ public class PurchaseOrdersController : ApiControllerBase
 
     /// <summary>Marks a submitted purchase order as received and increases stock on hand.</summary>
     [HttpPost("{id:guid}/receive")]
+    [Authorize(Policy = "purchase-orders:write")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -65,6 +69,7 @@ public class PurchaseOrdersController : ApiControllerBase
 
     /// <summary>Cancels a draft or submitted purchase order.</summary>
     [HttpPost("{id:guid}/cancel")]
+    [Authorize(Policy = "purchase-orders:write")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]

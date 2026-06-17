@@ -7,7 +7,9 @@
       <h1 class="detail-page__title" i18n="@@item.detail.title">Детали товара</h1>
       <span class="detail-page__spacer"></span>
       <dx-button text="Редактировать" icon="edit" stylingMode="outlined" [routerLink]="['edit']" />
-      <dx-button text="Удалить" icon="trash" stylingMode="outlined" type="danger" (onClick)="delete()" />
+      @if (canDeleteItem()) {
+        <dx-button text="Удалить" icon="trash" stylingMode="outlined" type="danger" (onClick)="delete()" />
+      }
     </div>
 
     <div class="dx-card">

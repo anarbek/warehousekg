@@ -15,6 +15,7 @@ import { InventoryItem } from '../../inventory/models/inventory-item.model';
 import { InventoryService } from '../../inventory/services/inventory.service';
 import { PickOrder } from '../models/stock-operation.model';
 import { StockOperationsService } from '../services/stock-operations.service';
+import { ErrorToastService } from '../../../core/services/error-toast.service';
 
 @Component({
   selector: 'app-packing-form',
@@ -33,6 +34,7 @@ export class PackingForm implements OnInit {
   private readonly inventoryService = inject(InventoryService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly toast = inject(ErrorToastService);
 
   protected readonly saving = signal(false);
   protected readonly error = signal<string | null>(null);
@@ -129,8 +131,8 @@ export class PackingForm implements OnInit {
           this.saving.set(false);
           void this.router.navigate(['..'], { relativeTo: this.route });
         },
-        error: () => {
-          this.error.set($localize`:@@common.saveError:Не удалось сохранить данные`);
+        error: (e) => {
+          this.toast.showSave(e);
           this.saving.set(false);
         },
       });

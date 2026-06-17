@@ -17,6 +17,9 @@ public static class AuthorizationPolicies
 
     public const string RequireViewer = "RequireViewer";
 
+    public const string ReadPolicy = "read";
+    public const string WritePolicy = "write";
+
     public static IServiceCollection AddWarehouseAuthorization(this IServiceCollection services)
     {
         services.AddScoped<IAuthorizationHandler, TenantPermissionHandler>();
@@ -38,7 +41,9 @@ public static class AuthorizationPolicies
                 .AddPolicy($"{resource}:read", policy =>
                     policy.AddRequirements(new TenantPermissionRequirement(resource, PermissionType.Read)))
                 .AddPolicy($"{resource}:write", policy =>
-                    policy.AddRequirements(new TenantPermissionRequirement(resource, PermissionType.Write)));
+                    policy.AddRequirements(new TenantPermissionRequirement(resource, PermissionType.Write)))
+                .AddPolicy($"{resource}:delete", policy =>
+                    policy.AddRequirements(new TenantPermissionRequirement(resource, PermissionType.Delete)));
         }
 
         return services;

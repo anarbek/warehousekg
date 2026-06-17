@@ -1,4 +1,8 @@
 <div class="admin-page">
+  <div class="admin-page__tabs">
+    <a routerLink="/admin/users" class="admin-page__tab" i18n="@@admin.users.title">Пользователи</a>
+    <a routerLink="/admin/permissions" class="admin-page__tab admin-page__tab--active" i18n="@@admin.permissions.title">Матрица разрешений</a>
+  </div>
   <h1 i18n="@@admin.permissions.title">Матрица разрешений</h1>
 
   @if (loading()) { <dx-progress-bar [visible]="true" /> }
@@ -11,19 +15,38 @@
 
   <dx-data-grid [dataSource]="rows()" [showBorders]="true" [hoverStateEnabled]="true" [showColumnLines]="true" [showRowLines]="true">
     <dxi-column dataField="roleName" caption="Роль" [width]="150" [groupIndex]="0" />
-    <dxi-column dataField="resource" caption="Ресурс" [width]="160" />
+    <dxi-column dataField="resource" caption="Ресурс" [width]="180" />
     <dxi-column caption="Чтение" [width]="80" cellTemplate="readCell" />
     <dxi-column caption="Запись" [width]="80" cellTemplate="writeCell" />
     <dxi-column caption="Удаление" [width]="80" cellTemplate="delCell" />
+    <dxi-column caption="Макс. дней назад" [width]="140" cellTemplate="backdateCell" />
 
     <div *dxTemplate="let c of 'readCell'">
-      <dx-check-box [value]="c.data.canRead" (onValueChanged)="togglePermission(c.data, 'canRead')" [disabled]="c.data.roleName === 'Admin'" />
+      @if (!isBackdate(c.data)) {
+        <dx-check-box [value]="c.data.canRead" (onValueChanged)="togglePermission(c.data, 'canRead')" [disabled]="c.data.roleName === 'Admin'" />
+      }
     </div>
     <div *dxTemplate="let c of 'writeCell'">
-      <dx-check-box [value]="c.data.canWrite" (onValueChanged)="togglePermission(c.data, 'canWrite')" [disabled]="c.data.roleName === 'Admin'" />
+      @if (!isBackdate(c.data)) {
+        <dx-check-box [value]="c.data.canWrite" (onValueChanged)="togglePermission(c.data, 'canWrite')" [disabled]="c.data.roleName === 'Admin'" />
+      }
     </div>
     <div *dxTemplate="let c of 'delCell'">
-      <dx-check-box [value]="c.data.canDelete" (onValueChanged)="togglePermission(c.data, 'canDelete')" [disabled]="c.data.roleName === 'Admin'" />
+      @if (!isBackdate(c.data)) {
+        <dx-check-box [value]="c.data.canDelete" (onValueChanged)="togglePermission(c.data, 'canDelete')" [disabled]="c.data.roleName === 'Admin'" />
+      }
+    </div>
+    <div *dxTemplate="let c of 'backdateCell'">
+      @if (isBackdate(c.data)) {
+        <dx-number-box
+          [value]="c.data.maxBackdateDays"
+          [min]="0"
+          [showSpinButtons]="true"
+          stylingMode="outlined"
+          [width]="120"
+          (onValueChanged)="c.data.maxBackdateDays = $event.value"
+        />
+      }
     </div>
   </dx-data-grid>
 </div>

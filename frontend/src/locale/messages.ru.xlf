@@ -857,6 +857,13 @@
 
       <!-- Admin -->
       <trans-unit id="admin.permissions.title" datatype="html"><source>Матрица разрешений</source><target>Матрица разрешений</target></trans-unit>
+      <trans-unit id="admin.users.title" datatype="html"><source>Пользователи</source><target>Пользователи</target></trans-unit>
+      <trans-unit id="admin.users.add" datatype="html"><source>Добавить пользователя</source><target>Добавить пользователя</target></trans-unit>
+      <trans-unit id="admin.users.createTitle" datatype="html"><source>Новый пользователь</source><target>Новый пользователь</target></trans-unit>
+      <trans-unit id="admin.users.userName" datatype="html"><source>Имя пользователя</source><target>Имя пользователя</target></trans-unit>
+      <trans-unit id="admin.users.email" datatype="html"><source>Email</source><target>Email</target></trans-unit>
+      <trans-unit id="admin.users.password" datatype="html"><source>Пароль</source><target>Пароль</target></trans-unit>
+      <trans-unit id="admin.users.roles" datatype="html"><source>Роли</source><target>Роли</target></trans-unit>
 
       <!-- Adjustments -->
       <trans-unit id="adj.list.title" datatype="html"><source>Корректировки</source><target>Корректировки</target></trans-unit>

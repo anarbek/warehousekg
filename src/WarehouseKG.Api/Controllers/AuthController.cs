@@ -3,9 +3,13 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using WarehouseKG.Api.Authorization;
+using WarehouseKG.Application.Common.Interfaces;
 using WarehouseKG.Application.Features.Auth.Commands;
 using WarehouseKG.Application.Features.Auth.Dtos;
+using WarehouseKG.Domain.Identity;
 
 namespace WarehouseKG.Api.Controllers;
 
@@ -60,6 +64,60 @@ public class AuthController : ApiControllerBase
         return result.Succeeded
             ? Ok(result.Response)
             : Unauthorized(new { errors = result.Errors });
+    }
+
+    /// <summary>
+    /// Returns which resources the current user can read and write, based on roles
+    /// and tenant-scoped permission overrides.
+    /// </summary>
+    [HttpGet("my-permissions")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> MyPermissions(
+        [FromServices] IApplicationDbContext context,
+        CancellationToken cancellationToken)
+    {
+        var tenantIdClaim = User.FindFirst("tenant_id")?.Value;
+        var roles = User.FindAll(ClaimTypes.Role).Select(r => r.Value).ToList();
+        if (string.IsNullOrEmpty(tenantIdClaim)) return Unauthorized();
+
+        var tenantId = Guid.Parse(tenantIdClaim);
+        var result = new Dictionary<string, object>();
+
+        foreach (var resource in Resources.All)
+        {
+            bool canRead = roles.Count > 0;
+            bool canWrite = roles.Any(r => r is Roles.Admin or Roles.Manager or Roles.WarehouseOperator);
+            bool canDelete = roles.Any(r => r is Roles.Admin or Roles.Manager);
+
+            foreach (var role in roles)
+            {
+                var perm = await context.TenantPermissions
+                    .FirstOrDefaultAsync(p =>
+                        p.TenantId == tenantId &&
+                        p.RoleName == role &&
+                        p.Resource == resource, cancellationToken);
+
+                if (perm != null)
+                {
+                    canRead = perm.CanRead;
+                    canWrite = perm.CanWrite;
+                    canDelete = perm.CanDelete;
+                    break;
+                }
+            }
+
+            if (roles.Contains(Roles.Admin))
+            {
+                canRead = true;
+                canWrite = true;
+                canDelete = true;
+            }
+
+            result[resource] = new { canRead, canWrite, canDelete };
+        }
+
+        return Ok(new { resources = result, roles });
     }
 
     /// <summary>

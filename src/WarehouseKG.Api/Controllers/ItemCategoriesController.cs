@@ -11,7 +11,6 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Manages item categories for the current tenant.
 /// </summary>
-[Authorize(Policy = AuthorizationPolicies.RequireManager)]
 [ApiController]
 [Route("api/v1/item-categories")]
 [Produces("application/json")]
@@ -26,12 +25,14 @@ public class ItemCategoriesController : ControllerBase
 
     /// <summary>Returns all item categories.</summary>
     [HttpGet]
+    [Authorize]
     [ProducesResponseType(typeof(IReadOnlyList<ItemCategoryDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<ItemCategoryDto>>> GetAll(CancellationToken cancellationToken)
         => Ok(await _sender.Send(new GetItemCategoriesQuery(), cancellationToken));
 
     /// <summary>Returns a single category by id.</summary>
     [HttpGet("{id:guid}")]
+    [Authorize]
     [ProducesResponseType(typeof(ItemCategoryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ItemCategoryDto>> GetById(Guid id, CancellationToken cancellationToken)
@@ -42,6 +43,7 @@ public class ItemCategoriesController : ControllerBase
 
     /// <summary>Creates a new item category.</summary>
     [HttpPost]
+    [Authorize(Policy = "item-categories:write")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     public async Task<ActionResult<Guid>> Create(CreateItemCategoryCommand command, CancellationToken cancellationToken)
     {
@@ -51,6 +53,7 @@ public class ItemCategoriesController : ControllerBase
 
     /// <summary>Updates an existing item category.</summary>
     [HttpPut("{id:guid}")]
+    [Authorize(Policy = "item-categories:write")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(Guid id, UpdateItemCategoryRequest request, CancellationToken cancellationToken)
@@ -62,6 +65,7 @@ public class ItemCategoriesController : ControllerBase
 
     /// <summary>Deletes an item category.</summary>
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = "item-categories:delete")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)

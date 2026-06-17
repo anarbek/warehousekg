@@ -19,12 +19,18 @@ public static class Resources
     public const string Reports = "reports";
     public const string Users = "users";
 
+    /// <summary>Special resource for back-in-time date permissions (not CRUD).</summary>
+    public const string AddItemsBackInTime = "add-items-back-in-time";
+
+    /// <summary>Permission to delete completed stock receipts.</summary>
+    public const string ReceivingDelete = "stock-receipts-delete-completed";
+
     public static readonly IReadOnlyList<string> All = new[]
     {
         Warehouses, InventoryItems, ItemCategories, UnitsOfMeasure,
         StockReceipts, PickOrders, PackOrders, StockTransfers,
         StockAdjustments, StockAudits,
         Suppliers, PurchaseOrders, Customers, SalesOrders,
-        Reports, Users
+        Reports, Users, AddItemsBackInTime, ReceivingDelete
     };
 }

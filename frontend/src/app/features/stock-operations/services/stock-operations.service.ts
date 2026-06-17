@@ -44,6 +44,10 @@ export class StockOperationsService {
     return this.http.post<void>(`${this.receiptsUrl}/${id}/cancel`, {});
   }
 
+  deleteStockReceipt(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.receiptsUrl}/${id}`);
+  }
+
   // ─── Pick Orders ────────────────────────────────────────────────────────
 
   getPickOrders(): Observable<PickOrder[]> {

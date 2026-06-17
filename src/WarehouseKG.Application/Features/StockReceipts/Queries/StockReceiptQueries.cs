@@ -34,6 +34,7 @@ public class GetStockReceiptsQueryHandler
                 SupplierReference = r.SupplierReference,
                 Status = r.Status,
                 ReceivedAtUtc = r.ReceivedAtUtc,
+                TransactionDate = r.TransactionDate,
                 LineCount = r.Lines.Count
             })
             .ToListAsync(cancellationToken);
@@ -68,6 +69,7 @@ public class GetStockReceiptByIdQueryHandler
                 SupplierReference = r.SupplierReference,
                 Status = r.Status,
                 ReceivedAtUtc = r.ReceivedAtUtc,
+                TransactionDate = r.TransactionDate,
                 Notes = r.Notes,
                 Lines = r.Lines.Select(l => new StockReceiptLineDto
                 {

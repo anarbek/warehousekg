@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { forkJoin, of } from 'rxjs';
 import { DxButtonModule, DxDataGridModule, DxSelectBoxModule, DxProgressBarModule } from 'devextreme-angular';
@@ -8,6 +8,7 @@ import { Warehouse } from '../../models/warehouse.model';
 import { ItemMovement } from '../../../reports/models/report.model';
 import { InventoryService } from '../../services/inventory.service';
 import { ReportsService } from '../../../reports/services/reports.service';
+import { PermissionsService } from '../../../../core/services/permissions.service';
 
 @Component({
   selector: 'app-inventory-item-detail',
@@ -21,6 +22,7 @@ export class InventoryItemDetail {
   private readonly reports = inject(ReportsService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly perms = inject(PermissionsService);
 
   protected readonly id = this.route.snapshot.paramMap.get('id')!;
   protected readonly item = signal<InventoryItem | null>(null);
@@ -29,6 +31,7 @@ export class InventoryItemDetail {
   protected readonly selWarehouseId = signal<string>('');
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
+  protected readonly canDeleteItem = computed(() => this.perms.canDelete('inventory-items'));
 
   constructor() {
     // Pre-select warehouse from query param

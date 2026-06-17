@@ -14,4 +14,11 @@ public class TenantPermission : BaseEntity
     public bool CanRead { get; set; }
     public bool CanWrite { get; set; }
     public bool CanDelete { get; set; }
+
+    /// <summary>
+    /// Maximum number of days back in time this role can set transaction dates.
+    /// null = unlimited, 0 = no backdating (today only), positive = N days max.
+    /// Applies to the special "add-items-back-in-time" resource.
+    /// </summary>
+    public int? MaxBackdateDays { get; set; }
 }

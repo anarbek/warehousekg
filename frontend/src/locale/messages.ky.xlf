@@ -792,6 +792,13 @@
       <trans-unit id="nav.reports" datatype="html"><source>Отчёты</source><target>Отчёттор</target></trans-unit>
       <trans-unit id="nav.admin" datatype="html"><source>Администрирование</source><target>Администрациялоо</target></trans-unit>
       <trans-unit id="admin.permissions.title" datatype="html"><source>Матрица разрешений</source><target>Уруксат матрицасы</target></trans-unit>
+      <trans-unit id="admin.users.title" datatype="html"><source>Пользователи</source><target>Пайдалануучулар</target></trans-unit>
+      <trans-unit id="admin.users.add" datatype="html"><source>Добавить пользователя</source><target>Пайдалануучу кошуу</target></trans-unit>
+      <trans-unit id="admin.users.createTitle" datatype="html"><source>Новый пользователь</source><target>Жаңы пайдалануучу</target></trans-unit>
+      <trans-unit id="admin.users.userName" datatype="html"><source>Имя пользователя</source><target>Пайдалануучунун аты</target></trans-unit>
+      <trans-unit id="admin.users.email" datatype="html"><source>Email</source><target>Email</target></trans-unit>
+      <trans-unit id="admin.users.password" datatype="html"><source>Пароль</source><target>Сырсөз</target></trans-unit>
+      <trans-unit id="admin.users.roles" datatype="html"><source>Роли</source><target>Ролдор</target></trans-unit>
 
       <trans-unit id="sup.list.title" datatype="html"><source>Поставщики</source><target>Жеткирүүчүлөр</target></trans-unit>
       <trans-unit id="sup.list.add" datatype="html"><source>Добавить поставщика</source><target>Жеткирүүчү кошуу</target></trans-unit>

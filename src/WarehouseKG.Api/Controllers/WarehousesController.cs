@@ -11,12 +11,13 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Manages warehouses for the current tenant.
 /// </summary>
-[Authorize(Policy = AuthorizationPolicies.RequireManager)]
 [ApiController]
 [Route("api/v1/warehouses")]
 [Produces("application/json")]
 public class WarehousesController : ControllerBase
 {
+    private const string R = "warehouses";
+
     private readonly ISender _sender;
 
     public WarehousesController(ISender sender)
@@ -26,6 +27,7 @@ public class WarehousesController : ControllerBase
 
     /// <summary>Returns all warehouses for the current tenant.</summary>
     [HttpGet]
+    [Authorize(Policy = R + ":read")]
     [ProducesResponseType(typeof(IReadOnlyList<WarehouseDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<WarehouseDto>>> GetAll(CancellationToken cancellationToken)
     {
@@ -35,6 +37,7 @@ public class WarehousesController : ControllerBase
 
     /// <summary>Returns a single warehouse by its identifier.</summary>
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = R + ":read")]
     [ProducesResponseType(typeof(WarehouseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<WarehouseDto>> GetById(Guid id, CancellationToken cancellationToken)
@@ -45,6 +48,7 @@ public class WarehousesController : ControllerBase
 
     /// <summary>Creates a new warehouse.</summary>
     [HttpPost]
+    [Authorize(Policy = R + ":write")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     public async Task<ActionResult<Guid>> Create(
         CreateWarehouseCommand command,
@@ -56,6 +60,7 @@ public class WarehousesController : ControllerBase
 
     /// <summary>Updates an existing warehouse.</summary>
     [HttpPut("{id:guid}")]
+    [Authorize(Policy = R + ":write")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(
@@ -72,6 +77,7 @@ public class WarehousesController : ControllerBase
 
     /// <summary>Deletes a warehouse.</summary>
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = R + ":delete")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)

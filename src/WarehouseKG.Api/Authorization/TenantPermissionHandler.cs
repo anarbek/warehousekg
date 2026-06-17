@@ -18,7 +18,7 @@ public class TenantPermissionRequirement : IAuthorizationRequirement
     }
 }
 
-public enum PermissionType { Read, Write }
+public enum PermissionType { Read, Write, Delete }
 
 public class TenantPermissionHandler : AuthorizationHandler<TenantPermissionRequirement>
 {
@@ -57,16 +57,20 @@ public class TenantPermissionHandler : AuthorizationHandler<TenantPermissionRequ
 
             if (permission != null)
             {
-                var allowed = requirement.Type == PermissionType.Read
-                    ? permission.CanRead
-                    : permission.CanWrite;
+                var allowed = requirement.Type switch
+                {
+                    PermissionType.Read => permission.CanRead,
+                    PermissionType.Write => permission.CanWrite,
+                    PermissionType.Delete => permission.CanDelete,
+                    _ => false
+                };
 
                 if (allowed) context.Succeed(requirement);
                 return; // Explicit permission exists — don't fall through
             }
         }
 
-        // Fallback: Viewer can read, Manager/Operator can write
+        // Fallback: Viewer can read, Manager/Operator can write, Admin/Manager can delete
         if (requirement.Type == PermissionType.Read && roles.Count > 0)
         {
             context.Succeed(requirement);
@@ -75,6 +79,13 @@ public class TenantPermissionHandler : AuthorizationHandler<TenantPermissionRequ
 
         if (requirement.Type == PermissionType.Write &&
             roles.Any(r => r is Roles.Manager or Roles.WarehouseOperator))
+        {
+            context.Succeed(requirement);
+            return;
+        }
+
+        if (requirement.Type == PermissionType.Delete &&
+            roles.Any(r => r is Roles.Admin or Roles.Manager))
         {
             context.Succeed(requirement);
         }

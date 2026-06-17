@@ -18,6 +18,8 @@ public class StockReceiptDto
 
     public DateTime? ReceivedAtUtc { get; set; }
 
+    public DateTime TransactionDate { get; set; }
+
     public string? Notes { get; set; }
 
     public List<StockReceiptLineDto> Lines { get; set; } = new();
@@ -49,6 +51,8 @@ public class StockReceiptSummaryDto
     public StockOperationStatus Status { get; set; }
 
     public DateTime? ReceivedAtUtc { get; set; }
+
+    public DateTime TransactionDate { get; set; }
 
     public int LineCount { get; set; }
 }

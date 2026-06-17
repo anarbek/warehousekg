@@ -10,6 +10,7 @@ export interface TenantPermission {
   canRead: boolean;
   canWrite: boolean;
   canDelete: boolean;
+  maxBackdateDays?: number | null;
 }
 
 export interface ResourceInfo {

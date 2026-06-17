@@ -11,7 +11,6 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Manages pack orders (packing) for the current tenant.
 /// </summary>
-[Authorize(Policy = AuthorizationPolicies.RequireOperator)]
 [Route("api/v1/pack-orders")]
 public class PackOrdersController : ApiControllerBase
 {
@@ -24,12 +23,14 @@ public class PackOrdersController : ApiControllerBase
 
     /// <summary>Returns all pack orders.</summary>
     [HttpGet]
+    [Authorize(Policy = "pack-orders:read")]
     [ProducesResponseType(typeof(IReadOnlyList<PackOrderSummaryDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<PackOrderSummaryDto>>> GetAll(CancellationToken cancellationToken)
         => Ok(await _sender.Send(new GetPackOrdersQuery(), cancellationToken));
 
     /// <summary>Returns a single pack order by id.</summary>
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = "pack-orders:read")]
     [ProducesResponseType(typeof(PackOrderDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PackOrderDto>> GetById(Guid id, CancellationToken cancellationToken)
@@ -40,6 +41,7 @@ public class PackOrdersController : ApiControllerBase
 
     /// <summary>Creates a draft pack order.</summary>
     [HttpPost]
+    [Authorize(Policy = "pack-orders:write")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     public async Task<ActionResult<Guid>> Create([FromBody] CreatePackOrderCommand command, CancellationToken cancellationToken)
     {
@@ -49,6 +51,7 @@ public class PackOrdersController : ApiControllerBase
 
     /// <summary>Completes a draft pack order.</summary>
     [HttpPost("{id:guid}/complete")]
+    [Authorize(Policy = "pack-orders:write")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -57,6 +60,7 @@ public class PackOrdersController : ApiControllerBase
 
     /// <summary>Cancels a draft pack order.</summary>
     [HttpPost("{id:guid}/cancel")]
+    [Authorize(Policy = "pack-orders:write")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]

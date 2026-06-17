@@ -11,7 +11,6 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Manages customers for the current tenant.
 /// </summary>
-[Authorize(Policy = AuthorizationPolicies.RequireManager)]
 [ApiController]
 [Route("api/v1/customers")]
 [Produces("application/json")]
@@ -26,12 +25,14 @@ public class CustomersController : ControllerBase
 
     /// <summary>Returns all customers.</summary>
     [HttpGet]
+    [Authorize(Policy = "customers:read")]
     [ProducesResponseType(typeof(IReadOnlyList<CustomerDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<CustomerDto>>> GetAll(CancellationToken cancellationToken)
         => Ok(await _sender.Send(new GetCustomersQuery(), cancellationToken));
 
     /// <summary>Returns a single customer by id.</summary>
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = "customers:read")]
     [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CustomerDto>> GetById(Guid id, CancellationToken cancellationToken)
@@ -42,6 +43,7 @@ public class CustomersController : ControllerBase
 
     /// <summary>Creates a new customer.</summary>
     [HttpPost]
+    [Authorize(Policy = "customers:write")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     public async Task<ActionResult<Guid>> Create(CreateCustomerCommand command, CancellationToken cancellationToken)
     {
@@ -51,6 +53,7 @@ public class CustomersController : ControllerBase
 
     /// <summary>Updates an existing customer.</summary>
     [HttpPut("{id:guid}")]
+    [Authorize(Policy = "customers:write")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(Guid id, UpdateCustomerRequest request, CancellationToken cancellationToken)
@@ -72,6 +75,7 @@ public class CustomersController : ControllerBase
 
     /// <summary>Deletes a customer.</summary>
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = "customers:delete")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)

@@ -3,6 +3,7 @@ import { forkJoin } from 'rxjs';
 import { DxFormModule, DxSelectBoxModule, DxButtonModule, DxProgressBarModule } from 'devextreme-angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { InventoryService } from '../../services/inventory.service';
+import { ErrorToastService } from '../../../../core/services/error-toast.service';
 
 @Component({
   selector: 'app-inventory-item-form',
@@ -15,6 +16,7 @@ export class InventoryItemForm implements OnInit {
   private readonly svc = inject(InventoryService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly toast = inject(ErrorToastService);
 
   protected readonly editId = this.route.snapshot.paramMap.get('id');
   protected readonly isEdit = this.editId !== null;
@@ -68,12 +70,12 @@ export class InventoryItemForm implements OnInit {
         if (this.isEdit) {
           this.svc.getInventoryItemById(this.editId!).subscribe({
             next: (it) => { this.formData = it; },
-            error: () => { this.err.set($localize`:@@common.loadError:Не удалось загрузить данные`); },
+            error: (e) => { this.toast.showLoad(e); },
           });
         }
       },
-      error: () => {
-        this.err.set($localize`:@@common.loadError:Не удалось загрузить данные`);
+      error: (e) => {
+        this.toast.showLoad(e);
         this.loading.set(false);
       },
     });
@@ -92,7 +94,7 @@ export class InventoryItemForm implements OnInit {
     };
 
     const done = () => { this.saving.set(false); void this.router.navigate(['..'], { relativeTo: this.route }); };
-    const fail = () => { this.err.set($localize`:@@common.saveError:Не удалось сохранить данные`); this.saving.set(false); };
+    const fail = (e: any) => { this.toast.showSave(e); this.saving.set(false); };
 
     if (this.isEdit) {
       this.svc.updateInventoryItem(this.editId!, r).subscribe({ next: done, error: fail });

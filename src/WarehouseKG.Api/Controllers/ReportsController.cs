@@ -10,7 +10,6 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Read-only aggregate reports across inventory, orders, and stock operations for the current tenant.
 /// </summary>
-[Authorize(Policy = AuthorizationPolicies.RequireViewer)]
 [Route("api/v1/reports")]
 public class ReportsController : ApiControllerBase
 {
@@ -23,30 +22,35 @@ public class ReportsController : ApiControllerBase
 
     /// <summary>Returns aggregate inventory KPIs (totals, items below reorder, items out of stock).</summary>
     [HttpGet("inventory-summary")]
+    [Authorize(Policy = "reports:read")]
     [ProducesResponseType(typeof(InventorySummaryReportDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<InventorySummaryReportDto>> GetInventorySummary(CancellationToken cancellationToken)
         => Ok(await _sender.Send(new GetInventorySummaryReportQuery(), cancellationToken));
 
     /// <summary>Returns active items at or below their reorder level, most deficient first.</summary>
     [HttpGet("low-stock")]
+    [Authorize(Policy = "reports:read")]
     [ProducesResponseType(typeof(IReadOnlyList<LowStockItemDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<LowStockItemDto>>> GetLowStock(CancellationToken cancellationToken)
         => Ok(await _sender.Send(new GetLowStockReportQuery(), cancellationToken));
 
     /// <summary>Returns sales order counts and value, broken down by status.</summary>
     [HttpGet("sales-summary")]
+    [Authorize(Policy = "reports:read")]
     [ProducesResponseType(typeof(SalesSummaryReportDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<SalesSummaryReportDto>> GetSalesSummary(CancellationToken cancellationToken)
         => Ok(await _sender.Send(new GetSalesSummaryReportQuery(), cancellationToken));
 
     /// <summary>Returns purchase order counts and value, broken down by status.</summary>
     [HttpGet("purchase-summary")]
+    [Authorize(Policy = "reports:read")]
     [ProducesResponseType(typeof(PurchaseSummaryReportDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<PurchaseSummaryReportDto>> GetPurchaseSummary(CancellationToken cancellationToken)
         => Ok(await _sender.Send(new GetPurchaseSummaryReportQuery(), cancellationToken));
 
     /// <summary>Returns counts of each stock operation grouped by Draft / Completed / Cancelled.</summary>
     [HttpGet("stock-movements")]
+    [Authorize(Policy = "reports:read")]
     [ProducesResponseType(typeof(StockMovementSummaryReportDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<StockMovementSummaryReportDto>> GetStockMovements(CancellationToken cancellationToken)
         => Ok(await _sender.Send(new GetStockMovementSummaryReportQuery(), cancellationToken));
@@ -56,6 +60,7 @@ public class ReportsController : ApiControllerBase
     /// within an optional date range.
     /// </summary>
     [HttpGet("warehouse-stock")]
+    [Authorize(Policy = "warehouses:read")]
     [ProducesResponseType(typeof(IReadOnlyList<WarehouseStockItemDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<WarehouseStockItemDto>>> GetWarehouseStock(
         [FromQuery] Guid warehouseId,
@@ -69,6 +74,7 @@ public class ReportsController : ApiControllerBase
     /// with running balance after each operation.
     /// </summary>
     [HttpGet("item-movements")]
+    [Authorize(Policy = "inventory-items:read")]
     [ProducesResponseType(typeof(IReadOnlyList<ItemMovementDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<ItemMovementDto>>> GetItemMovements(
         [FromQuery] Guid itemId,
@@ -81,6 +87,7 @@ public class ReportsController : ApiControllerBase
     /// that have no prior receiving operations. Specify a warehouseId to assign them to.
     /// </summary>
     [HttpPost("backfill-initial-stock")]
+    [Authorize(Policy = "reports:write")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> BackfillInitialStock(
         [FromQuery] Guid warehouseId,

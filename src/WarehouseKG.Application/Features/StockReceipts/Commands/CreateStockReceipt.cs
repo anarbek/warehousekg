@@ -1,7 +1,9 @@
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using WarehouseKG.Application.Common.Interfaces;
 using WarehouseKG.Domain.Entities;
 using WarehouseKG.Domain.Enums;
+using WarehouseKG.Domain.Identity;
 
 namespace WarehouseKG.Application.Features.StockReceipts.Commands;
 
@@ -15,6 +17,9 @@ public record CreateStockReceiptCommand(
     Guid WarehouseId,
     string? SupplierReference,
     string? Notes,
+    DateTime TransactionDate,
+    Guid TenantId,
+    IReadOnlyList<string> UserRoles,
     IReadOnlyList<StockReceiptLineInput> Lines) : IRequest<Guid>;
 
 public class CreateStockReceiptCommandHandler : IRequestHandler<CreateStockReceiptCommand, Guid>
@@ -28,6 +33,43 @@ public class CreateStockReceiptCommandHandler : IRequestHandler<CreateStockRecei
 
     public async Task<Guid> Handle(CreateStockReceiptCommand request, CancellationToken cancellationToken)
     {
+        // Validate back-in-time: if TransactionDate is in the past, check permission
+        var now = DateTime.UtcNow.Date;
+        var txDate = request.TransactionDate.Date;
+        if (txDate < now)
+        {
+            var daysBack = (now - txDate).Days;
+            var maxDays = int.MaxValue; // default: no backdating allowed unless permission exists
+
+            foreach (var role in request.UserRoles)
+            {
+                var perm = await _context.TenantPermissions
+                    .FirstOrDefaultAsync(p =>
+                        p.TenantId == request.TenantId &&
+                        p.RoleName == role &&
+                        p.Resource == Resources.AddItemsBackInTime,
+                        cancellationToken);
+
+                if (perm?.MaxBackdateDays != null)
+                {
+                    maxDays = Math.Min(maxDays, perm.MaxBackdateDays.Value);
+                }
+            }
+
+            // If no permission found or daysBack exceeds max, reject
+            if (maxDays == int.MaxValue)
+            {
+                maxDays = 0; // No permission means no backdating
+            }
+
+            if (daysBack > maxDays)
+            {
+                throw new InvalidOperationException(
+                    $"Transaction date {txDate:yyyy-MM-dd} is {daysBack} days in the past. " +
+                    $"Maximum allowed is {maxDays} day(s).");
+            }
+        }
+
         var receipt = new StockReceipt
         {
             Id = Guid.NewGuid(),
@@ -35,6 +77,7 @@ public class CreateStockReceiptCommandHandler : IRequestHandler<CreateStockRecei
             WarehouseId = request.WarehouseId,
             SupplierReference = request.SupplierReference,
             Notes = request.Notes,
+            TransactionDate = request.TransactionDate,
             Status = StockOperationStatus.Draft,
             Lines = request.Lines.Select(l => new StockReceiptLine
             {

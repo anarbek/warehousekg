@@ -11,7 +11,6 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Manages sales orders for the current tenant.
 /// </summary>
-[Authorize(Policy = AuthorizationPolicies.RequireManager)]
 [Route("api/v1/sales-orders")]
 public class SalesOrdersController : ApiControllerBase
 {
@@ -24,12 +23,14 @@ public class SalesOrdersController : ApiControllerBase
 
     /// <summary>Returns all sales orders.</summary>
     [HttpGet]
+    [Authorize(Policy = "sales-orders:read")]
     [ProducesResponseType(typeof(IReadOnlyList<SalesOrderSummaryDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<SalesOrderSummaryDto>>> GetAll(CancellationToken cancellationToken)
         => Ok(await _sender.Send(new GetSalesOrdersQuery(), cancellationToken));
 
     /// <summary>Returns a single sales order by id.</summary>
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = "sales-orders:read")]
     [ProducesResponseType(typeof(SalesOrderDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<SalesOrderDto>> GetById(Guid id, CancellationToken cancellationToken)
@@ -40,6 +41,7 @@ public class SalesOrdersController : ApiControllerBase
 
     /// <summary>Creates a draft sales order.</summary>
     [HttpPost]
+    [Authorize(Policy = "sales-orders:write")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     public async Task<ActionResult<Guid>> Create([FromBody] CreateSalesOrderCommand command, CancellationToken cancellationToken)
     {
@@ -49,6 +51,7 @@ public class SalesOrdersController : ApiControllerBase
 
     /// <summary>Confirms a draft sales order.</summary>
     [HttpPost("{id:guid}/confirm")]
+    [Authorize(Policy = "sales-orders:write")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -57,6 +60,7 @@ public class SalesOrdersController : ApiControllerBase
 
     /// <summary>Ships a confirmed sales order and decreases stock on hand.</summary>
     [HttpPost("{id:guid}/ship")]
+    [Authorize(Policy = "sales-orders:write")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -65,6 +69,7 @@ public class SalesOrdersController : ApiControllerBase
 
     /// <summary>Cancels a draft or confirmed sales order.</summary>
     [HttpPost("{id:guid}/cancel")]
+    [Authorize(Policy = "sales-orders:write")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]

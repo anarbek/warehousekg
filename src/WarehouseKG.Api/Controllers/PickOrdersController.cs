@@ -11,7 +11,6 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Manages pick orders (picking) for the current tenant.
 /// </summary>
-[Authorize(Policy = AuthorizationPolicies.RequireOperator)]
 [Route("api/v1/pick-orders")]
 public class PickOrdersController : ApiControllerBase
 {
@@ -24,12 +23,14 @@ public class PickOrdersController : ApiControllerBase
 
     /// <summary>Returns all pick orders.</summary>
     [HttpGet]
+    [Authorize(Policy = "pick-orders:read")]
     [ProducesResponseType(typeof(IReadOnlyList<PickOrderSummaryDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<PickOrderSummaryDto>>> GetAll(CancellationToken cancellationToken)
         => Ok(await _sender.Send(new GetPickOrdersQuery(), cancellationToken));
 
     /// <summary>Returns a single pick order by id.</summary>
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = "pick-orders:read")]
     [ProducesResponseType(typeof(PickOrderDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PickOrderDto>> GetById(Guid id, CancellationToken cancellationToken)
@@ -40,6 +41,7 @@ public class PickOrdersController : ApiControllerBase
 
     /// <summary>Creates a draft pick order.</summary>
     [HttpPost]
+    [Authorize(Policy = "pick-orders:write")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     public async Task<ActionResult<Guid>> Create([FromBody] CreatePickOrderCommand command, CancellationToken cancellationToken)
     {
@@ -49,6 +51,7 @@ public class PickOrdersController : ApiControllerBase
 
     /// <summary>Completes a draft pick order and decreases stock on hand.</summary>
     [HttpPost("{id:guid}/complete")]
+    [Authorize(Policy = "pick-orders:write")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -57,6 +60,7 @@ public class PickOrdersController : ApiControllerBase
 
     /// <summary>Cancels a draft pick order.</summary>
     [HttpPost("{id:guid}/cancel")]
+    [Authorize(Policy = "pick-orders:write")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]

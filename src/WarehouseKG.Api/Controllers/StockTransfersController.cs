@@ -11,7 +11,6 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Manages stock transfers between warehouses for the current tenant.
 /// </summary>
-[Authorize(Policy = AuthorizationPolicies.RequireOperator)]
 [Route("api/v1/stock-transfers")]
 public class StockTransfersController : ApiControllerBase
 {
@@ -24,12 +23,14 @@ public class StockTransfersController : ApiControllerBase
 
     /// <summary>Returns all stock transfers.</summary>
     [HttpGet]
+    [Authorize(Policy = "stock-transfers:read")]
     [ProducesResponseType(typeof(IReadOnlyList<StockTransferSummaryDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<StockTransferSummaryDto>>> GetAll(CancellationToken cancellationToken)
         => Ok(await _sender.Send(new GetStockTransfersQuery(), cancellationToken));
 
     /// <summary>Returns a single stock transfer by id.</summary>
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = "stock-transfers:read")]
     [ProducesResponseType(typeof(StockTransferDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<StockTransferDto>> GetById(Guid id, CancellationToken cancellationToken)
@@ -40,6 +41,7 @@ public class StockTransfersController : ApiControllerBase
 
     /// <summary>Creates a draft stock transfer.</summary>
     [HttpPost]
+    [Authorize(Policy = "stock-transfers:write")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     public async Task<ActionResult<Guid>> Create([FromBody] CreateStockTransferCommand command, CancellationToken cancellationToken)
     {
@@ -49,6 +51,7 @@ public class StockTransfersController : ApiControllerBase
 
     /// <summary>Completes a draft transfer.</summary>
     [HttpPost("{id:guid}/complete")]
+    [Authorize(Policy = "stock-transfers:write")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -57,6 +60,7 @@ public class StockTransfersController : ApiControllerBase
 
     /// <summary>Cancels a draft transfer.</summary>
     [HttpPost("{id:guid}/cancel")]
+    [Authorize(Policy = "stock-transfers:write")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]

@@ -66,6 +66,7 @@ public class TenantPermissionsController : ControllerBase
             existing.CanRead = dto.CanRead;
             existing.CanWrite = dto.CanWrite;
             existing.CanDelete = dto.CanDelete;
+            existing.MaxBackdateDays = dto.MaxBackdateDays;
         }
         else
         {
@@ -77,7 +78,8 @@ public class TenantPermissionsController : ControllerBase
                 Resource = dto.Resource,
                 CanRead = dto.CanRead,
                 CanWrite = dto.CanWrite,
-                CanDelete = dto.CanDelete
+                CanDelete = dto.CanDelete,
+                MaxBackdateDays = dto.MaxBackdateDays
             });
         }
     }
@@ -117,7 +119,8 @@ public class TenantPermissionsController : ControllerBase
         Resource = p.Resource,
         CanRead = p.CanRead,
         CanWrite = p.CanWrite,
-        CanDelete = p.CanDelete
+        CanDelete = p.CanDelete,
+        MaxBackdateDays = p.MaxBackdateDays
     };
 }
 
@@ -129,6 +132,7 @@ public class TenantPermissionDto
     public bool CanRead { get; set; }
     public bool CanWrite { get; set; }
     public bool CanDelete { get; set; }
+    public int? MaxBackdateDays { get; set; }
 }
 
 public class ResourceInfo

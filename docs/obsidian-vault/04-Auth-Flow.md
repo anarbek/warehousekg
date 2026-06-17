@@ -1,46 +1,156 @@
 # Auth Flow
 
-Authentication and authorization: login, tokens, refresh, roles, and permissions.
+Authentication and authorization: login, tokens, refresh, roles, permissions, and user management.
 
 ## Overview
 
 Authentication is built on **ASP.NET Core Identity** (EF Core stores) issuing **JWT access tokens** plus
-opaque, single-use **refresh tokens**. Today users sign in with **username + password**; **Google OAuth**
-is stubbed for a future iteration. Authorization is **role-based** via named policies.
+opaque, single-use **refresh tokens**. Users sign in with **username + password**; Google OAuth is stubbed.
 
-- Identity types (`ApplicationUser`, `ApplicationRole`, `RefreshToken`) live in `WarehouseKG.Infrastructure`
-  to keep the Domain pure. The Application layer talks to them only through abstractions
-  (`IIdentityService`, `IJwtTokenGenerator`, `IRefreshTokenStore`).
-- Auth use-cases are MediatR commands (`RegisterCommand`, `LoginCommand`, `RefreshTokenCommand`) behind
-  `AuthController`, matching the rest of the codebase.
-- Identity tables (`AspNetUsers`, `AspNetRoles`, …) and `refresh_tokens` are created by the
-  `AddIdentityAndAuth` migration (see [[02-Database-Schema]]).
+Authorization is a **hybrid RBAC + tenant-scoped PBAC model**:
+- **System roles** (Admin, Manager, WarehouseOperator, Viewer) provide the baseline hierarchy
+- **Tenant permission matrix** (`TenantPermission` entity) allows admins to override permissions per role per resource per tenant
+- Controllers use **resource-based policies** (`warehouses:read`, `warehouses:write`) resolved by `TenantPermissionHandler`
+- If no tenant override exists, the system role hierarchy applies as fallback
 
 ## Roles
 
-Four canonical roles are seeded at startup (`Roles` in the Domain):
+Four canonical roles are seeded at startup:
 
-| Role                | Intent                                              |
-| ------------------- | --------------------------------------------------- |
-| `Admin`             | Full access, including user/tenant administration   |
-| `Manager`           | Manage catalog, orders, and stock operations        |
-| `WarehouseOperator` | Execute day-to-day stock operations                 |
-| `Viewer`            | Read-only access                                    |
+| Role                | System Default                                        |
+| ------------------- | ----------------------------------------------------- |
+| `Admin`             | Full access, user/tenant admin, bypasses all permission checks |
+| `Manager`           | Manage catalog, orders, suppliers, customers, and stock operations |
+| `WarehouseOperator` | Execute day-to-day stock operations (receiving, picking, packing, transfers, adjustments, audits) |
+| `Viewer`            | View dashboard and reports; read-only                 |
 
-## Authorization policies
+On first startup, the **first registered user automatically gets the Admin role** (`IdentitySeeder.SeedAdminUserAsync`).
 
-Registered in `AuthorizationPolicies.AddWarehouseAuthorization`. Higher roles satisfy lower-privilege
-policies (an `Admin` satisfies every policy).
+## Authorization System
 
-| Policy            | Satisfied by roles                                       |
-| ----------------- | -------------------------------------------------------- |
-| `RequireAdmin`    | `Admin`                                                  |
-| `RequireManager`  | `Admin`, `Manager`                                       |
-| `RequireOperator` | `Admin`, `Manager`, `WarehouseOperator`                  |
-| `RequireViewer`   | `Admin`, `Manager`, `WarehouseOperator`, `Viewer`        |
+### Role Hierarchy (fallback)
 
-Apply with `[Authorize(Policy = AuthorizationPolicies.RequireManager)]` on controllers/actions. (Existing
-domain controllers are not yet decorated — that rollout is tracked in [[09-Roadmap]].)
+Higher roles inherit lower-privilege system policies:
+
+| Policy              | Satisfied by roles                                         | Purpose |
+| ------------------- | ---------------------------------------------------------- | ------- |
+| `RequireAdmin`      | `Admin`                                                    | Admin-only endpoints |
+| `RequireManager`    | `Admin`, `Manager`                                         | Legacy fallback |
+| `RequireOperator`   | `Admin`, `Manager`, `WarehouseOperator`                    | Legacy fallback |
+| `RequireViewer`     | `Admin`, `Manager`, `WarehouseOperator`, `Viewer`          | Legacy fallback |
+
+### Resource-Based Policies (primary)
+
+Every controller action uses **resource-level policies** checked by `TenantPermissionHandler`:
+
+| Policy Format       | Example                    | Allowed Actions |
+| ------------------- | -------------------------- | --------------- |
+| `{resource}:read`   | `warehouses:read`          | GET requests    |
+| `{resource}:write`  | `stock-receipts:write`     | POST, PUT, DELETE |
+
+**16 resources** are defined in `Resources.All`:
+
+```
+warehouses, inventory-items, item-categories, units-of-measure,
+stock-receipts, pick-orders, pack-orders, stock-transfers,
+stock-adjustments, stock-audits,
+suppliers, purchase-orders, customers, sales-orders,
+reports, users
+```
+
+### Authorization Flow
+
+```
+Request → [Authorize(Policy = "warehouses:write")]
+            │
+            ├── Admin role? → Allowed (bypass)
+            │
+            ├── TenantPermission exists for this role + resource?
+            │     ├── YES → Check CanRead/CanWrite
+            │     │         ├── Allowed → Succeed
+            │     │         └── Denied → 403
+            │     │
+            │     └── NO → Fallback to system role hierarchy
+            │               ├── Viewer has only read
+            │               ├── WarehouseOperator can read+write
+            │               └── Manager can read+write
+            │
+            └── Not authenticated → 401
+```
+
+### Tenant Permission Matrix
+
+Stored in `TenantPermissions` table:
+
+| Column      | Description |
+| ----------- | ----------- |
+| `TenantId`  | Tenant that owns this override |
+| `RoleName`  | ASP.NET Identity role (e.g. "WarehouseOperator") |
+| `Resource`  | Resource key (e.g. "warehouses") |
+| `CanRead`   | Allow GET |
+| `CanWrite`  | Allow POST/PUT/DELETE |
+| `CanDelete` | Allow DELETE (reserved) |
+
+**Admin API:** `PUT /api/v1/tenant-permissions/bulk` — saves the entire matrix in one request.
+
+**Admin UI:** `/admin/permissions` — checkbox grid (roles × resources), grouped by role with bulk save.
+
+**Default behavior** (no TenantPermission rows): system role hierarchy applies unchanged.
+
+**Example override:** Add a row `{WarehouseOperator, warehouses, CanRead=true, CanWrite=false}` →
+WarehouseOperator can view warehouses but cannot create/edit/delete them in that tenant.
+
+## Controller Authorization Map
+
+| Controllers | Resource | GET Policy | Write Policy |
+|---|---|---|---|
+| WarehousesController | `warehouses` | `warehouses:read` | `warehouses:write` |
+| InventoryItemsController | `inventory-items` | `inventory-items:read` | `inventory-items:write` |
+| ItemCategoriesController | `item-categories` | `item-categories:read` | `item-categories:write` |
+| UnitsOfMeasureController | `units-of-measure` | `units-of-measure:read` | `units-of-measure:write` |
+| StockReceiptsController | `stock-receipts` | `stock-receipts:read` | `stock-receipts:write` |
+| PickOrdersController | `pick-orders` | `pick-orders:read` | `pick-orders:write` |
+| PackOrdersController | `pack-orders` | `pack-orders:read` | `pack-orders:write` |
+| StockTransfersController | `stock-transfers` | `stock-transfers:read` | `stock-transfers:write` |
+| StockAdjustmentsController | `stock-adjustments` | `stock-adjustments:read` | `stock-adjustments:write` |
+| StockAuditsController | `stock-audits` | `stock-audits:read` | `stock-audits:write` |
+| SuppliersController | `suppliers` | `suppliers:read` | `suppliers:write` |
+| PurchaseOrdersController | `purchase-orders` | `purchase-orders:read` | `purchase-orders:write` |
+| CustomersController | `customers` | `customers:read` | `customers:write` |
+| SalesOrdersController | `sales-orders` | `sales-orders:read` | `sales-orders:write` |
+| ReportsController | `reports` | `reports:read` | — |
+| UsersController | `users` | `users:read` | `users:write` |
+| TenantPermissionsController | — | — | `RequireAdmin` |
+
+**AuthController** remains `[AllowAnonymous]`.
+
+## User Management
+
+### Admin API — `/api/v1/users`
+
+| Method | Route | Policy | Description |
+|---|---|---|---|
+| `GET` | `/api/v1/users` | `RequireAdmin` | List all users in tenant with roles |
+| `POST` | `/api/v1/users` | `RequireAdmin` | Create user with password and roles |
+| `GET` | `/api/v1/users/{id}` | `RequireAdmin` | Get single user |
+| `PUT` | `/api/v1/users/{id}/roles` | `RequireAdmin` | Update user roles |
+| `DELETE` | `/api/v1/users/{id}` | `RequireAdmin` | Delete user |
+| `GET` | `/api/v1/users/roles` | `RequireAdmin` | List available role names |
+
+**Admin UI:** `/admin/users` — user list with inline role toggles (click to assign/remove), create new user form with role selection.
+
+## Sidebar Navigation
+
+The sidebar filters menu items by the logged-in user's roles:
+
+| Role | Visible Items |
+|---|---|
+| `Admin` | All items including Admin |
+| `Manager` | Dashboard, catalog, operations, orders, reports (no Admin) |
+| `WarehouseOperator` | Dashboard, operations, reports (no catalog, orders, admin) |
+| `Viewer` | Dashboard, reports only |
+
+Implementation in `Sidenav` component — uses `computed()` signal filtered by `AuthService.currentUser().roles`.
 
 ## Endpoints — `/api/v1/auth`
 

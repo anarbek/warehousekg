@@ -23,6 +23,7 @@ export interface StockReceipt {
   status: StockOperationStatus;
   lineCount: number;
   receivedAtUtc?: string | null;
+  transactionDate?: string | null;
   createdAtUtc?: string | null;
   lines: StockOperationLine[];
 }
@@ -32,6 +33,7 @@ export interface CreateStockReceiptRequest {
   warehouseId: string;
   supplierReference?: string | null;
   notes?: string | null;
+  transactionDate: string;
   lines: StockOperationLine[];
 }
 

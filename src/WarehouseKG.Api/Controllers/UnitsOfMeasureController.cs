@@ -11,7 +11,6 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Manages units of measure for the current tenant.
 /// </summary>
-[Authorize(Policy = AuthorizationPolicies.RequireManager)]
 [ApiController]
 [Route("api/v1/units-of-measure")]
 [Produces("application/json")]
@@ -26,12 +25,14 @@ public class UnitsOfMeasureController : ControllerBase
 
     /// <summary>Returns all units of measure.</summary>
     [HttpGet]
+    [Authorize]
     [ProducesResponseType(typeof(IReadOnlyList<UnitOfMeasureDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<UnitOfMeasureDto>>> GetAll(CancellationToken cancellationToken)
         => Ok(await _sender.Send(new GetUnitsOfMeasureQuery(), cancellationToken));
 
     /// <summary>Returns a single unit by id.</summary>
     [HttpGet("{id:guid}")]
+    [Authorize]
     [ProducesResponseType(typeof(UnitOfMeasureDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<UnitOfMeasureDto>> GetById(Guid id, CancellationToken cancellationToken)
@@ -42,6 +43,7 @@ public class UnitsOfMeasureController : ControllerBase
 
     /// <summary>Creates a new unit of measure.</summary>
     [HttpPost]
+    [Authorize(Policy = "units-of-measure:write")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     public async Task<ActionResult<Guid>> Create(CreateUnitOfMeasureCommand command, CancellationToken cancellationToken)
     {
@@ -51,6 +53,7 @@ public class UnitsOfMeasureController : ControllerBase
 
     /// <summary>Updates an existing unit of measure.</summary>
     [HttpPut("{id:guid}")]
+    [Authorize(Policy = "units-of-measure:write")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(Guid id, UpdateUnitOfMeasureRequest request, CancellationToken cancellationToken)
@@ -62,6 +65,7 @@ public class UnitsOfMeasureController : ControllerBase
 
     /// <summary>Deletes a unit of measure.</summary>
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = "units-of-measure:delete")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)

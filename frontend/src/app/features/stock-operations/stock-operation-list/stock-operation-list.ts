@@ -5,6 +5,7 @@ import { DxDataGridModule, DxButtonModule, DxSelectBoxModule, DxProgressBarModul
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { OperationType, StockOperationStatus, StockReceipt, PickOrder, PackOrder, StockTransfer } from '../models/stock-operation.model';
 import { StockOperationsService } from '../services/stock-operations.service';
+import { ErrorToastService } from '../../../core/services/error-toast.service';
 
 type Row = StockReceipt | PickOrder | PackOrder | StockTransfer;
 
@@ -19,7 +20,7 @@ const CONFIGS: Record<OperationType, ListCfg> = {
 
 @Component({selector:'app-stock-operation-list',imports:[DatePipe,DxDataGridModule,DxButtonModule,DxSelectBoxModule,DxProgressBarModule,RouterLink],templateUrl:'./stock-operation-list.html',styleUrl:'./stock-operation-list.scss'})
 export class StockOperationList implements OnInit {
-  private readonly svc=inject(StockOperationsService);private readonly route=inject(ActivatedRoute);
+  private readonly svc=inject(StockOperationsService);private readonly route=inject(ActivatedRoute);private readonly toast=inject(ErrorToastService);
   protected readonly op=this.route.snapshot.data['operationType'] as OperationType;
   protected readonly cfg=signal<ListCfg|null>(null);protected readonly rawData=signal<Row[]>([]);
   protected readonly loading=signal(false);protected readonly err=signal<string|null>(null);
@@ -27,9 +28,9 @@ export class StockOperationList implements OnInit {
   protected readonly selStatus=signal<string>('');
   get filteredData():Row[]{const s=this.selStatus();let d=this.rawData()||[];if(s)d=d.filter(r=>r.status===s);return d.sort((a,b)=>(this.getDate(b)||'').localeCompare(this.getDate(a)||''))}
   ngOnInit(){const c=CONFIGS[this.op];this.cfg.set(c);this.load()}
-  load(){this.loading.set(true);this.err.set(null);const o=(this.op==='receiving'?this.svc.getStockReceipts():this.op==='picking'?this.svc.getPickOrders():this.op==='packing'?this.svc.getPackOrders():this.svc.getStockTransfers())as Observable<Row[]>;o.subscribe({next:d=>{this.rawData.set(d);this.loading.set(false)},error:()=>{this.err.set($localize`:@@common.loadError:Не удалось загрузить данные`);this.loading.set(false)}})}
+  load(){this.loading.set(true);this.err.set(null);const o=(this.op==='receiving'?this.svc.getStockReceipts():this.op==='picking'?this.svc.getPickOrders():this.op==='packing'?this.svc.getPackOrders():this.svc.getStockTransfers())as Observable<Row[]>;o.subscribe({next:d=>{this.rawData.set(d);this.loading.set(false)},error:(e)=>{this.toast.showLoad(e);this.loading.set(false)}})}
   getNewRoute(){return CONFIGS[this.op].newRoute}
-  getRef(row:Row):string{return((row as any).supplierReference||(row as any).reference)||'—'}
-  getWh(row:Row):string{if((row as any).sourceWarehouseName){return `${(row as StockTransfer).sourceWarehouseName??'—'} → ${(row as StockTransfer).destinationWarehouseName??'—'}`}return(row as any).warehouseName??'—'}
-  getDate(row:any):string|null{return row.receivedAtUtc||row.transferredAtUtc||row.adjustedAtUtc||row.reconciledAtUtc||row.createdAtUtc||null}
+  getRef(row:Row):string{return((row as any).supplierReference||(row as any).reference)||'\u2014'}
+  getWh(row:Row):string{if((row as any).sourceWarehouseName){return `${(row as StockTransfer).sourceWarehouseName??'\u2014'} \u2192 ${(row as StockTransfer).destinationWarehouseName??'\u2014'}`}return(row as any).warehouseName??'\u2014'}
+  getDate(row:any):string|null{return row.transactionDate||row.receivedAtUtc||row.transferredAtUtc||row.adjustedAtUtc||row.reconciledAtUtc||row.createdAtUtc||null}
 }

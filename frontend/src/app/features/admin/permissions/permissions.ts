@@ -1,7 +1,9 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { forkJoin } from 'rxjs';
-import { DxDataGridModule, DxCheckBoxModule, DxButtonModule, DxProgressBarModule } from 'devextreme-angular';
+import { DxDataGridModule, DxCheckBoxModule, DxButtonModule, DxProgressBarModule, DxNumberBoxModule } from 'devextreme-angular';
+import { RouterLink } from '@angular/router';
 import { AdminService, TenantPermission } from '../services/admin.service';
+import { ErrorToastService } from '../../../core/services/error-toast.service';
 
 interface MatrixRow {
   roleName: string;
@@ -9,18 +11,22 @@ interface MatrixRow {
   canRead: boolean;
   canWrite: boolean;
   canDelete: boolean;
+  maxBackdateDays: number | null;
   id?: string;
 }
+
+const BACKDATE_RESOURCE = 'add-items-back-in-time';
 
 @Component({
   selector: 'app-permissions',
   standalone: true,
-  imports: [DxDataGridModule, DxCheckBoxModule, DxButtonModule, DxProgressBarModule],
+  imports: [DxDataGridModule, DxCheckBoxModule, DxButtonModule, DxProgressBarModule, DxNumberBoxModule, RouterLink],
   templateUrl: './permissions.html',
   styleUrl: './permissions.scss',
 })
 export class Permissions implements OnInit {
   private readonly admin = inject(AdminService);
+  private readonly toast = inject(ErrorToastService);
 
   protected readonly rows = signal<MatrixRow[]>([]);
   protected readonly roles = signal<string[]>([]);
@@ -51,6 +57,7 @@ export class Permissions implements OnInit {
               canRead: existing?.canRead ?? true,
               canWrite: existing?.canWrite ?? (role !== 'Viewer'),
               canDelete: existing?.canDelete ?? (role !== 'Viewer'),
+              maxBackdateDays: existing?.maxBackdateDays ?? null,
               id: existing?.id,
             });
           }
@@ -58,12 +65,14 @@ export class Permissions implements OnInit {
         this.rows.set(matrix);
         this.loading.set(false);
       },
-      error: () => {
-        this.err.set($localize`:@@common.loadError:Не удалось загрузить данные`);
+      error: (e) => {
+        this.toast.showLoad(e);
         this.loading.set(false);
       },
     });
   }
+
+  protected readonly isBackdate = (r: MatrixRow) => r.resource === BACKDATE_RESOURCE;
 
   togglePermission(row: MatrixRow, field: 'canRead' | 'canWrite' | 'canDelete'): void {
     (row as any)[field] = !(row as any)[field];
@@ -79,11 +88,12 @@ export class Permissions implements OnInit {
       canRead: r.canRead,
       canWrite: r.canWrite,
       canDelete: r.canDelete,
+      maxBackdateDays: r.resource === BACKDATE_RESOURCE ? r.maxBackdateDays : null,
     }));
     this.admin.bulkUpsertPermissions(payload).subscribe({
       next: () => this.saving.set(false),
-      error: () => {
-        this.err.set($localize`:@@common.saveError:Не удалось сохранить данные`);
+      error: (e) => {
+        this.toast.showSave(e);
         this.saving.set(false);
       },
     });

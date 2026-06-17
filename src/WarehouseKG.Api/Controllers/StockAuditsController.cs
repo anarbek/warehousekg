@@ -11,7 +11,6 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Manages stock audits (physical counts / stocktakes) for the current tenant.
 /// </summary>
-[Authorize(Policy = AuthorizationPolicies.RequireOperator)]
 [Route("api/v1/stock-audits")]
 public class StockAuditsController : ApiControllerBase
 {
@@ -24,12 +23,14 @@ public class StockAuditsController : ApiControllerBase
 
     /// <summary>Returns all stock audits.</summary>
     [HttpGet]
+    [Authorize(Policy = "stock-audits:read")]
     [ProducesResponseType(typeof(IReadOnlyList<StockAuditSummaryDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<StockAuditSummaryDto>>> GetAll(CancellationToken cancellationToken)
         => Ok(await _sender.Send(new GetStockAuditsQuery(), cancellationToken));
 
     /// <summary>Returns a single stock audit by id, including per-line variance.</summary>
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = "stock-audits:read")]
     [ProducesResponseType(typeof(StockAuditDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<StockAuditDto>> GetById(Guid id, CancellationToken cancellationToken)
@@ -40,6 +41,7 @@ public class StockAuditsController : ApiControllerBase
 
     /// <summary>Creates a draft stock audit, snapshotting current on-hand quantities.</summary>
     [HttpPost]
+    [Authorize(Policy = "stock-audits:write")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     public async Task<ActionResult<Guid>> Create(CreateStockAuditCommand command, CancellationToken cancellationToken)
     {
@@ -49,6 +51,7 @@ public class StockAuditsController : ApiControllerBase
 
     /// <summary>Completes a draft audit, reconciling stock on hand to the counted quantities.</summary>
     [HttpPost("{id:guid}/complete")]
+    [Authorize(Policy = "stock-audits:write")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -57,6 +60,7 @@ public class StockAuditsController : ApiControllerBase
 
     /// <summary>Cancels a draft audit.</summary>
     [HttpPost("{id:guid}/cancel")]
+    [Authorize(Policy = "stock-audits:write")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]

@@ -765,6 +765,9 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("TransactionDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("WarehouseId")
                         .HasColumnType("uuid");
 
@@ -945,6 +948,9 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
 
                     b.Property<bool>("CanWrite")
                         .HasColumnType("boolean");
+
+                    b.Property<int?>("MaxBackdateDays")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Resource")
                         .IsRequired()

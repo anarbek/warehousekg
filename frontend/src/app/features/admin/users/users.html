@@ -1,0 +1,87 @@
+<div class="admin-page">
+  <div class="admin-page__tabs">
+    <a routerLink="/admin/users" class="admin-page__tab admin-page__tab--active" i18n="@@admin.users.title">Пользователи</a>
+    <a routerLink="/admin/permissions" class="admin-page__tab" i18n="@@admin.permissions.title">Матрица разрешений</a>
+  </div>
+  <div class="admin-page__toolbar">
+    <h1 i18n="@@admin.users.title">Пользователи</h1>
+    <dx-button i18n="@@admin.users.add" text="Добавить пользователя" icon="add" type="default" stylingMode="contained" (onClick)="showCreate.set(true)" />
+  </div>
+
+  @if (loading()) { <dx-progress-bar [visible]="true" /> }
+  @if (saving()) { <dx-progress-bar [visible]="true" /> }
+  @if (err()) { <p class="admin-page__error">{{ err() }}</p> }
+
+  <!-- Create form -->
+  @if (showCreate()) {
+    <div class="create-card">
+      <h3 i18n="@@admin.users.createTitle">Новый пользователь</h3>
+      <div class="create-card__fields">
+        <dx-text-box
+          [(value)]="$any(newUser()).userName"
+          i18n-placeholder="@@admin.users.userName"
+          placeholder="Имя пользователя"
+          stylingMode="outlined"
+          [width]="200"
+        />
+        <dx-text-box
+          [(value)]="$any(newUser()).email"
+          i18n-placeholder="@@admin.users.email"
+          placeholder="Email"
+          stylingMode="outlined"
+          [width]="250"
+        />
+        <dx-text-box
+          [(value)]="$any(newUser()).password"
+          i18n-placeholder="@@admin.users.password"
+          placeholder="Пароль"
+          stylingMode="outlined"
+          mode="password"
+          [width]="180"
+        />
+      </div>
+      <div class="create-card__roles">
+        <span i18n="@@admin.users.roles">Роли:</span>
+        @for (role of roles(); track role) {
+          <dx-button
+            [text]="role"
+            [stylingMode]="hasRole(role) ? 'contained' : 'outlined'"
+            [type]="hasRole(role) ? 'default' : 'normal'"
+            (onClick)="toggleRoleFor(role)"
+          />
+        }
+      </div>
+      <div class="create-card__actions">
+        <dx-button i18n="@@common.save" text="Создать" icon="check" type="default" stylingMode="contained" (onClick)="createUser()" [disabled]="saving()" />
+        <dx-button i18n="@@common.cancel" text="Отмена" stylingMode="outlined" (onClick)="showCreate.set(false); newUser.set({ userName: '', email: '', password: '', roles: [] })" />
+      </div>
+    </div>
+  }
+
+  <dx-data-grid [dataSource]="users()" [showBorders]="true" [hoverStateEnabled]="true" [showColumnLines]="true" [showRowLines]="true">
+    <dxi-column dataField="userName" caption="Пользователь" [width]="180" />
+    <dxi-column dataField="email" caption="Email" [width]="220" />
+    <dxi-column caption="Роли" [width]="300" cellTemplate="rolesCell" />
+    <dxi-column caption="" [width]="80" cellTemplate="actCell" />
+
+    <div *dxTemplate="let c of 'rolesCell'">
+      @for (role of roles(); track role) {
+        <dx-button
+          [text]="role"
+          [stylingMode]="c.data.roles.includes(role) ? 'contained' : 'outlined'"
+          [type]="c.data.roles.includes(role) ? 'default' : 'normal'"
+          [width]="'auto'"
+          (onClick)="
+            c.data.roles.includes(role)
+              ? c.data.roles.splice(c.data.roles.indexOf(role), 1)
+              : c.data.roles.push(role);
+            onRoleChanged(c.data)
+          "
+        />
+      }
+    </div>
+    <div *dxTemplate="let c of 'actCell'">
+      <dx-button icon="trash" type="danger" stylingMode="text" (onClick)="deleteUser(c.data)" />
+    </div>
+  </dx-data-grid>
+</div>

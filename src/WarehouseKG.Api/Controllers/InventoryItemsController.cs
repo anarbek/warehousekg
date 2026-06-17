@@ -11,7 +11,6 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Manages inventory items for the current tenant.
 /// </summary>
-[Authorize(Policy = AuthorizationPolicies.RequireManager)]
 [ApiController]
 [Route("api/v1/inventory-items")]
 [Produces("application/json")]
@@ -26,6 +25,7 @@ public class InventoryItemsController : ControllerBase
 
     /// <summary>Returns all inventory items for the current tenant.</summary>
     [HttpGet]
+    [Authorize(Policy = "inventory-items:read")]
     [ProducesResponseType(typeof(IReadOnlyList<InventoryItemDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<InventoryItemDto>>> GetAll(CancellationToken cancellationToken)
     {
@@ -35,6 +35,7 @@ public class InventoryItemsController : ControllerBase
 
     /// <summary>Returns a single inventory item by its identifier.</summary>
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = "inventory-items:read")]
     [ProducesResponseType(typeof(InventoryItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<InventoryItemDto>> GetById(Guid id, CancellationToken cancellationToken)
@@ -45,6 +46,7 @@ public class InventoryItemsController : ControllerBase
 
     /// <summary>Creates a new inventory item.</summary>
     [HttpPost]
+    [Authorize(Policy = "inventory-items:write")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     public async Task<ActionResult<Guid>> Create(
         CreateInventoryItemCommand command,
@@ -56,6 +58,7 @@ public class InventoryItemsController : ControllerBase
 
     /// <summary>Updates an existing inventory item.</summary>
     [HttpPut("{id:guid}")]
+    [Authorize(Policy = "inventory-items:write")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(
@@ -80,6 +83,7 @@ public class InventoryItemsController : ControllerBase
 
     /// <summary>Deletes an inventory item.</summary>
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = "inventory-items:delete")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
