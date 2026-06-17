@@ -182,6 +182,14 @@
         <source>Товары на складе</source>
         <target>Товары на складе</target>
       </trans-unit>
+      <trans-unit id="warehouse.detail.dateFrom" datatype="html">
+        <source>Дата с</source>
+        <target>Дата с</target>
+      </trans-unit>
+      <trans-unit id="warehouse.detail.dateTo" datatype="html">
+        <source>Дата по</source>
+        <target>Дата по</target>
+      </trans-unit>
       <trans-unit id="warehouse.form.create.title" datatype="html">
         <source>Новый склад</source>
         <target>Новый склад</target>
@@ -252,6 +260,18 @@
         <source>Статус</source>
         <target>Статус</target>
       </trans-unit>
+      <trans-unit id="item.filter.warehouse" datatype="html">
+        <source>Все склады</source>
+        <target>Все склады</target>
+      </trans-unit>
+      <trans-unit id="item.filter.dateFrom" datatype="html">
+        <source>Дата с</source>
+        <target>Дата с</target>
+      </trans-unit>
+      <trans-unit id="item.filter.dateTo" datatype="html">
+        <source>Дата по</source>
+        <target>Дата по</target>
+      </trans-unit>
       <trans-unit id="item.detail.title" datatype="html">
         <source>Детали товара</source>
         <target>Детали товара</target>
@@ -291,6 +311,22 @@
       <trans-unit id="item.detail.isActive" datatype="html">
         <source>Статус</source>
         <target>Статус</target>
+      </trans-unit>
+      <trans-unit id="item.detail.movements" datatype="html">
+        <source>История движений</source>
+        <target>История движений</target>
+      </trans-unit>
+      <trans-unit id="item.detail.selectWarehouse" datatype="html">
+        <source>Выберите склад</source>
+        <target>Выберите склад</target>
+      </trans-unit>
+      <trans-unit id="item.detail.selectWarehouseHint" datatype="html">
+        <source>Выберите склад, чтобы увидеть историю движений</source>
+        <target>Выберите склад, чтобы увидеть историю движений</target>
+      </trans-unit>
+      <trans-unit id="item.detail.currentBalance" datatype="html">
+        <source>Текущий остаток на складе:</source>
+        <target>Текущий остаток на складе:</target>
       </trans-unit>
       <trans-unit id="item.form.create.title" datatype="html">
         <source>Новый товар</source>

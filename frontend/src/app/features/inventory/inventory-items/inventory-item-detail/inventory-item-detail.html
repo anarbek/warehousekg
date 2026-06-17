@@ -4,23 +4,75 @@
   <div class="detail-page">
     <div class="detail-page__toolbar">
       <dx-button icon="arrowleft" stylingMode="text" [routerLink]="['../..']" />
-      <h1 class="detail-page__title">Детали товара</h1>
+      <h1 class="detail-page__title" i18n="@@item.detail.title">Детали товара</h1>
       <span class="detail-page__spacer"></span>
       <dx-button text="Редактировать" icon="edit" stylingMode="outlined" [routerLink]="['edit']" />
       <dx-button text="Удалить" icon="trash" stylingMode="outlined" type="danger" (onClick)="delete()" />
     </div>
+
     <div class="dx-card">
       <dl class="detail-list">
-        <dt>SKU</dt><dd>{{ it.sku }}</dd>
-        <dt>Название</dt><dd>{{ it.name }}</dd>
-        <dt>Описание</dt><dd>{{ it.description || '—' }}</dd>
-        <dt>Штрихкод</dt><dd>{{ it.barcode || '—' }}</dd>
-        <dt>Категория</dt><dd>{{ it.categoryName || '—' }}</dd>
-        <dt>Ед. изм.</dt><dd>{{ it.unitOfMeasureName || '—' }}</dd>
-        <dt>На складе</dt><dd>{{ it.quantityOnHand }}</dd>
-        <dt>Мин. остаток</dt><dd>{{ it.reorderLevel }}</dd>
-        <dt>Статус</dt><dd>{{ it.isActive ? 'Активен' : 'Неактивен' }}</dd>
+        <dt i18n="@@item.detail.sku">Артикул</dt><dd>{{ it.sku }}</dd>
+        <dt i18n="@@item.detail.name">Название</dt><dd>{{ it.name }}</dd>
+        <dt i18n="@@item.detail.description">Описание</dt><dd>{{ it.description || '—' }}</dd>
+        <dt i18n="@@item.detail.barcode">Штрихкод</dt><dd>{{ it.barcode || '—' }}</dd>
+        <dt i18n="@@item.detail.categoryId">Категория</dt><dd>{{ it.categoryName || '—' }}</dd>
+        <dt i18n="@@item.detail.unitOfMeasureId">Ед. изм.</dt><dd>{{ it.unitOfMeasureName || '—' }}</dd>
+        <dt i18n="@@item.detail.quantityOnHand">На складе</dt><dd>{{ it.quantityOnHand }}</dd>
+        <dt i18n="@@item.detail.reorderLevel">Мин. остаток</dt><dd>{{ it.reorderLevel }}</dd>
+        <dt i18n="@@item.detail.isActive">Статус</dt><dd>{{ it.isActive ? 'Активен' : 'Неактивен' }}</dd>
       </dl>
+    </div>
+
+    <div class="dx-card">
+      <div class="movement-header">
+        <h3 i18n="@@item.detail.movements">История движений</h3>
+        <dx-select-box
+          [items]="warehouses()"
+          [value]="selWarehouseId()"
+          displayExpr="name"
+          valueExpr="id"
+          i18n-placeholder="@@item.detail.selectWarehouse"
+          placeholder="Выберите склад"
+          stylingMode="outlined"
+          [width]="220"
+          [showClearButton]="true"
+          (onValueChanged)="selWarehouseId.set($event.value || ''); onWarehouseChange()"
+        />
+      </div>
+
+      @if (selWarehouseId()) {
+        <dx-data-grid [dataSource]="movements()" [showBorders]="true" [hoverStateEnabled]="true" [showColumnLines]="true" [showRowLines]="true">
+          <dxi-column dataField="timestampUtc" caption="Дата" [width]="160" cellTemplate="dateCell" />
+          <dxi-column dataField="operationType" caption="Операция" [width]="180" />
+          <dxi-column dataField="documentNumber" caption="Документ" [width]="130" cellTemplate="docCell" />
+          <dxi-column dataField="quantityChange" caption="Изменение" [width]="100" cellTemplate="qtyCell" />
+          <dxi-column dataField="runningBalance" caption="Остаток" [width]="100" format="#,##0.###" />
+          <dxi-column dataField="notes" caption="Примечание" />
+          <div *dxTemplate="let c of 'docCell'">
+            @if (getDocumentRoute(c.data); as route) {
+              <a [routerLink]="route">{{ c.value }}</a>
+            } @else {
+              {{ c.value }}
+            }
+          </div>
+          <div *dxTemplate="let c of 'dateCell'">{{ c.value | date:'short' }}</div>
+          <div *dxTemplate="let c of 'qtyCell'">
+            <span [class.qty-positive]="c.value > 0" [class.qty-negative]="c.value < 0">
+              {{ c.value > 0 ? '+' : '' }}{{ c.value }}
+            </span>
+          </div>
+        </dx-data-grid>
+
+        @if (movements().length > 0) {
+          <div class="movement-summary">
+            <span i18n="@@item.detail.currentBalance">Текущий остаток на складе:</span>
+            <strong>{{ runningBalance }}</strong>
+          </div>
+        }
+      } @else {
+        <p class="movement-hint" i18n="@@item.detail.selectWarehouseHint">Выберите склад, чтобы увидеть историю движений</p>
+      }
     </div>
   </div>
 }

@@ -12,7 +12,6 @@ public record UpdateInventoryItemCommand(
     string? Barcode,
     Guid CategoryId,
     Guid UnitOfMeasureId,
-    decimal QuantityOnHand,
     decimal ReorderLevel,
     bool IsActive) : IRequest<bool>;
 
@@ -41,7 +40,6 @@ public class UpdateInventoryItemCommandHandler : IRequestHandler<UpdateInventory
         item.Barcode = request.Barcode;
         item.CategoryId = request.CategoryId;
         item.UnitOfMeasureId = request.UnitOfMeasureId;
-        item.QuantityOnHand = request.QuantityOnHand;
         item.ReorderLevel = request.ReorderLevel;
         item.IsActive = request.IsActive;
 

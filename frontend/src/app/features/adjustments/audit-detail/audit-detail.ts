@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { DxDataGridModule, DxButtonModule, DxProgressBarModule } from 'devextreme-angular';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { StockAudit } from '../models/audit.model';
 import { InventoryItem } from '../../inventory/models/inventory-item.model';
 import { InventoryService } from '../../inventory/services/inventory.service';
@@ -19,7 +19,7 @@ interface DisplayLine {
 @Component({
   selector: 'app-audit-detail',
   standalone: true,
-  imports: [DatePipe, DxDataGridModule, DxButtonModule, DxProgressBarModule],
+  imports: [DatePipe, DxDataGridModule, DxButtonModule, DxProgressBarModule, RouterLink],
   templateUrl: './audit-detail.html',
   styleUrl: './audit-detail.scss',
 })

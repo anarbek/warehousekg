@@ -1,9 +1,14 @@
 using MediatR;
 using WarehouseKG.Application.Common.Interfaces;
 using WarehouseKG.Domain.Entities;
+using WarehouseKG.Domain.Enums;
 
 namespace WarehouseKG.Application.Features.InventoryItems.Commands;
 
+/// <summary>
+/// Creates an inventory item. If warehouseId is provided, an initial StockReceipt
+/// is auto-created and completed so stock enters through receiving.
+/// </summary>
 public record CreateInventoryItemCommand(
     string Sku,
     string Name,
@@ -11,9 +16,10 @@ public record CreateInventoryItemCommand(
     string? Barcode,
     Guid CategoryId,
     Guid UnitOfMeasureId,
-    decimal QuantityOnHand,
     decimal ReorderLevel,
-    bool IsActive = true) : IRequest<Guid>;
+    bool IsActive = true,
+    Guid? WarehouseId = null,
+    decimal InitialQuantity = 0) : IRequest<Guid>;
 
 public class CreateInventoryItemCommandHandler : IRequestHandler<CreateInventoryItemCommand, Guid>
 {
@@ -35,14 +41,40 @@ public class CreateInventoryItemCommandHandler : IRequestHandler<CreateInventory
             Barcode = request.Barcode,
             CategoryId = request.CategoryId,
             UnitOfMeasureId = request.UnitOfMeasureId,
-            QuantityOnHand = request.QuantityOnHand,
+            QuantityOnHand = 0,
             ReorderLevel = request.ReorderLevel,
             IsActive = request.IsActive
         };
 
         _context.InventoryItems.Add(item);
-        await _context.SaveChangesAsync(cancellationToken);
 
+        // If warehouse + initial quantity provided, create an auto-receipt
+        if (request.WarehouseId.HasValue && request.InitialQuantity > 0)
+        {
+            var receipt = new StockReceipt
+            {
+                Id = Guid.NewGuid(),
+                Number = $"RCV-{item.Sku}",
+                WarehouseId = request.WarehouseId.Value,
+                Status = StockOperationStatus.Completed,
+                ReceivedAtUtc = DateTime.UtcNow,
+                Notes = "Авто: начальный остаток",
+                Lines = new List<StockReceiptLine>
+                {
+                    new StockReceiptLine
+                    {
+                        Id = Guid.NewGuid(),
+                        InventoryItemId = item.Id,
+                        Quantity = request.InitialQuantity
+                    }
+                }
+            };
+
+            item.QuantityOnHand = request.InitialQuantity;
+            _context.StockReceipts.Add(receipt);
+        }
+
+        await _context.SaveChangesAsync(cancellationToken);
         return item.Id;
     }
 }

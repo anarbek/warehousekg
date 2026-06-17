@@ -47,4 +47,43 @@ public class ReportsController : ApiControllerBase
     [ProducesResponseType(typeof(StockMovementSummaryReportDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<StockMovementSummaryReportDto>> GetStockMovements(CancellationToken cancellationToken)
         => Ok(await _sender.Send(new GetStockMovementSummaryReportQuery(), cancellationToken));
+
+    /// <summary>
+    /// Calculates per-item stock at a warehouse by replaying all completed operations
+    /// within an optional date range.
+    /// </summary>
+    [HttpGet("warehouse-stock")]
+    [ProducesResponseType(typeof(IReadOnlyList<WarehouseStockItemDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<WarehouseStockItemDto>>> GetWarehouseStock(
+        [FromQuery] Guid warehouseId,
+        [FromQuery] DateTime? dateFrom = null,
+        [FromQuery] DateTime? dateTo = null,
+        CancellationToken cancellationToken = default)
+        => Ok(await _sender.Send(new GetWarehouseStockReportQuery(warehouseId, dateFrom, dateTo), cancellationToken));
+
+    /// <summary>
+    /// Returns chronological movement history for a single item at a warehouse,
+    /// with running balance after each operation.
+    /// </summary>
+    [HttpGet("item-movements")]
+    [ProducesResponseType(typeof(IReadOnlyList<ItemMovementDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<ItemMovementDto>>> GetItemMovements(
+        [FromQuery] Guid itemId,
+        [FromQuery] Guid warehouseId,
+        CancellationToken cancellationToken = default)
+        => Ok(await _sender.Send(new GetItemMovementHistoryQuery(itemId, warehouseId), cancellationToken));
+
+    /// <summary>
+    /// One-time backfill: creates initial StockReceipts for items with QuantityOnHand &gt; 0
+    /// that have no prior receiving operations. Specify a warehouseId to assign them to.
+    /// </summary>
+    [HttpPost("backfill-initial-stock")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> BackfillInitialStock(
+        [FromQuery] Guid warehouseId,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _sender.Send(new BackfillInitialStockCommand(warehouseId), cancellationToken);
+        return Ok(new { itemsBackfilled = result });
+    }
 }

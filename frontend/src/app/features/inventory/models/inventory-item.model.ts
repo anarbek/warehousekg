@@ -20,12 +20,22 @@ export interface CreateInventoryItemRequest {
   barcode?: string | null;
   categoryId: string;
   unitOfMeasureId: string;
-  quantityOnHand: number;
+  reorderLevel: number;
+  isActive: boolean;
+  warehouseId?: string | null;
+  initialQuantity?: number;
+}
+
+export interface UpdateInventoryItemRequest {
+  sku: string;
+  name: string;
+  description?: string | null;
+  barcode?: string | null;
+  categoryId: string;
+  unitOfMeasureId: string;
   reorderLevel: number;
   isActive: boolean;
 }
-
-export type UpdateInventoryItemRequest = CreateInventoryItemRequest;
 
 export interface ItemCategory {
   id: string;

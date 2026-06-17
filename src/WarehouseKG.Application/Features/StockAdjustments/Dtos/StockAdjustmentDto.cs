@@ -10,6 +10,8 @@ public class StockAdjustmentDto
 
     public Guid WarehouseId { get; set; }
 
+    public string? WarehouseName { get; set; }
+
     public StockAdjustmentReason Reason { get; set; }
 
     public StockOperationStatus Status { get; set; }

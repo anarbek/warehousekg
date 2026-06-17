@@ -19,10 +19,13 @@
   </dl></div>
   <div class="dx-card"><h3>Позиции</h3>
     <dx-data-grid [dataSource]="editableLines()" [showBorders]="true" [hoverStateEnabled]="true">
-      <dxi-column dataField="inventoryItemName" caption="Товар"/>
+      <dxi-column dataField="inventoryItemName" caption="Товар" cellTemplate="itemCell"/>
       <dxi-column dataField="quantity" caption="Кол-во" [width]="100"/>
       <dxi-column dataField="warehouseLocationName" caption="Ячейка" [width]="120"/>
       <dxi-column dataField="packageLabel" caption="Упаковка" [width]="120"/>
+      <div *dxTemplate="let c of 'itemCell'">
+        <a [routerLink]="['/inventory/items', c.data.inventoryItemId]" [queryParams]="{ warehouseId: getWarehouseId() }">{{ c.value }}</a>
+      </div>
     </dx-data-grid>
   </div>
 </div>}

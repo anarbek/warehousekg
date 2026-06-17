@@ -44,10 +44,13 @@
     <div class="dx-card">
       <h3 i18n="@@adj.detail.lines">Позиции</h3>
       <dx-data-grid [dataSource]="editableLines()" [showBorders]="true" [hoverStateEnabled]="true">
-        <dxi-column dataField="inventoryItemName" i18n-caption="@@adj.detail.item" caption="Товар" />
+        <dxi-column dataField="inventoryItemName" i18n-caption="@@adj.detail.item" caption="Товар" cellTemplate="itemCell" />
         <dxi-column dataField="quantityChange" i18n-caption="@@adj.detail.qtyChange" caption="Изменение" [width]="120" cellTemplate="qtyCell" />
         <dxi-column dataField="notes" i18n-caption="@@adj.detail.lineNotes" caption="Примечание" />
 
+        <div *dxTemplate="let c of 'itemCell'">
+          <a [routerLink]="['/inventory/items', c.data.inventoryItemId]" [queryParams]="{ warehouseId: d.warehouseId }">{{ c.value }}</a>
+        </div>
         <div *dxTemplate="let c of 'qtyCell'">
           <span [class.qty-positive]="c.value > 0" [class.qty-negative]="c.value < 0">
             {{ c.value > 0 ? '+' : '' }}{{ c.value }}

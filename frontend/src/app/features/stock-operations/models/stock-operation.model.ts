@@ -93,6 +93,7 @@ export interface StockTransfer {
   notes?: string | null;
   status: StockOperationStatus;
   lineCount: number;
+  transferredAtUtc?: string | null;
   createdAtUtc?: string | null;
   lines: StockOperationLine[];
 }

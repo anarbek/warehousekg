@@ -63,6 +63,7 @@ public class GetStockAdjustmentByIdQueryHandler
                 Id = a.Id,
                 Number = a.Number,
                 WarehouseId = a.WarehouseId,
+                WarehouseName = a.Warehouse!.Name,
                 Reason = a.Reason,
                 Status = a.Status,
                 AdjustedAtUtc = a.AdjustedAtUtc,

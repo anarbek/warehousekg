@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { forkJoin } from 'rxjs';
 import { DxDataGridModule, DxButtonModule, DxProgressBarModule } from 'devextreme-angular';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { StockAdjustment, StockAdjustmentLine, StockAdjustmentReason } from '../models/stock-adjustment.model';
 import { InventoryItem } from '../../inventory/models/inventory-item.model';
 import { InventoryService } from '../../inventory/services/inventory.service';
@@ -28,7 +28,7 @@ interface DisplayLine {
 @Component({
   selector: 'app-stock-adjustment-detail',
   standalone: true,
-  imports: [DatePipe, DxDataGridModule, DxButtonModule, DxProgressBarModule],
+  imports: [DatePipe, DxDataGridModule, DxButtonModule, DxProgressBarModule, RouterLink],
   templateUrl: './stock-adjustment-detail.html',
   styleUrl: './stock-adjustment-detail.scss',
 })

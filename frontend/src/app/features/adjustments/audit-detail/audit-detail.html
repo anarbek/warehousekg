@@ -40,11 +40,14 @@
     <div class="dx-card">
       <h3 i18n="@@audit.detail.comparison">Сравнение: система vs факт</h3>
       <dx-data-grid [dataSource]="getLines()" [showBorders]="true" [hoverStateEnabled]="true">
-        <dxi-column dataField="inventoryItemName" i18n-caption="@@audit.detail.item" caption="Товар" />
+        <dxi-column dataField="inventoryItemName" i18n-caption="@@audit.detail.item" caption="Товар" cellTemplate="itemCell" />
         <dxi-column dataField="systemQuantity" i18n-caption="@@audit.detail.systemQty" caption="Система" [width]="100" />
         <dxi-column dataField="countedQuantity" i18n-caption="@@audit.detail.countedQty" caption="Факт" [width]="100" />
         <dxi-column dataField="variance" i18n-caption="@@audit.detail.variance" caption="Отклонение" [width]="120" cellTemplate="varCell" />
 
+        <div *dxTemplate="let c of 'itemCell'">
+          <a [routerLink]="['/inventory/items', c.data.inventoryItemId]" [queryParams]="{ warehouseId: a.warehouseId }">{{ c.value }}</a>
+        </div>
         <div *dxTemplate="let c of 'varCell'">
           <span [class.qty-positive]="c.value > 0" [class.qty-negative]="c.value < 0" [class.qty-zero]="c.value === 0">
             {{ c.value > 0 ? '+' : '' }}{{ c.value }}

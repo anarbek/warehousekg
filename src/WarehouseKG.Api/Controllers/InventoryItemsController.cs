@@ -68,7 +68,6 @@ public class InventoryItemsController : ControllerBase
             request.Barcode,
             request.CategoryId,
             request.UnitOfMeasureId,
-            request.QuantityOnHand,
             request.ReorderLevel,
             request.IsActive);
 
@@ -95,6 +94,5 @@ public record UpdateInventoryItemRequest(
     string? Barcode,
     Guid CategoryId,
     Guid UnitOfMeasureId,
-    decimal QuantityOnHand,
     decimal ReorderLevel,
     bool IsActive);

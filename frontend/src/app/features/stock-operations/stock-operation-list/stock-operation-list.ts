@@ -25,11 +25,11 @@ export class StockOperationList implements OnInit {
   protected readonly loading=signal(false);protected readonly err=signal<string|null>(null);
   protected readonly statuses:StockOperationStatus[]=['Draft','Completed','Cancelled'];
   protected readonly selStatus=signal<string>('');
-  get filteredData():Row[]{const s=this.selStatus();const d=this.rawData()||[];return s?d.filter(r=>r.status===s):d}
+  get filteredData():Row[]{const s=this.selStatus();let d=this.rawData()||[];if(s)d=d.filter(r=>r.status===s);return d.sort((a,b)=>(this.getDate(b)||'').localeCompare(this.getDate(a)||''))}
   ngOnInit(){const c=CONFIGS[this.op];this.cfg.set(c);this.load()}
   load(){this.loading.set(true);this.err.set(null);const o=(this.op==='receiving'?this.svc.getStockReceipts():this.op==='picking'?this.svc.getPickOrders():this.op==='packing'?this.svc.getPackOrders():this.svc.getStockTransfers())as Observable<Row[]>;o.subscribe({next:d=>{this.rawData.set(d);this.loading.set(false)},error:()=>{this.err.set($localize`:@@common.loadError:Не удалось загрузить данные`);this.loading.set(false)}})}
   getNewRoute(){return CONFIGS[this.op].newRoute}
   getRef(row:Row):string{return((row as any).supplierReference||(row as any).reference)||'—'}
   getWh(row:Row):string{if((row as any).sourceWarehouseName){return `${(row as StockTransfer).sourceWarehouseName??'—'} → ${(row as StockTransfer).destinationWarehouseName??'—'}`}return(row as any).warehouseName??'—'}
-  getDate(row:any):string|null{return row.receivedAtUtc||row.adjustedAtUtc||row.reconciledAtUtc||row.createdAtUtc||null}
+  getDate(row:any):string|null{return row.receivedAtUtc||row.transferredAtUtc||row.adjustedAtUtc||row.reconciledAtUtc||row.createdAtUtc||null}
 }
