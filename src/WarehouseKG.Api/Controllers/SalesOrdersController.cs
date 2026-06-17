@@ -1,5 +1,7 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WarehouseKG.Api.Authorization;
 using WarehouseKG.Application.Features.SalesOrders.Commands;
 using WarehouseKG.Application.Features.SalesOrders.Dtos;
 using WarehouseKG.Application.Features.SalesOrders.Queries;
@@ -9,6 +11,7 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Manages sales orders for the current tenant.
 /// </summary>
+[Authorize(Policy = AuthorizationPolicies.RequireManager)]
 [Route("api/v1/sales-orders")]
 public class SalesOrdersController : ApiControllerBase
 {

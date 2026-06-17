@@ -1,5 +1,7 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WarehouseKG.Api.Authorization;
 using WarehouseKG.Application.Features.StockAudits.Commands;
 using WarehouseKG.Application.Features.StockAudits.Dtos;
 using WarehouseKG.Application.Features.StockAudits.Queries;
@@ -9,6 +11,7 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Manages stock audits (physical counts / stocktakes) for the current tenant.
 /// </summary>
+[Authorize(Policy = AuthorizationPolicies.RequireOperator)]
 [Route("api/v1/stock-audits")]
 public class StockAuditsController : ApiControllerBase
 {

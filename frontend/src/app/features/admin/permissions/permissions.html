@@ -1,0 +1,29 @@
+<div class="admin-page">
+  <h1 i18n="@@admin.permissions.title">Матрица разрешений</h1>
+
+  @if (loading()) { <dx-progress-bar [visible]="true" /> }
+  @if (saving()) { <dx-progress-bar [visible]="true" /> }
+  @if (err()) { <p class="admin-page__error">{{ err() }}</p> }
+
+  <div class="admin-page__actions">
+    <dx-button i18n="@@common.save" text="Сохранить" icon="check" type="default" stylingMode="contained" (onClick)="save()" [disabled]="saving()" />
+  </div>
+
+  <dx-data-grid [dataSource]="rows()" [showBorders]="true" [hoverStateEnabled]="true" [showColumnLines]="true" [showRowLines]="true">
+    <dxi-column dataField="roleName" caption="Роль" [width]="150" [groupIndex]="0" />
+    <dxi-column dataField="resource" caption="Ресурс" [width]="160" />
+    <dxi-column caption="Чтение" [width]="80" cellTemplate="readCell" />
+    <dxi-column caption="Запись" [width]="80" cellTemplate="writeCell" />
+    <dxi-column caption="Удаление" [width]="80" cellTemplate="delCell" />
+
+    <div *dxTemplate="let c of 'readCell'">
+      <dx-check-box [value]="c.data.canRead" (onValueChanged)="togglePermission(c.data, 'canRead')" [disabled]="c.data.roleName === 'Admin'" />
+    </div>
+    <div *dxTemplate="let c of 'writeCell'">
+      <dx-check-box [value]="c.data.canWrite" (onValueChanged)="togglePermission(c.data, 'canWrite')" [disabled]="c.data.roleName === 'Admin'" />
+    </div>
+    <div *dxTemplate="let c of 'delCell'">
+      <dx-check-box [value]="c.data.canDelete" (onValueChanged)="togglePermission(c.data, 'canDelete')" [disabled]="c.data.roleName === 'Admin'" />
+    </div>
+  </dx-data-grid>
+</div>

@@ -53,6 +53,11 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/reports/reports.routes').then((m) => m.reportRoutes),
       },
+      {
+        path: 'admin',
+        loadChildren: () =>
+          import('./features/admin/admin.routes').then((m) => m.adminRoutes),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

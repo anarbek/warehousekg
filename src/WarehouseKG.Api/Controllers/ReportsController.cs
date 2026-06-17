@@ -1,5 +1,7 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WarehouseKG.Api.Authorization;
 using WarehouseKG.Application.Features.Reports.Dtos;
 using WarehouseKG.Application.Features.Reports.Queries;
 
@@ -8,6 +10,7 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Read-only aggregate reports across inventory, orders, and stock operations for the current tenant.
 /// </summary>
+[Authorize(Policy = AuthorizationPolicies.RequireViewer)]
 [Route("api/v1/reports")]
 public class ReportsController : ApiControllerBase
 {

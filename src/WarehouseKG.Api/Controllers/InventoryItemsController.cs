@@ -1,5 +1,7 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WarehouseKG.Api.Authorization;
 using WarehouseKG.Application.Features.InventoryItems.Commands;
 using WarehouseKG.Application.Features.InventoryItems.Dtos;
 using WarehouseKG.Application.Features.InventoryItems.Queries;
@@ -9,6 +11,7 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Manages inventory items for the current tenant.
 /// </summary>
+[Authorize(Policy = AuthorizationPolicies.RequireManager)]
 [ApiController]
 [Route("api/v1/inventory-items")]
 [Produces("application/json")]

@@ -67,6 +67,8 @@ public class WarehouseKgDbContext
 
     public DbSet<StockAuditLine> StockAuditLines => Set<StockAuditLine>();
 
+    public DbSet<TenantPermission> TenantPermissions => Set<TenantPermission>();
+
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     public Guid CurrentTenantId => _tenantProvider.GetTenantId();

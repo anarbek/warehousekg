@@ -1,5 +1,7 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WarehouseKG.Api.Authorization;
 using WarehouseKG.Application.Features.PackOrders.Commands;
 using WarehouseKG.Application.Features.PackOrders.Dtos;
 using WarehouseKG.Application.Features.PackOrders.Queries;
@@ -9,6 +11,7 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Manages pack orders (packing) for the current tenant.
 /// </summary>
+[Authorize(Policy = AuthorizationPolicies.RequireOperator)]
 [Route("api/v1/pack-orders")]
 public class PackOrdersController : ApiControllerBase
 {

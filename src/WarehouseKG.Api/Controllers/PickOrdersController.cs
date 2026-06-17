@@ -1,5 +1,7 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WarehouseKG.Api.Authorization;
 using WarehouseKG.Application.Features.PickOrders.Commands;
 using WarehouseKG.Application.Features.PickOrders.Dtos;
 using WarehouseKG.Application.Features.PickOrders.Queries;
@@ -9,6 +11,7 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Manages pick orders (picking) for the current tenant.
 /// </summary>
+[Authorize(Policy = AuthorizationPolicies.RequireOperator)]
 [Route("api/v1/pick-orders")]
 public class PickOrdersController : ApiControllerBase
 {

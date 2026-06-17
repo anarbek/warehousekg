@@ -1,5 +1,7 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WarehouseKG.Api.Authorization;
 using WarehouseKG.Application.Features.PurchaseOrders.Commands;
 using WarehouseKG.Application.Features.PurchaseOrders.Dtos;
 using WarehouseKG.Application.Features.PurchaseOrders.Queries;
@@ -9,6 +11,7 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Manages purchase orders for the current tenant.
 /// </summary>
+[Authorize(Policy = AuthorizationPolicies.RequireManager)]
 [Route("api/v1/purchase-orders")]
 public class PurchaseOrdersController : ApiControllerBase
 {

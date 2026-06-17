@@ -1,5 +1,7 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WarehouseKG.Api.Authorization;
 using WarehouseKG.Application.Features.Warehouses.Commands;
 using WarehouseKG.Application.Features.Warehouses.Dtos;
 using WarehouseKG.Application.Features.Warehouses.Queries;
@@ -9,6 +11,7 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Manages warehouses for the current tenant.
 /// </summary>
+[Authorize(Policy = AuthorizationPolicies.RequireManager)]
 [ApiController]
 [Route("api/v1/warehouses")]
 [Produces("application/json")]

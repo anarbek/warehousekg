@@ -51,5 +51,7 @@ public interface IApplicationDbContext
 
     DbSet<StockAuditLine> StockAuditLines { get; }
 
+    DbSet<TenantPermission> TenantPermissions { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

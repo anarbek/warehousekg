@@ -19,6 +19,8 @@ public static class AuthorizationPolicies
 
     public static IServiceCollection AddWarehouseAuthorization(this IServiceCollection services)
     {
+        services.AddScoped<IAuthorizationHandler, TenantPermissionHandler>();
+
         services.AddAuthorizationBuilder()
             .AddPolicy(RequireAdmin, policy =>
                 policy.RequireRole(Roles.Admin))
@@ -28,6 +30,16 @@ public static class AuthorizationPolicies
                 policy.RequireRole(Roles.Admin, Roles.Manager, Roles.WarehouseOperator))
             .AddPolicy(RequireViewer, policy =>
                 policy.RequireRole(Roles.Admin, Roles.Manager, Roles.WarehouseOperator, Roles.Viewer));
+
+        // Resource-based policies for tenant-scoped permission overrides
+        foreach (var resource in Resources.All)
+        {
+            services.AddAuthorizationBuilder()
+                .AddPolicy($"{resource}:read", policy =>
+                    policy.AddRequirements(new TenantPermissionRequirement(resource, PermissionType.Read)))
+                .AddPolicy($"{resource}:write", policy =>
+                    policy.AddRequirements(new TenantPermissionRequirement(resource, PermissionType.Write)));
+        }
 
         return services;
     }

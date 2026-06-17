@@ -1,5 +1,7 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WarehouseKG.Api.Authorization;
 using WarehouseKG.Application.Features.StockReceipts.Commands;
 using WarehouseKG.Application.Features.StockReceipts.Dtos;
 using WarehouseKG.Application.Features.StockReceipts.Queries;
@@ -9,6 +11,7 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Manages stock receipts (receiving) for the current tenant.
 /// </summary>
+[Authorize(Policy = AuthorizationPolicies.RequireOperator)]
 [Route("api/v1/stock-receipts")]
 public class StockReceiptsController : ApiControllerBase
 {

@@ -1,5 +1,7 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WarehouseKG.Api.Authorization;
 using WarehouseKG.Application.Features.StockTransfers.Commands;
 using WarehouseKG.Application.Features.StockTransfers.Dtos;
 using WarehouseKG.Application.Features.StockTransfers.Queries;
@@ -9,6 +11,7 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Manages stock transfers between warehouses for the current tenant.
 /// </summary>
+[Authorize(Policy = AuthorizationPolicies.RequireOperator)]
 [Route("api/v1/stock-transfers")]
 public class StockTransfersController : ApiControllerBase
 {

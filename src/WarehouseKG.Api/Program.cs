@@ -13,6 +13,7 @@ using WarehouseKG.Api.Authorization;
 using WarehouseKG.Application;
 using WarehouseKG.Infrastructure;
 using WarehouseKG.Infrastructure.Identity;
+using WarehouseKG.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -132,6 +133,7 @@ builder.Services.AddSwaggerGen(options =>
 var app = builder.Build();
 
 await SeedRolesAsync(app);
+await SeedAdminUserAsync(app);
 
 if (app.Environment.IsDevelopment())
 {
@@ -163,5 +165,20 @@ static async Task SeedRolesAsync(WebApplication app)
     {
         var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
         logger.LogWarning(ex, "Role seeding skipped (database may be unavailable).");
+    }
+}
+
+// Ensures the first registered user has Admin role for development convenience.
+static async Task SeedAdminUserAsync(WebApplication app)
+{
+    using var scope = app.Services.CreateScope();
+    try
+    {
+        await IdentitySeeder.SeedAdminUserAsync(scope.ServiceProvider);
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
+        logger.LogWarning(ex, "Admin user seeding skipped.");
     }
 }

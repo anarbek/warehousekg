@@ -1,5 +1,7 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WarehouseKG.Api.Authorization;
 using WarehouseKG.Application.Features.UnitsOfMeasure.Commands;
 using WarehouseKG.Application.Features.UnitsOfMeasure.Dtos;
 using WarehouseKG.Application.Features.UnitsOfMeasure.Queries;
@@ -9,6 +11,7 @@ namespace WarehouseKG.Api.Controllers;
 /// <summary>
 /// Manages units of measure for the current tenant.
 /// </summary>
+[Authorize(Policy = AuthorizationPolicies.RequireManager)]
 [ApiController]
 [Route("api/v1/units-of-measure")]
 [Produces("application/json")]

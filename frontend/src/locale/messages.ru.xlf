@@ -853,6 +853,10 @@
       <trans-unit id="nav.adjustments" datatype="html"><source>Корректировки</source><target>Корректировки</target></trans-unit>
       <trans-unit id="nav.audits" datatype="html"><source>Аудиты</source><target>Аудиты</target></trans-unit>
       <trans-unit id="nav.reports" datatype="html"><source>Отчёты</source><target>Отчёты</target></trans-unit>
+      <trans-unit id="nav.admin" datatype="html"><source>Администрирование</source><target>Администрирование</target></trans-unit>
+
+      <!-- Admin -->
+      <trans-unit id="admin.permissions.title" datatype="html"><source>Матрица разрешений</source><target>Матрица разрешений</target></trans-unit>
 
       <!-- Adjustments -->
       <trans-unit id="adj.list.title" datatype="html"><source>Корректировки</source><target>Корректировки</target></trans-unit>

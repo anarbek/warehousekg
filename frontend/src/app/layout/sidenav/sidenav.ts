@@ -35,6 +35,7 @@ export class Sidenav {
     { id: 'adjustments', icon: 'preferences', text: $localize`:@@nav.adjustments:Корректировки`, path: '/adjustments/adjustments' },
     { id: 'audits', icon: 'checklist', text: $localize`:@@nav.audits:Аудиты`, path: '/adjustments/audits' },
     { id: 'reports', icon: 'chart', text: $localize`:@@nav.reports:Отчёты`, path: '/reports' },
+    { id: 'admin', icon: 'key', text: $localize`:@@nav.admin:Администрирование`, path: '/admin' },
   ];
 
   protected onItemClick(e: any): void {
