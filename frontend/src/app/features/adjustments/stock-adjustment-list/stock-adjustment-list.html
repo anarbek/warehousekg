@@ -1,0 +1,52 @@
+<div class="list-page">
+  <div class="list-page__toolbar">
+    <h1 i18n="@@adj.list.title">Корректировки запасов</h1>
+    <dx-button i18n="@@adj.list.add" text="Новая корректировка" icon="add" type="default" stylingMode="contained" [routerLink]="['new']" />
+  </div>
+
+  @if (loading()) {
+    <dx-progress-bar [visible]="true" />
+  }
+  @if (err()) {
+    <p class="list-page__error">{{ err() }}</p>
+  }
+
+  <div class="list-page__filters">
+    <dx-select-box i18n-placeholder="@@adj.filter.status"
+      [items]="statuses"
+      [value]="selStatus()"
+      placeholder="Все статусы"
+      stylingMode="outlined"
+      [width]="200"
+      (onValueChanged)="selStatus.set($event.value)"
+    />
+    <dx-select-box i18n-placeholder="@@adj.filter.reason"
+      [items]="reasons"
+      [value]="selReason()"
+      placeholder="Все причины"
+      stylingMode="outlined"
+      [width]="200"
+      (onValueChanged)="selReason.set($event.value)"
+    />
+  </div>
+
+  <dx-data-grid [dataSource]="filteredData" [showBorders]="true" [hoverStateEnabled]="true" [showColumnLines]="true" [showRowLines]="true">
+    <dxi-column dataField="number" i18n-caption="@@adj.column.number" caption="Номер" cellTemplate="numCell" />
+    <dxi-column i18n-caption="@@adj.column.warehouse" caption="Склад" cellTemplate="whCell" />
+    <dxi-column dataField="reason" i18n-caption="@@adj.column.reason" caption="Причина" [width]="140" cellTemplate="reasonCell" />
+    <dxi-column dataField="lineCount" i18n-caption="@@adj.column.lines" caption="Позиций" [width]="80" />
+    <dxi-column dataField="status" i18n-caption="@@adj.column.status" caption="Статус" [width]="120" />
+    <dxi-column i18n-caption="@@adj.column.date" caption="Дата" [width]="160" cellTemplate="dateCell" />
+    <dxi-column caption="" [width]="60" cellTemplate="actCell" />
+
+    <div *dxTemplate="let c of 'numCell'">
+      <a [routerLink]="[c.data.id]">{{ c.value }}</a>
+    </div>
+    <div *dxTemplate="let c of 'whCell'">{{ c.data.warehouseName || '—' }}</div>
+    <div *dxTemplate="let c of 'reasonCell'">{{ reasonLabel(c.value) }}</div>
+    <div *dxTemplate="let c of 'dateCell'">{{ c.value | date: 'short' }}</div>
+    <div *dxTemplate="let c of 'actCell'">
+      <a [routerLink]="[c.data.id]"><dx-button icon="info" hint="View" stylingMode="text" /></a>
+    </div>
+  </dx-data-grid>
+</div>

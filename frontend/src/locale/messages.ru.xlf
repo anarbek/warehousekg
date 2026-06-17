@@ -178,6 +178,10 @@
         <source>Статус</source>
         <target>Статус</target>
       </trans-unit>
+      <trans-unit id="warehouse.detail.items" datatype="html">
+        <source>Товары на складе</source>
+        <target>Товары на складе</target>
+      </trans-unit>
       <trans-unit id="warehouse.form.create.title" datatype="html">
         <source>Новый склад</source>
         <target>Новый склад</target>
@@ -893,6 +897,97 @@
       <trans-unit id="rpt.movements.completed" datatype="html"><source>Завершено</source><target>Завершено</target></trans-unit>
       <trans-unit id="rpt.movements.cancelled" datatype="html"><source>Отменено</source><target>Отменено</target></trans-unit>
       <trans-unit id="rpt.movements.total" datatype="html"><source>Всего</source><target>Всего</target></trans-unit>
+      <trans-unit id="rpt.dash.chartTitle" datatype="html"><source>Операции по статусам</source><target>Операции по статусам</target></trans-unit>
+      <trans-unit id="rpt.stockLevels.title" datatype="html"><source>Уровни запасов</source><target>Уровни запасов</target></trans-unit>
+      <trans-unit id="rpt.stockLevels.filterCategory" datatype="html"><source>Категория</source><target>Категория</target></trans-unit>
+      <trans-unit id="rpt.stockLevels.lowStockOnly" datatype="html"><source>Только ниже мин. запаса</source><target>Только ниже мин. запаса</target></trans-unit>
+      <trans-unit id="rpt.stockLevels.category" datatype="html"><source>Категория</source><target>Категория</target></trans-unit>
+      <trans-unit id="rpt.movements.dateFrom" datatype="html"><source>Дата с</source><target>Дата с</target></trans-unit>
+      <trans-unit id="rpt.movements.dateTo" datatype="html"><source>Дата по</source><target>Дата по</target></trans-unit>
+
+      <!-- Stock Adjustments -->
+      <trans-unit id="adj.list.title" datatype="html"><source>Корректировки запасов</source><target>Корректировки запасов</target></trans-unit>
+      <trans-unit id="adj.list.add" datatype="html"><source>Новая корректировка</source><target>Новая корректировка</target></trans-unit>
+      <trans-unit id="adj.filter.status" datatype="html"><source>Все статусы</source><target>Все статусы</target></trans-unit>
+      <trans-unit id="adj.filter.reason" datatype="html"><source>Все причины</source><target>Все причины</target></trans-unit>
+      <trans-unit id="adj.column.number" datatype="html"><source>Номер</source><target>Номер</target></trans-unit>
+      <trans-unit id="adj.column.warehouse" datatype="html"><source>Склад</source><target>Склад</target></trans-unit>
+      <trans-unit id="adj.column.reason" datatype="html"><source>Причина</source><target>Причина</target></trans-unit>
+      <trans-unit id="adj.column.lines" datatype="html"><source>Позиций</source><target>Позиций</target></trans-unit>
+      <trans-unit id="adj.column.status" datatype="html"><source>Статус</source><target>Статус</target></trans-unit>
+      <trans-unit id="adj.column.date" datatype="html"><source>Дата</source><target>Дата</target></trans-unit>
+      <trans-unit id="adj.reason.correction" datatype="html"><source>Корректировка</source><target>Корректировка</target></trans-unit>
+      <trans-unit id="adj.reason.damage" datatype="html"><source>Порча</source><target>Порча</target></trans-unit>
+      <trans-unit id="adj.reason.loss" datatype="html"><source>Потеря</source><target>Потеря</target></trans-unit>
+      <trans-unit id="adj.reason.theft" datatype="html"><source>Кража</source><target>Кража</target></trans-unit>
+      <trans-unit id="adj.reason.found" datatype="html"><source>Найдено</source><target>Найдено</target></trans-unit>
+      <trans-unit id="adj.reason.expired" datatype="html"><source>Истёк срок</source><target>Истёк срок</target></trans-unit>
+      <trans-unit id="adj.reason.other" datatype="html"><source>Прочее</source><target>Прочее</target></trans-unit>
+      <trans-unit id="adj.detail.title" datatype="html"><source>Корректировка</source><target>Корректировка</target></trans-unit>
+      <trans-unit id="adj.detail.number" datatype="html"><source>Номер</source><target>Номер</target></trans-unit>
+      <trans-unit id="adj.detail.warehouse" datatype="html"><source>Склад</source><target>Склад</target></trans-unit>
+      <trans-unit id="adj.detail.reason" datatype="html"><source>Причина</source><target>Причина</target></trans-unit>
+      <trans-unit id="adj.detail.status" datatype="html"><source>Статус</source><target>Статус</target></trans-unit>
+      <trans-unit id="adj.detail.adjustedAt" datatype="html"><source>Дата корректировки</source><target>Дата корректировки</target></trans-unit>
+      <trans-unit id="adj.detail.notes" datatype="html"><source>Примечание</source><target>Примечание</target></trans-unit>
+      <trans-unit id="adj.detail.lines" datatype="html"><source>Позиции</source><target>Позиции</target></trans-unit>
+      <trans-unit id="adj.detail.item" datatype="html"><source>Товар</source><target>Товар</target></trans-unit>
+      <trans-unit id="adj.detail.qtyChange" datatype="html"><source>Изменение</source><target>Изменение</target></trans-unit>
+      <trans-unit id="adj.detail.lineNotes" datatype="html"><source>Примечание</source><target>Примечание</target></trans-unit>
+      <trans-unit id="adj.form.title" datatype="html"><source>Новая корректировка</source><target>Новая корректировка</target></trans-unit>
+      <trans-unit id="adj.form.header" datatype="html"><source>Основное</source><target>Основное</target></trans-unit>
+      <trans-unit id="adj.form.number" datatype="html"><source>Номер</source><target>Номер</target></trans-unit>
+      <trans-unit id="adj.form.warehouse" datatype="html"><source>Склад</source><target>Склад</target></trans-unit>
+      <trans-unit id="adj.form.reason" datatype="html"><source>Причина</source><target>Причина</target></trans-unit>
+      <trans-unit id="adj.form.notes" datatype="html"><source>Примечание</source><target>Примечание</target></trans-unit>
+      <trans-unit id="adj.form.lines" datatype="html"><source>Позиции</source><target>Позиции</target></trans-unit>
+      <trans-unit id="adj.form.addLine" datatype="html"><source>Добавить позицию</source><target>Добавить позицию</target></trans-unit>
+      <trans-unit id="adj.form.selectItem" datatype="html"><source>Выберите товар</source><target>Выберите товар</target></trans-unit>
+      <trans-unit id="adj.form.qtyChange" datatype="html"><source>Изменение (±)</source><target>Изменение (±)</target></trans-unit>
+      <trans-unit id="adj.form.lineNotes" datatype="html"><source>Примечание</source><target>Примечание</target></trans-unit>
+
+      <!-- Audits -->
+      <trans-unit id="audit.list.title" datatype="html"><source>История аудитов</source><target>История аудитов</target></trans-unit>
+      <trans-unit id="audit.filter.status" datatype="html"><source>Все статусы</source><target>Все статусы</target></trans-unit>
+      <trans-unit id="audit.filter.warehouse" datatype="html"><source>Все склады</source><target>Все склады</target></trans-unit>
+      <trans-unit id="audit.filter.dateFrom" datatype="html"><source>Дата с</source><target>Дата с</target></trans-unit>
+      <trans-unit id="audit.filter.dateTo" datatype="html"><source>Дата по</source><target>Дата по</target></trans-unit>
+      <trans-unit id="audit.column.number" datatype="html"><source>Номер</source><target>Номер</target></trans-unit>
+      <trans-unit id="audit.column.warehouse" datatype="html"><source>Склад</source><target>Склад</target></trans-unit>
+      <trans-unit id="audit.column.lines" datatype="html"><source>Позиций</source><target>Позиций</target></trans-unit>
+      <trans-unit id="audit.column.variance" datatype="html"><source>Расхождение</source><target>Расхождение</target></trans-unit>
+      <trans-unit id="audit.column.status" datatype="html"><source>Статус</source><target>Статус</target></trans-unit>
+      <trans-unit id="audit.column.date" datatype="html"><source>Дата</source><target>Дата</target></trans-unit>
+      <trans-unit id="audit.detail.title" datatype="html"><source>Аудит</source><target>Аудит</target></trans-unit>
+      <trans-unit id="audit.detail.number" datatype="html"><source>Номер</source><target>Номер</target></trans-unit>
+      <trans-unit id="audit.detail.warehouse" datatype="html"><source>Склад</source><target>Склад</target></trans-unit>
+      <trans-unit id="audit.detail.status" datatype="html"><source>Статус</source><target>Статус</target></trans-unit>
+      <trans-unit id="audit.detail.reconciledAt" datatype="html"><source>Дата сверки</source><target>Дата сверки</target></trans-unit>
+      <trans-unit id="audit.detail.notes" datatype="html"><source>Примечание</source><target>Примечание</target></trans-unit>
+      <trans-unit id="audit.detail.comparison" datatype="html"><source>Сравнение: система vs факт</source><target>Сравнение: система vs факт</target></trans-unit>
+      <trans-unit id="audit.detail.item" datatype="html"><source>Товар</source><target>Товар</target></trans-unit>
+      <trans-unit id="audit.detail.systemQty" datatype="html"><source>Система</source><target>Система</target></trans-unit>
+      <trans-unit id="audit.detail.countedQty" datatype="html"><source>Факт</source><target>Факт</target></trans-unit>
+      <trans-unit id="audit.detail.variance" datatype="html"><source>Отклонение</source><target>Отклонение</target></trans-unit>
+      <trans-unit id="audit.detail.summary" datatype="html"><source>Итого</source><target>Итого</target></trans-unit>
+      <trans-unit id="audit.detail.totalVariance" datatype="html"><source>Общее расхождение</source><target>Общее расхождение</target></trans-unit>
+      <trans-unit id="audit.detail.lineCount" datatype="html"><source>Проверено позиций</source><target>Проверено позиций</target></trans-unit>
+
+      <!-- Audit Form -->
+      <trans-unit id="audit.list.add" datatype="html"><source>Новый аудит</source><target>Новый аудит</target></trans-unit>
+      <trans-unit id="audit.form.title" datatype="html"><source>Новый аудит</source><target>Новый аудит</target></trans-unit>
+      <trans-unit id="audit.form.header" datatype="html"><source>Основное</source><target>Основное</target></trans-unit>
+      <trans-unit id="audit.form.number" datatype="html"><source>Номер</source><target>Номер</target></trans-unit>
+      <trans-unit id="audit.form.warehouse" datatype="html"><source>Склад</source><target>Склад</target></trans-unit>
+      <trans-unit id="audit.form.notes" datatype="html"><source>Примечание</source><target>Примечание</target></trans-unit>
+      <trans-unit id="audit.form.lines" datatype="html"><source>Позиции для подсчёта</source><target>Позиции для подсчёта</target></trans-unit>
+      <trans-unit id="audit.form.addLine" datatype="html"><source>Добавить позицию</source><target>Добавить позицию</target></trans-unit>
+      <trans-unit id="audit.form.selectItem" datatype="html"><source>Выберите товар</source><target>Выберите товар</target></trans-unit>
+      <trans-unit id="audit.form.countedQty" datatype="html"><source>Факт. кол-во</source><target>Факт. кол-во</target></trans-unit>
+
+      <!-- Adjustments Nav -->
+      <trans-unit id="nav.adjustments" datatype="html"><source>Корректировки</source><target>Корректировки</target></trans-unit>
+      <trans-unit id="nav.audits" datatype="html"><source>Аудиты</source><target>Аудиты</target></trans-unit>
     </body>
   </file>
 </xliff>

@@ -17,5 +17,19 @@
         <dt i18n="@@warehouse.column.status">Статус</dt><dd>{{ wh.isActive ? 'Активен' : 'Неактивен' }}</dd>
       </dl>
     </div>
+
+    <div class="dx-card">
+      <h3 i18n="@@warehouse.detail.items">Товары на складе</h3>
+      <dx-data-grid [dataSource]="items()" [showBorders]="true" [hoverStateEnabled]="true" [showColumnLines]="true" [showRowLines]="true">
+        <dxi-column dataField="sku" i18n-caption="@@item.column.sku" caption="Артикул" [width]="120" />
+        <dxi-column dataField="name" i18n-caption="@@item.column.name" caption="Название" />
+        <dxi-column dataField="categoryName" i18n-caption="@@item.column.category" caption="Категория" [width]="140" />
+        <dxi-column dataField="barcode" i18n-caption="@@item.column.barcode" caption="Штрихкод" [width]="140" />
+        <dxi-column dataField="quantityOnHand" i18n-caption="@@item.column.qty" caption="Кол-во" [width]="80" format="#,##0.###" />
+        <dxi-column dataField="reorderLevel" i18n-caption="@@item.column.reorder" caption="Мин. запас" [width]="100" format="#,##0.###" />
+        <dxi-column dataField="isActive" i18n-caption="@@item.column.status" caption="Статус" [width]="100" cellTemplate="activeCell" />
+        <div *dxTemplate="let c of 'activeCell'">{{ c.value ? 'Активен' : 'Неактивен' }}</div>
+      </dx-data-grid>
+    </div>
   </div>
 }

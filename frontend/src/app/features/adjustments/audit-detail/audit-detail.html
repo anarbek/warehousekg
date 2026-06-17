@@ -1,22 +1,70 @@
-@if(loading()){<dx-progress-bar [visible]="true"/>}
-@if(error()&&!aud()){<div class="detail-page detail-page--error"><p>{{error()}}</p><dx-button text="Назад" icon="arrowleft" stylingMode="outlined" (onClick)="goBack()"/></div>}
-@if(aud();as a){
-<div class="detail-page">
-  <div class="detail-page__toolbar"><dx-button icon="arrowleft" stylingMode="text" (onClick)="goBack()"/><h1 class="detail-page__title">Аудит: {{a.number}}</h1></div>
-  <div class="dx-card"><dl class="detail-list">
-    <dt>Номер</dt><dd>{{a.number}}</dd>
-    <dt>Склад</dt><dd>{{a.warehouseName||a.warehouseId}}</dd>
-    <dt>Статус</dt><dd><span class="badge">{{a.status}}</span></dd>
-    <dt>Расхождение</dt><dd>{{a.totalVariance|number:'1.3-3'}}</dd>
-    @if(a.notes){<dt>Примечание</dt><dd>{{a.notes}}</dd>}
-  </dl></div>
-  <div class="dx-card"><h3>Сравнение</h3>
-    <dx-data-grid [dataSource]="getLines()" [showBorders]="true" [hoverStateEnabled]="true">
-      <dxi-column dataField="inventoryItemName" caption="Товар"/>
-      <dxi-column dataField="systemQuantity" caption="Система" [width]="120"/>
-      <dxi-column dataField="countedQuantity" caption="Факт" [width]="120"/>
-      <dxi-column dataField="variance" caption="Отклонение" [width]="120"/>
-      <dxi-column dataField="notes" caption="Примечание"/>
-    </dx-data-grid>
+@if (loading()) {
+  <dx-progress-bar [visible]="true" />
+}
+@if (error() && !aud()) {
+  <div class="detail-page detail-page--error">
+    <p>{{ error() }}</p>
+    <dx-button i18n="@@common.back" text="Назад" icon="arrowleft" stylingMode="outlined" (onClick)="goBack()" />
   </div>
-</div>}
+}
+@if (aud(); as a) {
+  <div class="detail-page">
+    <div class="detail-page__toolbar">
+      <dx-button icon="arrowleft" stylingMode="text" (onClick)="goBack()" />
+      <h1 class="detail-page__title" i18n="@@audit.detail.title">Аудит: {{ a.number }}</h1>
+      <span class="detail-page__spacer"></span>
+      @if (isDraft()) {
+        <dx-button i18n="@@stockOp.complete" text="Завершить" icon="check" type="default" stylingMode="contained" (onClick)="complete()" [disabled]="saving()" />
+        <dx-button i18n="@@stockOp.cancel" text="Отменить" icon="trash" type="danger" stylingMode="outlined" (onClick)="cancelOp()" [disabled]="saving()" />
+      }
+    </div>
+
+    @if (saving()) {
+      <dx-progress-bar [visible]="true" />
+    }
+
+    <div class="dx-card">
+      <dl class="detail-list">
+        <dt i18n="@@audit.detail.number">Номер</dt><dd>{{ a.number }}</dd>
+        <dt i18n="@@audit.detail.warehouse">Склад</dt><dd>{{ a.warehouseName || a.warehouseId }}</dd>
+        <dt i18n="@@audit.detail.status">Статус</dt><dd><span class="badge">{{ a.status }}</span></dd>
+        @if (a.reconciledAtUtc) {
+          <dt i18n="@@audit.detail.reconciledAt">Дата сверки</dt><dd>{{ a.reconciledAtUtc | date: 'medium' }}</dd>
+        }
+        @if (a.notes) {
+          <dt i18n="@@audit.detail.notes">Примечание</dt><dd>{{ a.notes }}</dd>
+        }
+      </dl>
+    </div>
+
+    <div class="dx-card">
+      <h3 i18n="@@audit.detail.comparison">Сравнение: система vs факт</h3>
+      <dx-data-grid [dataSource]="getLines()" [showBorders]="true" [hoverStateEnabled]="true">
+        <dxi-column dataField="inventoryItemName" i18n-caption="@@audit.detail.item" caption="Товар" />
+        <dxi-column dataField="systemQuantity" i18n-caption="@@audit.detail.systemQty" caption="Система" [width]="100" />
+        <dxi-column dataField="countedQuantity" i18n-caption="@@audit.detail.countedQty" caption="Факт" [width]="100" />
+        <dxi-column dataField="variance" i18n-caption="@@audit.detail.variance" caption="Отклонение" [width]="120" cellTemplate="varCell" />
+
+        <div *dxTemplate="let c of 'varCell'">
+          <span [class.qty-positive]="c.value > 0" [class.qty-negative]="c.value < 0" [class.qty-zero]="c.value === 0">
+            {{ c.value > 0 ? '+' : '' }}{{ c.value }}
+          </span>
+        </div>
+      </dx-data-grid>
+    </div>
+
+    <div class="dx-card">
+      <h3 i18n="@@audit.detail.summary">Итого</h3>
+      <dl class="detail-list summary-list">
+        <dt i18n="@@audit.detail.totalVariance">Общее расхождение</dt>
+        <dd>
+          <span [class.qty-positive]="totalVariance > 0" [class.qty-negative]="totalVariance < 0">
+            {{ totalVariance > 0 ? '+' : '' }}{{ totalVariance }}
+          </span>
+        </dd>
+        <dt i18n="@@audit.detail.lineCount">Проверено позиций</dt>
+        <dd>{{ getLines().length }}</dd>
+      </dl>
+    </div>
+  </div>
+}

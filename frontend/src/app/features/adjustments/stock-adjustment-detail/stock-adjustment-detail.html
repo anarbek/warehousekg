@@ -1,0 +1,59 @@
+@if (loading()) {
+  <dx-progress-bar [visible]="true" />
+}
+@if (err() && !doc()) {
+  <div class="detail-page detail-page--error">
+    <p>{{ err() }}</p>
+    <dx-button i18n="@@common.back" text="Назад" icon="arrowleft" stylingMode="outlined" (onClick)="goBack()" />
+  </div>
+}
+@if (doc(); as d) {
+  <div class="detail-page">
+    <div class="detail-page__toolbar">
+      <dx-button icon="arrowleft" stylingMode="text" (onClick)="goBack()" />
+      <h1 class="detail-page__title" i18n="@@adj.detail.title">Корректировка: {{ d.number }}</h1>
+      <span class="detail-page__spacer"></span>
+      @if (isDraft()) {
+        <dx-button i18n="@@stockOp.complete" text="Завершить" icon="check" type="default" stylingMode="contained" (onClick)="complete()" [disabled]="saving()" />
+        <dx-button i18n="@@stockOp.cancel" text="Отменить" icon="trash" type="danger" stylingMode="outlined" (onClick)="cancelOp()" [disabled]="saving()" />
+      }
+    </div>
+
+    @if (saving()) {
+      <dx-progress-bar [visible]="true" />
+    }
+    @if (err()) {
+      <p class="detail-page__error">{{ err() }}</p>
+    }
+
+    <div class="dx-card">
+      <dl class="detail-list">
+        <dt i18n="@@adj.detail.number">Номер</dt><dd>{{ d.number }}</dd>
+        <dt i18n="@@adj.detail.warehouse">Склад</dt><dd>{{ d.warehouseName || '—' }}</dd>
+        <dt i18n="@@adj.detail.reason">Причина</dt><dd>{{ reasonLabel(d.reason) }}</dd>
+        <dt i18n="@@adj.detail.status">Статус</dt><dd><span class="badge">{{ d.status }}</span></dd>
+        @if (d.adjustedAtUtc) {
+          <dt i18n="@@adj.detail.adjustedAt">Дата корректировки</dt><dd>{{ d.adjustedAtUtc | date: 'medium' }}</dd>
+        }
+        @if (d.notes) {
+          <dt i18n="@@adj.detail.notes">Примечание</dt><dd>{{ d.notes }}</dd>
+        }
+      </dl>
+    </div>
+
+    <div class="dx-card">
+      <h3 i18n="@@adj.detail.lines">Позиции</h3>
+      <dx-data-grid [dataSource]="editableLines()" [showBorders]="true" [hoverStateEnabled]="true">
+        <dxi-column dataField="inventoryItemName" i18n-caption="@@adj.detail.item" caption="Товар" />
+        <dxi-column dataField="quantityChange" i18n-caption="@@adj.detail.qtyChange" caption="Изменение" [width]="120" cellTemplate="qtyCell" />
+        <dxi-column dataField="notes" i18n-caption="@@adj.detail.lineNotes" caption="Примечание" />
+
+        <div *dxTemplate="let c of 'qtyCell'">
+          <span [class.qty-positive]="c.value > 0" [class.qty-negative]="c.value < 0">
+            {{ c.value > 0 ? '+' : '' }}{{ c.value }}
+          </span>
+        </div>
+      </dx-data-grid>
+    </div>
+  </div>
+}

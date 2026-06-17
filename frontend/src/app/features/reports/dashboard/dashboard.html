@@ -1,50 +1,125 @@
 <div class="dash">
-  @if(loading()){<dx-progress-bar [visible]="true"/>}
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
   <h1 i18n="@@rpt.dash.title">Панель отчётов</h1>
-  <div class="dash__cards">
 
+  <div class="dash__cards">
     <!-- Inventory -->
-    @if(inv(); as i){
-    <div class="dash-card">
-      <div class="dash-card__header"><span class="dash-card__icon">📦</span><h2 i18n="@@rpt.dash.inventory">Инвентарь</h2></div>
-      <div class="dash-card__body">
-        <div class="metric"><span class="metric__val">{{i.totalItems}}</span><span class="metric__lbl" i18n="@@rpt.dash.totalItems">Всего товаров</span></div>
-        <div class="metric"><span class="metric__val">{{i.totalQuantityOnHand|number:'1.0-0'}}</span><span class="metric__lbl" i18n="@@rpt.dash.qtyOnHand">На складе</span></div>
-        <div class="metric metric--warn"><span class="metric__val">{{i.itemsBelowReorder}}</span><span class="metric__lbl" i18n="@@rpt.dash.belowReorder">Ниже мин. запаса</span></div>
-        <div class="metric metric--danger"><span class="metric__val">{{i.itemsOutOfStock}}</span><span class="metric__lbl" i18n="@@rpt.dash.outOfStock">Нет в наличии</span></div>
-      </div>
-    </div>}
+    <mat-card appearance="outlined">
+      <mat-card-header>
+        <mat-card-title i18n="@@rpt.dash.inventory">📦 Инвентарь</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (inv(); as i) {
+          <div class="metric">
+            <span class="metric__val">{{ i.totalItems }}</span>
+            <span class="metric__lbl" i18n="@@rpt.dash.totalItems">Всего товаров</span>
+          </div>
+          <div class="metric">
+            <span class="metric__val">{{ i.totalQuantityOnHand | number:'1.0-0' }}</span>
+            <span class="metric__lbl" i18n="@@rpt.dash.qtyOnHand">На складе</span>
+          </div>
+          <div class="metric metric--warn">
+            <span class="metric__val">{{ i.itemsBelowReorder }}</span>
+            <span class="metric__lbl" i18n="@@rpt.dash.belowReorder">Ниже мин. запаса</span>
+          </div>
+          <div class="metric metric--danger">
+            <span class="metric__val">{{ i.itemsOutOfStock }}</span>
+            <span class="metric__lbl" i18n="@@rpt.dash.outOfStock">Нет в наличии</span>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
 
     <!-- Sales -->
-    @if(sales(); as s){
-    <div class="dash-card">
-      <div class="dash-card__header"><span class="dash-card__icon">💰</span><h2 i18n="@@rpt.dash.sales">Продажи</h2></div>
-      <div class="dash-card__body">
-        <div class="metric"><span class="metric__val">{{s.totalOrders}}</span><span class="metric__lbl" i18n="@@rpt.dash.salesOrders">Заказов</span></div>
-        <div class="metric"><span class="metric__val">{{s.totalAmount|number:'1.2-2'}}</span><span class="metric__lbl">KGS</span></div>
-        @for(sb of s.byStatus; track sb.status){<div class="metric metric--sm"><span class="metric__val">{{sb.orderCount}}</span><span class="metric__lbl">{{sb.status}}</span></div>}
-      </div>
-    </div>}
+    <mat-card appearance="outlined">
+      <mat-card-header>
+        <mat-card-title i18n="@@rpt.dash.sales">💰 Продажи</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (sales(); as s) {
+          <div class="metric">
+            <span class="metric__val">{{ s.totalOrders }}</span>
+            <span class="metric__lbl" i18n="@@rpt.dash.salesOrders">Заказов</span>
+          </div>
+          <div class="metric">
+            <span class="metric__val">{{ s.totalAmount | number:'1.2-2' }}</span>
+            <span class="metric__lbl">KGS</span>
+          </div>
+          @for (sb of s.byStatus; track sb.status) {
+            <div class="metric metric--sm">
+              <span class="metric__val">{{ sb.orderCount }}</span>
+              <span class="metric__lbl">{{ sb.status }}</span>
+            </div>
+          }
+        }
+      </mat-card-content>
+    </mat-card>
 
     <!-- Purchase -->
-    @if(purch(); as p){
-    <div class="dash-card">
-      <div class="dash-card__header"><span class="dash-card__icon">🛒</span><h2 i18n="@@rpt.dash.purchases">Закупки</h2></div>
-      <div class="dash-card__body">
-        <div class="metric"><span class="metric__val">{{p.totalOrders}}</span><span class="metric__lbl" i18n="@@rpt.dash.poOrders">Заказов</span></div>
-        <div class="metric"><span class="metric__val">{{p.totalAmount|number:'1.2-2'}}</span><span class="metric__lbl">KGS</span></div>
-        @for(pb of p.byStatus; track pb.status){<div class="metric metric--sm"><span class="metric__val">{{pb.orderCount}}</span><span class="metric__lbl">{{pb.status}}</span></div>}
-      </div>
-    </div>}
+    <mat-card appearance="outlined">
+      <mat-card-header>
+        <mat-card-title i18n="@@rpt.dash.purchases">🛒 Закупки</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (purch(); as p) {
+          <div class="metric">
+            <span class="metric__val">{{ p.totalOrders }}</span>
+            <span class="metric__lbl" i18n="@@rpt.dash.purchaseOrders">Заказов</span>
+          </div>
+          <div class="metric">
+            <span class="metric__val">{{ p.totalAmount | number:'1.2-2' }}</span>
+            <span class="metric__lbl">KGS</span>
+          </div>
+          @for (pb of p.byStatus; track pb.status) {
+            <div class="metric metric--sm">
+              <span class="metric__val">{{ pb.orderCount }}</span>
+              <span class="metric__lbl">{{ pb.status }}</span>
+            </div>
+          }
+        }
+      </mat-card-content>
+    </mat-card>
 
     <!-- Movements -->
-    @if(mov(); as m){
-    <div class="dash-card">
-      <div class="dash-card__header"><span class="dash-card__icon">📋</span><h2 i18n="@@rpt.dash.movements">Движения</h2></div>
-      <div class="dash-card__body">
-        @for(mb of m.operations; track mb.operation){<div class="metric"><span class="metric__val">{{mb.total}}</span><span class="metric__lbl">{{mb.operation}}</span></div>}
-      </div>
-    </div>}
-
+    <mat-card appearance="outlined">
+      <mat-card-header>
+        <mat-card-title i18n="@@rpt.dash.movements">📋 Движения</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (mov(); as m) {
+          @for (mb of m.operations; track mb.operation) {
+            <div class="metric">
+              <span class="metric__val">{{ mb.total }}</span>
+              <span class="metric__lbl">{{ mb.operation }}</span>
+            </div>
+          }
+        }
+      </mat-card-content>
+    </mat-card>
   </div>
+
+  <!-- Chart -->
+  @if (mov(); as m) {
+    <mat-card appearance="outlined" class="dash__chart">
+      <mat-card-header>
+        <mat-card-title i18n="@@rpt.dash.chartTitle">Операции по статусам</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <dx-chart [dataSource]="m.operations" palette="Harmony Light">
+          <dxi-series valueField="completed" name="Завершено" type="bar" />
+          <dxi-series valueField="draft" name="Черновик" type="bar" />
+          <dxi-series valueField="cancelled" name="Отменено" type="bar" />
+          <dxo-argument-axis>
+            <dxo-label [rotationAngle]="-30" />
+          </dxo-argument-axis>
+          <dxo-legend horizontalAlignment="center" verticalAlignment="bottom" />
+          <dxi-value-axis>
+            <dxo-label format="fixedPoint" />
+          </dxi-value-axis>
+        </dx-chart>
+      </mat-card-content>
+    </mat-card>
+  }
 </div>

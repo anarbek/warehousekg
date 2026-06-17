@@ -1,11 +1,79 @@
-<div class="list-page"><div class="list-page__toolbar"><h1>Аудиты</h1></div>
-@if(loading()){<dx-progress-bar [visible]="true"/>} @if(error()){<p class="list-page__error">{{error()}}</p>}
-<dx-data-grid [dataSource]="items()" [showBorders]="true" [hoverStateEnabled]="true" [showColumnLines]="true" [showRowLines]="true">
-    <dxi-column dataField="number" caption="Номер" [sortOrder]="'asc'"/><dxi-column dataField="warehouseId" caption="Склад"/>
-    <dxi-column dataField="status" caption="Статус" [width]="120"/>
-    <dxi-column dataField="reconciledAtUtc" caption="Дата"/>
-    <dxi-column dataField="lineCount" caption="Позиций" [width]="80"/>
-    <dxi-column dataField="totalVariance" caption="Расхождение" [width]="120"/>
-    <dxi-column caption="" [width]="100" cellTemplate="act"/>
-    <div *dxTemplate="let c of 'act'"><a [routerLink]="[c.data.id]"><dx-button icon="info" hint="View" stylingMode="text"/></a></div>
-</dx-data-grid></div>
+<div class="list-page">
+  <div class="list-page__toolbar">
+    <h1 i18n="@@audit.list.title">История аудитов</h1>
+    <dx-button i18n="@@audit.list.add" text="Новый аудит" icon="add" type="default" stylingMode="contained" [routerLink]="['new']" />
+  </div>
+
+  @if (loading()) {
+    <dx-progress-bar [visible]="true" />
+  }
+  @if (err()) {
+    <p class="list-page__error">{{ err() }}</p>
+  }
+
+  <div class="list-page__filters">
+    <dx-select-box
+      [items]="statuses"
+      [value]="selStatus()"
+      i18n-placeholder="@@audit.filter.status"
+      placeholder="Все статусы"
+      stylingMode="outlined"
+      [width]="180"
+      (onValueChanged)="selStatus.set($event.value)"
+    />
+    <dx-select-box
+      [items]="warehouses()"
+      [value]="selWarehouseId()"
+      displayExpr="name"
+      valueExpr="id"
+      i18n-placeholder="@@audit.filter.warehouse"
+      placeholder="Все склады"
+      stylingMode="outlined"
+      [width]="200"
+      [showClearButton]="true"
+      (onValueChanged)="selWarehouseId.set($event.value || '')"
+    />
+    <dx-date-box
+      [value]="dateFrom()"
+      i18n-placeholder="@@audit.filter.dateFrom"
+      placeholder="Дата с"
+      stylingMode="outlined"
+      [width]="160"
+      type="date"
+      (onValueChanged)="dateFrom.set($event.value)"
+    />
+    <dx-date-box
+      [value]="dateTo()"
+      i18n-placeholder="@@audit.filter.dateTo"
+      placeholder="Дата по"
+      stylingMode="outlined"
+      [width]="160"
+      type="date"
+      (onValueChanged)="dateTo.set($event.value)"
+    />
+  </div>
+
+  <dx-data-grid [dataSource]="filteredData()" [showBorders]="true" [hoverStateEnabled]="true" [showColumnLines]="true" [showRowLines]="true">
+    <dxi-column dataField="number" i18n-caption="@@audit.column.number" caption="Номер" cellTemplate="numCell" />
+    <dxi-column i18n-caption="@@audit.column.warehouse" caption="Склад" [width]="160" cellTemplate="whCell" />
+    <dxi-column dataField="lineCount" i18n-caption="@@audit.column.lines" caption="Позиций" [width]="80" />
+    <dxi-column dataField="totalVariance" i18n-caption="@@audit.column.variance" caption="Расхождение" [width]="120" cellTemplate="varCell" />
+    <dxi-column dataField="status" i18n-caption="@@audit.column.status" caption="Статус" [width]="120" />
+    <dxi-column dataField="reconciledAtUtc" i18n-caption="@@audit.column.date" caption="Дата" [width]="160" cellTemplate="dateCell" />
+    <dxi-column caption="" [width]="60" cellTemplate="actCell" />
+
+    <div *dxTemplate="let c of 'numCell'">
+      <a [routerLink]="[c.data.id]">{{ c.value }}</a>
+    </div>
+    <div *dxTemplate="let c of 'whCell'">{{ warehouseName(c.data.warehouseId) }}</div>
+    <div *dxTemplate="let c of 'varCell'">
+      <span [class.qty-positive]="c.value > 0" [class.qty-negative]="c.value < 0">
+        {{ c.value > 0 ? '+' : '' }}{{ c.value }}
+      </span>
+    </div>
+    <div *dxTemplate="let c of 'dateCell'">{{ c.value | date: 'short' }}</div>
+    <div *dxTemplate="let c of 'actCell'">
+      <a [routerLink]="[c.data.id]"><dx-button icon="info" hint="View" stylingMode="text" /></a>
+    </div>
+  </dx-data-grid>
+</div>

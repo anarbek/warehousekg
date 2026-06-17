@@ -178,6 +178,10 @@
         <source>Статус</source>
         <target>Статус</target>
       </trans-unit>
+      <trans-unit id="warehouse.detail.items" datatype="html">
+        <source>Товары на складе</source>
+        <target>Кампадагы товарлар</target>
+      </trans-unit>
       <trans-unit id="warehouse.form.create.title" datatype="html">
         <source>Новый склад</source>
         <target>Жаңы кам</target>
@@ -810,6 +814,121 @@
       <trans-unit id="po.form.line.qty" datatype="html"><source>Кол-во</source><target>Саны</target></trans-unit>
       <trans-unit id="po.form.line.price" datatype="html"><source>Цена</source><target>Баасы</target></trans-unit>
       <trans-unit id="po.form.line.add" datatype="html"><source>Добавить позицию</source><target>Позиция кошуу</target></trans-unit>
+
+      <!-- Reports -->
+      <trans-unit id="rpt.dash.title" datatype="html"><source>Панель отчётов</source><target>Отчёттор панели</target></trans-unit>
+      <trans-unit id="rpt.dash.inventory" datatype="html"><source>Инвентарь</source><target>Инвентарь</target></trans-unit>
+      <trans-unit id="rpt.dash.totalItems" datatype="html"><source>Всего товаров</source><target>Бардык товарлар</target></trans-unit>
+      <trans-unit id="rpt.dash.qtyOnHand" datatype="html"><source>На складе</source><target>Кампада</target></trans-unit>
+      <trans-unit id="rpt.dash.belowReorder" datatype="html"><source>Ниже мин. запаса</source><target>Мин. запастан төмөн</target></trans-unit>
+      <trans-unit id="rpt.dash.outOfStock" datatype="html"><source>Нет в наличии</source><target>Жок</target></trans-unit>
+      <trans-unit id="rpt.dash.sales" datatype="html"><source>Продажи</source><target>Сатуулар</target></trans-unit>
+      <trans-unit id="rpt.dash.salesOrders" datatype="html"><source>Заказов</source><target>Заказдар</target></trans-unit>
+      <trans-unit id="rpt.dash.purchases" datatype="html"><source>Закупки</source><target>Сатып алуулар</target></trans-unit>
+      <trans-unit id="rpt.dash.purchaseOrders" datatype="html"><source>Заказов</source><target>Заказдар</target></trans-unit>
+      <trans-unit id="rpt.dash.movements" datatype="html"><source>Движения</source><target>Кыймылдар</target></trans-unit>
+      <trans-unit id="rpt.dash.chartTitle" datatype="html"><source>Операции по статусам</source><target>Статустар боюнча операциялар</target></trans-unit>
+      <trans-unit id="rpt.lowStock.sku" datatype="html"><source>Артикул</source><target>Артикул</target></trans-unit>
+      <trans-unit id="rpt.lowStock.name" datatype="html"><source>Название</source><target>Аты</target></trans-unit>
+      <trans-unit id="rpt.lowStock.qty" datatype="html"><source>Кол-во</source><target>Саны</target></trans-unit>
+      <trans-unit id="rpt.lowStock.reorder" datatype="html"><source>Мин. запас</source><target>Мин. запас</target></trans-unit>
+      <trans-unit id="rpt.lowStock.deficit" datatype="html"><source>Дефицит</source><target>Дефицит</target></trans-unit>
+      <trans-unit id="rpt.stockLevels.title" datatype="html"><source>Уровни запасов</source><target>Запас деңгээлдери</target></trans-unit>
+      <trans-unit id="rpt.stockLevels.filterCategory" datatype="html"><source>Категория</source><target>Категория</target></trans-unit>
+      <trans-unit id="rpt.stockLevels.lowStockOnly" datatype="html"><source>Только ниже мин. запаса</source><target>Мин. запастан төмөн болгондор</target></trans-unit>
+      <trans-unit id="rpt.stockLevels.category" datatype="html"><source>Категория</source><target>Категория</target></trans-unit>
+      <trans-unit id="rpt.movements.title" datatype="html"><source>История движений</source><target>Кыймылдар таржымалы</target></trans-unit>
+      <trans-unit id="rpt.movements.op" datatype="html"><source>Операция</source><target>Операция</target></trans-unit>
+      <trans-unit id="rpt.movements.draft" datatype="html"><source>Черновик</source><target>Долбоор</target></trans-unit>
+      <trans-unit id="rpt.movements.completed" datatype="html"><source>Завершено</source><target>Аяктады</target></trans-unit>
+      <trans-unit id="rpt.movements.cancelled" datatype="html"><source>Отменено</source><target>Жокко чыгарылды</target></trans-unit>
+      <trans-unit id="rpt.movements.total" datatype="html"><source>Всего</source><target>Бардыгы</target></trans-unit>
+      <trans-unit id="rpt.movements.dateFrom" datatype="html"><source>Дата с</source><target>Баштапкы дата</target></trans-unit>
+      <trans-unit id="rpt.movements.dateTo" datatype="html"><source>Дата по</source><target>Аяккы дата</target></trans-unit>
+
+      <!-- Stock Adjustments -->
+      <trans-unit id="adj.list.title" datatype="html"><source>Корректировки запасов</source><target>Запастарды коррекциялоо</target></trans-unit>
+      <trans-unit id="adj.list.add" datatype="html"><source>Новая корректировка</source><target>Жаңы коррекция</target></trans-unit>
+      <trans-unit id="adj.filter.status" datatype="html"><source>Все статусы</source><target>Бардык статустар</target></trans-unit>
+      <trans-unit id="adj.filter.reason" datatype="html"><source>Все причины</source><target>Бардык себептер</target></trans-unit>
+      <trans-unit id="adj.column.number" datatype="html"><source>Номер</source><target>Номери</target></trans-unit>
+      <trans-unit id="adj.column.warehouse" datatype="html"><source>Склад</source><target>Кампа</target></trans-unit>
+      <trans-unit id="adj.column.reason" datatype="html"><source>Причина</source><target>Себеп</target></trans-unit>
+      <trans-unit id="adj.column.lines" datatype="html"><source>Позиций</source><target>Позициялар</target></trans-unit>
+      <trans-unit id="adj.column.status" datatype="html"><source>Статус</source><target>Статус</target></trans-unit>
+      <trans-unit id="adj.column.date" datatype="html"><source>Дата</source><target>Дата</target></trans-unit>
+      <trans-unit id="adj.reason.correction" datatype="html"><source>Корректировка</source><target>Коррекция</target></trans-unit>
+      <trans-unit id="adj.reason.damage" datatype="html"><source>Порча</source><target>Бузулуу</target></trans-unit>
+      <trans-unit id="adj.reason.loss" datatype="html"><source>Потеря</source><target>Жоготуу</target></trans-unit>
+      <trans-unit id="adj.reason.theft" datatype="html"><source>Кража</source><target>Уурулук</target></trans-unit>
+      <trans-unit id="adj.reason.found" datatype="html"><source>Найдено</source><target>Табылды</target></trans-unit>
+      <trans-unit id="adj.reason.expired" datatype="html"><source>Истёк срок</source><target>Мөөнөтү өттү</target></trans-unit>
+      <trans-unit id="adj.reason.other" datatype="html"><source>Прочее</source><target>Башка</target></trans-unit>
+      <trans-unit id="adj.detail.title" datatype="html"><source>Корректировка</source><target>Коррекция</target></trans-unit>
+      <trans-unit id="adj.detail.number" datatype="html"><source>Номер</source><target>Номери</target></trans-unit>
+      <trans-unit id="adj.detail.warehouse" datatype="html"><source>Склад</source><target>Кампа</target></trans-unit>
+      <trans-unit id="adj.detail.reason" datatype="html"><source>Причина</source><target>Себеп</target></trans-unit>
+      <trans-unit id="adj.detail.status" datatype="html"><source>Статус</source><target>Статус</target></trans-unit>
+      <trans-unit id="adj.detail.adjustedAt" datatype="html"><source>Дата корректировки</source><target>Коррекция датасы</target></trans-unit>
+      <trans-unit id="adj.detail.notes" datatype="html"><source>Примечание</source><target>Эскертүү</target></trans-unit>
+      <trans-unit id="adj.detail.lines" datatype="html"><source>Позиции</source><target>Позициялар</target></trans-unit>
+      <trans-unit id="adj.detail.item" datatype="html"><source>Товар</source><target>Товар</target></trans-unit>
+      <trans-unit id="adj.detail.qtyChange" datatype="html"><source>Изменение</source><target>Өзгөрүү</target></trans-unit>
+      <trans-unit id="adj.detail.lineNotes" datatype="html"><source>Примечание</source><target>Эскертүү</target></trans-unit>
+      <trans-unit id="adj.form.title" datatype="html"><source>Новая корректировка</source><target>Жаңы коррекция</target></trans-unit>
+      <trans-unit id="adj.form.header" datatype="html"><source>Основное</source><target>Негизги</target></trans-unit>
+      <trans-unit id="adj.form.number" datatype="html"><source>Номер</source><target>Номери</target></trans-unit>
+      <trans-unit id="adj.form.warehouse" datatype="html"><source>Склад</source><target>Кампа</target></trans-unit>
+      <trans-unit id="adj.form.reason" datatype="html"><source>Причина</source><target>Себеп</target></trans-unit>
+      <trans-unit id="adj.form.notes" datatype="html"><source>Примечание</source><target>Эскертүү</target></trans-unit>
+      <trans-unit id="adj.form.lines" datatype="html"><source>Позиции</source><target>Позициялар</target></trans-unit>
+      <trans-unit id="adj.form.addLine" datatype="html"><source>Добавить позицию</source><target>Позиция кошуу</target></trans-unit>
+      <trans-unit id="adj.form.selectItem" datatype="html"><source>Выберите товар</source><target>Товарды тандаңыз</target></trans-unit>
+      <trans-unit id="adj.form.qtyChange" datatype="html"><source>Изменение (±)</source><target>Өзгөрүү (±)</target></trans-unit>
+      <trans-unit id="adj.form.lineNotes" datatype="html"><source>Примечание</source><target>Эскертүү</target></trans-unit>
+
+      <!-- Audits -->
+      <trans-unit id="audit.list.title" datatype="html"><source>История аудитов</source><target>Аудит таржымалы</target></trans-unit>
+      <trans-unit id="audit.filter.status" datatype="html"><source>Все статусы</source><target>Бардык статустар</target></trans-unit>
+      <trans-unit id="audit.filter.warehouse" datatype="html"><source>Все склады</source><target>Бардык кампалар</target></trans-unit>
+      <trans-unit id="audit.filter.dateFrom" datatype="html"><source>Дата с</source><target>Баштапкы дата</target></trans-unit>
+      <trans-unit id="audit.filter.dateTo" datatype="html"><source>Дата по</source><target>Аяккы дата</target></trans-unit>
+      <trans-unit id="audit.column.number" datatype="html"><source>Номер</source><target>Номери</target></trans-unit>
+      <trans-unit id="audit.column.warehouse" datatype="html"><source>Склад</source><target>Кампа</target></trans-unit>
+      <trans-unit id="audit.column.lines" datatype="html"><source>Позиций</source><target>Позициялар</target></trans-unit>
+      <trans-unit id="audit.column.variance" datatype="html"><source>Расхождение</source><target>Айырма</target></trans-unit>
+      <trans-unit id="audit.column.status" datatype="html"><source>Статус</source><target>Статус</target></trans-unit>
+      <trans-unit id="audit.column.date" datatype="html"><source>Дата</source><target>Дата</target></trans-unit>
+      <trans-unit id="audit.detail.title" datatype="html"><source>Аудит</source><target>Аудит</target></trans-unit>
+      <trans-unit id="audit.detail.number" datatype="html"><source>Номер</source><target>Номери</target></trans-unit>
+      <trans-unit id="audit.detail.warehouse" datatype="html"><source>Склад</source><target>Кампа</target></trans-unit>
+      <trans-unit id="audit.detail.status" datatype="html"><source>Статус</source><target>Статус</target></trans-unit>
+      <trans-unit id="audit.detail.reconciledAt" datatype="html"><source>Дата сверки</source><target>Салыштыруу датасы</target></trans-unit>
+      <trans-unit id="audit.detail.notes" datatype="html"><source>Примечание</source><target>Эскертүү</target></trans-unit>
+      <trans-unit id="audit.detail.comparison" datatype="html"><source>Сравнение: система vs факт</source><target>Салыштыруу: система vs факт</target></trans-unit>
+      <trans-unit id="audit.detail.item" datatype="html"><source>Товар</source><target>Товар</target></trans-unit>
+      <trans-unit id="audit.detail.systemQty" datatype="html"><source>Система</source><target>Система</target></trans-unit>
+      <trans-unit id="audit.detail.countedQty" datatype="html"><source>Факт</source><target>Факт</target></trans-unit>
+      <trans-unit id="audit.detail.variance" datatype="html"><source>Отклонение</source><target>Четтөө</target></trans-unit>
+      <trans-unit id="audit.detail.summary" datatype="html"><source>Итого</source><target>Жыйынтык</target></trans-unit>
+      <trans-unit id="audit.detail.totalVariance" datatype="html"><source>Общее расхождение</source><target>Жалпы айырма</target></trans-unit>
+      <trans-unit id="audit.detail.lineCount" datatype="html"><source>Проверено позиций</source><target>Текшерилген позициялар</target></trans-unit>
+
+      <!-- Audit Form -->
+      <trans-unit id="audit.list.add" datatype="html"><source>Новый аудит</source><target>Жаңы аудит</target></trans-unit>
+      <trans-unit id="audit.form.title" datatype="html"><source>Новый аудит</source><target>Жаңы аудит</target></trans-unit>
+      <trans-unit id="audit.form.header" datatype="html"><source>Основное</source><target>Негизги</target></trans-unit>
+      <trans-unit id="audit.form.number" datatype="html"><source>Номер</source><target>Номери</target></trans-unit>
+      <trans-unit id="audit.form.warehouse" datatype="html"><source>Склад</source><target>Кампа</target></trans-unit>
+      <trans-unit id="audit.form.notes" datatype="html"><source>Примечание</source><target>Эскертүү</target></trans-unit>
+      <trans-unit id="audit.form.lines" datatype="html"><source>Позиции для подсчёта</source><target>Саналуучу позициялар</target></trans-unit>
+      <trans-unit id="audit.form.addLine" datatype="html"><source>Добавить позицию</source><target>Позиция кошуу</target></trans-unit>
+      <trans-unit id="audit.form.selectItem" datatype="html"><source>Выберите товар</source><target>Товарды тандаңыз</target></trans-unit>
+      <trans-unit id="audit.form.countedQty" datatype="html"><source>Факт. кол-во</source><target>Факт. саны</target></trans-unit>
+
+      <!-- Adjustments Nav -->
+      <trans-unit id="nav.adjustments" datatype="html"><source>Корректировки</source><target>Коррекциялар</target></trans-unit>
+      <trans-unit id="nav.audits" datatype="html"><source>Аудиты</source><target>Аудиттер</target></trans-unit>
     </body>
   </file>
 </xliff>

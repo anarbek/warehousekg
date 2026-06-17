@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using WarehouseKG.Api.Authorization;
 using WarehouseKG.Application;
 using WarehouseKG.Infrastructure;
@@ -17,6 +21,36 @@ const string GoogleOAuthScheme = "GoogleOAuth";
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+
+// ─── OpenTelemetry ────────────────────────────────────────────────────────
+var otelEndpoint = builder.Configuration["OpenTelemetry:Endpoint"] ?? "http://localhost:4317";
+var serviceName = "WarehouseKG.Api";
+var serviceVersion = "1.0.0";
+
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(r => r.AddService(serviceName, serviceVersion))
+    .WithTracing(t =>
+    {
+        t.AddAspNetCoreInstrumentation();
+        t.AddHttpClientInstrumentation();
+        t.AddEntityFrameworkCoreInstrumentation();
+        t.AddOtlpExporter(o => o.Endpoint = new Uri(otelEndpoint));
+    })
+    .WithMetrics(m =>
+    {
+        m.AddAspNetCoreInstrumentation();
+        m.AddHttpClientInstrumentation();
+        m.AddOtlpExporter(o => o.Endpoint = new Uri(otelEndpoint));
+    });
+
+builder.Logging.AddOpenTelemetry(o =>
+{
+    o.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName, serviceVersion));
+    o.IncludeFormattedMessage = true;
+    o.IncludeScopes = true;
+    o.AddOtlpExporter(ex => ex.Endpoint = new Uri(otelEndpoint));
+});
+// ─── End OpenTelemetry ────────────────────────────────────────────────────
 
 var jwtSection = builder.Configuration.GetSection(JwtOptions.SectionName);
 var signingKey = jwtSection["SigningKey"] ?? string.Empty;

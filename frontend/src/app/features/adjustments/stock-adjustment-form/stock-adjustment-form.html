@@ -1,0 +1,68 @@
+<div class="form-page">
+  <div class="form-page__toolbar">
+    <dx-button icon="arrowleft" stylingMode="text" (onClick)="goBack()" />
+    <h1 i18n="@@adj.form.title">Новая корректировка</h1>
+    <span class="form-page__spacer"></span>
+    <dx-button i18n="@@common.save" text="Сохранить" icon="check" type="default" stylingMode="contained" (onClick)="submit()" [disabled]="saving()" />
+  </div>
+
+  @if (loading()) {
+    <dx-progress-bar [visible]="true" />
+  }
+  @if (saving()) {
+    <dx-progress-bar [visible]="true" />
+  }
+  @if (err()) {
+    <p class="form-page__error">{{ err() }}</p>
+  }
+
+  <div class="dx-card">
+    <h3 i18n="@@adj.form.header">Основное</h3>
+    <dx-form [formData]="formData" [colCount]="2" [items]="headerItems()" />
+  </div>
+
+  <div class="dx-card">
+    <div class="form-page__lines-header">
+      <h3 i18n="@@adj.form.lines">Позиции</h3>
+      <dx-button i18n="@@adj.form.addLine" text="Добавить позицию" icon="add" stylingMode="outlined" (onClick)="addLine()" />
+    </div>
+
+    <form [formGroup]="form">
+      <div formArrayName="lines">
+        @for (lineCtrl of linesArray.controls; track lineCtrl; let i = $index) {
+          <div class="form-page__line" [formGroupName]="i">
+            <dx-select-box
+              [dataSource]="items()"
+              displayExpr="name"
+              valueExpr="id"
+              i18n-placeholder="@@adj.form.selectItem"
+              placeholder="Выберите товар"
+              stylingMode="outlined"
+              [width]="300"
+              [searchEnabled]="true"
+              [(value)]="$any($any(lineCtrl).controls.inventoryItemId).value"
+              (onValueChanged)="$any($any(lineCtrl).controls.inventoryItemId).setValue($event.value)"
+            />
+            <dx-number-box
+              i18n-placeholder="@@adj.form.qtyChange"
+              placeholder="Изменение (±)"
+              stylingMode="outlined"
+              [width]="140"
+              [(value)]="$any($any(lineCtrl).controls.quantityChange).value"
+              (onValueChanged)="$any($any(lineCtrl).controls.quantityChange).setValue($event.value)"
+            />
+            <dx-text-box
+              i18n-placeholder="@@adj.form.lineNotes"
+              placeholder="Примечание"
+              stylingMode="outlined"
+              [width]="200"
+              [(value)]="$any($any(lineCtrl).controls.notes).value"
+              (onValueChanged)="$any($any(lineCtrl).controls.notes).setValue($event.value)"
+            />
+            <dx-button icon="trash" type="danger" stylingMode="outlined" (onClick)="removeLine(i)" [disabled]="linesArray.length <= 1" />
+          </div>
+        }
+      </div>
+    </form>
+  </div>
+</div>
