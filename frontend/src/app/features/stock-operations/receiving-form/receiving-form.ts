@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DxFormModule, DxSelectBoxModule, DxTextBoxModule, DxButtonModule, DxProgressBarModule } from 'devextreme-angular';
+import { DxFormModule, DxSelectBoxModule, DxTextBoxModule, DxDateBoxModule, DxButtonModule, DxProgressBarModule } from 'devextreme-angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Warehouse } from '../../inventory/models/warehouse.model';
 import { InventoryItem } from '../../inventory/models/inventory-item.model';
@@ -9,7 +9,7 @@ import { InventoryService } from '../../inventory/services/inventory.service';
 import { StockOperationsService } from '../services/stock-operations.service';
 import { ErrorToastService } from '../../../core/services/error-toast.service';
 
-@Component({selector:'app-receiving-form',imports:[ReactiveFormsModule,DxFormModule,DxSelectBoxModule,DxTextBoxModule,DxButtonModule,DxProgressBarModule],templateUrl:'./receiving-form.html',styleUrl:'./receiving-form.scss'})
+@Component({selector:'app-receiving-form',imports:[ReactiveFormsModule,DxFormModule,DxSelectBoxModule,DxTextBoxModule,DxDateBoxModule,DxButtonModule,DxProgressBarModule],templateUrl:'./receiving-form.html',styleUrl:'./receiving-form.scss'})
 export class ReceivingForm implements OnInit {
   private readonly fb=inject(FormBuilder);private readonly svc=inject(StockOperationsService);private readonly inv=inject(InventoryService);private readonly router=inject(Router);private readonly route=inject(ActivatedRoute);private readonly toast=inject(ErrorToastService);
   protected readonly saving=signal(false);protected readonly err=signal<string|null>(null);
@@ -18,7 +18,7 @@ export class ReceivingForm implements OnInit {
   protected readonly ready=signal(false);
   protected formData: any = {
     number: '', warehouseId: '', supplierReference: '', notes: '',
-    transactionDate: new Date(),
+    receivedAtUtc: new Date(),
   };
   protected readonly form=this.fb.group({lines:this.fb.array([this.cl()])});
   get lines():FormArray{return this.form.get('lines') as FormArray}
@@ -30,7 +30,7 @@ export class ReceivingForm implements OnInit {
       {dataField:'warehouseId',editorType:'dxSelectBox',label:{text:'Склад'},isRequired:true,editorOptions:{dataSource:d.warehouses,displayExpr:'name',valueExpr:'id',stylingMode:'outlined'}},
       {dataField:'supplierReference',label:{text:'Поставщик (опц.)'},editorOptions:{stylingMode:'outlined'}},
       {dataField:'notes',label:{text:'Примечание'},editorOptions:{stylingMode:'outlined'}},
-      {dataField:'transactionDate',editorType:'dxDateBox',label:{text:'Дата операции'},isRequired:true,editorOptions:{type:'date',displayFormat:'dd.MM.yyyy',stylingMode:'outlined'}},
+      {dataField:'receivedAtUtc',editorType:'dxDateBox',label:{text:'Дата поступления'},editorOptions:{type:'date',displayFormat:'dd.MM.yyyy',stylingMode:'outlined'}},
     ]);
     this.ready.set(true);
   }})}
@@ -42,9 +42,7 @@ export class ReceivingForm implements OnInit {
       warehouseId: this.formData.warehouseId,
       supplierReference: this.formData.supplierReference || null,
       notes: this.formData.notes || null,
-      transactionDate: this.formData.transactionDate instanceof Date
-        ? this.formData.transactionDate.toISOString()
-        : new Date().toISOString(),
+      receivedAtUtc: this.formData.receivedAtUtc ? new Date(this.formData.receivedAtUtc).toISOString() : null,
       lines: this.form.getRawValue().lines.map((l: any) => ({inventoryItemId:l.inventoryItemId!,quantity:Number(l.quantity)}))}).subscribe({next:()=>{this.saving.set(false);void this.router.navigate(['..'],{relativeTo:this.route})},error:(e)=>{this.toast.showSave(e);this.saving.set(false)}})}
   cancel(){void this.router.navigate(['..'],{relativeTo:this.route})}
 }

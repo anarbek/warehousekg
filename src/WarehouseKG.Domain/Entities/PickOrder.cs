@@ -17,6 +17,8 @@ public class PickOrder : BaseEntity
 
     public DateTime? PickedAtUtc { get; set; }
 
+    public DateTime? PlannedPickDate { get; set; }
+
     public string? Notes { get; set; }
 
     public ICollection<PickOrderLine> Lines { get; set; } = new List<PickOrderLine>();

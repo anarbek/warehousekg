@@ -33,6 +33,11 @@ public class GetPackOrdersQueryHandler
                 WarehouseName = p.Warehouse != null ? p.Warehouse.Name : null,
                 Status = p.Status,
                 PackedAtUtc = p.PackedAtUtc,
+                ActualPackDate = p.ActualPackDate,
+                CreatedAt = p.CreatedAt,
+                UpdatedAt = p.UpdatedAt,
+                CreatedBy = p.CreatedBy,
+                UpdatedBy = p.UpdatedBy,
                 LineCount = p.Lines.Count
             })
             .ToListAsync(cancellationToken);
@@ -67,6 +72,7 @@ public class GetPackOrderByIdQueryHandler
                 PickOrderId = p.PickOrderId,
                 Status = p.Status,
                 PackedAtUtc = p.PackedAtUtc,
+                ActualPackDate = p.ActualPackDate,
                 Notes = p.Notes,
                 Lines = p.Lines.Select(l => new PackOrderLineDto
                 {

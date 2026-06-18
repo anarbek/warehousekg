@@ -51,6 +51,7 @@
           <dxi-column dataField="quantityChange" caption="Изменение" [width]="100" cellTemplate="qtyCell" />
           <dxi-column dataField="runningBalance" caption="Остаток" [width]="100" format="#,##0.###" />
           <dxi-column dataField="notes" caption="Примечание" />
+          <dxi-column dataField="createdAt" caption="Создан" [width]="160" cellTemplate="createdCell" />
           <div *dxTemplate="let c of 'docCell'">
             @if (getDocumentRoute(c.data); as route) {
               <a [routerLink]="route">{{ c.value }}</a>
@@ -58,12 +59,13 @@
               {{ c.value }}
             }
           </div>
-          <div *dxTemplate="let c of 'dateCell'">{{ c.value | date:'short' }}</div>
+          <div *dxTemplate="let c of 'dateCell'">{{ c.value | date:'dd.MM.yyyy' }}</div>
           <div *dxTemplate="let c of 'qtyCell'">
             <span [class.qty-positive]="c.value > 0" [class.qty-negative]="c.value < 0">
               {{ c.value > 0 ? '+' : '' }}{{ c.value }}
             </span>
           </div>
+          <div *dxTemplate="let c of 'createdCell'">{{ c.value | date:'dd.MM.yyyy, HH:mm' }}</div>
         </dx-data-grid>
 
         @if (movements().length > 0) {

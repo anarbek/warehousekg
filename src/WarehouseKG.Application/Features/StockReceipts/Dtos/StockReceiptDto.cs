@@ -18,7 +18,7 @@ public class StockReceiptDto
 
     public DateTime? ReceivedAtUtc { get; set; }
 
-    public DateTime TransactionDate { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     public string? Notes { get; set; }
 
@@ -52,7 +52,7 @@ public class StockReceiptSummaryDto
 
     public DateTime? ReceivedAtUtc { get; set; }
 
-    public DateTime TransactionDate { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     public int LineCount { get; set; }
 }

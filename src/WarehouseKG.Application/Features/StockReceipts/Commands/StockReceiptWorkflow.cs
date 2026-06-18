@@ -49,7 +49,7 @@ public class CompleteStockReceiptCommandHandler : IRequestHandler<CompleteStockR
         }
 
         receipt.Status = StockOperationStatus.Completed;
-        receipt.ReceivedAtUtc = receipt.TransactionDate;
+        receipt.ReceivedAtUtc ??= DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
 

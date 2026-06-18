@@ -23,8 +23,7 @@ export interface StockReceipt {
   status: StockOperationStatus;
   lineCount: number;
   receivedAtUtc?: string | null;
-  transactionDate?: string | null;
-  createdAtUtc?: string | null;
+  createdAt: string;
   lines: StockOperationLine[];
 }
 
@@ -33,7 +32,7 @@ export interface CreateStockReceiptRequest {
   warehouseId: string;
   supplierReference?: string | null;
   notes?: string | null;
-  transactionDate: string;
+  receivedAtUtc?: string | null;
   lines: StockOperationLine[];
 }
 
@@ -49,6 +48,7 @@ export interface PickOrder {
   status: StockOperationStatus;
   lineCount: number;
   createdAtUtc?: string | null;
+  plannedPickDate?: string | null;
   lines: StockOperationLine[];
 }
 
@@ -57,6 +57,7 @@ export interface CreatePickOrderRequest {
   warehouseId: string;
   reference?: string | null;
   notes?: string | null;
+  plannedPickDate?: string | null;
   lines: StockOperationLine[];
 }
 
@@ -71,7 +72,11 @@ export interface PackOrder {
   notes?: string | null;
   status: StockOperationStatus;
   lineCount: number;
-  createdAtUtc?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  createdBy?: string | null;
+  updatedBy?: string | null;
+  actualPackDate?: string | null;
   lines: StockOperationLine[];
 }
 
@@ -80,6 +85,7 @@ export interface CreatePackOrderRequest {
   warehouseId: string;
   pickOrderId?: string | null;
   notes?: string | null;
+  actualPackDate?: string | null;
   lines: StockOperationLine[];
 }
 

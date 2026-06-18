@@ -34,6 +34,11 @@ public class GetPickOrdersQueryHandler
                 Reference = p.Reference,
                 Status = p.Status,
                 PickedAtUtc = p.PickedAtUtc,
+                PlannedPickDate = p.PlannedPickDate,
+                CreatedAt = p.CreatedAt,
+                UpdatedAt = p.UpdatedAt,
+                CreatedBy = p.CreatedBy,
+                UpdatedBy = p.UpdatedBy,
                 LineCount = p.Lines.Count
             })
             .ToListAsync(cancellationToken);
@@ -68,6 +73,7 @@ public class GetPickOrderByIdQueryHandler
                 Reference = p.Reference,
                 Status = p.Status,
                 PickedAtUtc = p.PickedAtUtc,
+                PlannedPickDate = p.PlannedPickDate,
                 Notes = p.Notes,
                 Lines = p.Lines.Select(l => new PickOrderLineDto
                 {

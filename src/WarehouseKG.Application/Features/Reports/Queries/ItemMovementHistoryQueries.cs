@@ -26,7 +26,7 @@ public class GetItemMovementHistoryQueryHandler
     {
         var itemId = request.ItemId;
         var warehouseId = request.WarehouseId;
-        var events = new List<(DateTime TimestampUtc, string OperationType, string DocNumber, Guid DocId, decimal Delta, string? Notes)>();
+        var events = new List<(DateTime TimestampUtc, string OperationType, string DocNumber, Guid DocId, decimal Delta, string? Notes, DateTime CreatedAt)>();
 
         // 1. StockReceipts
         var receipts = await _context.StockReceiptLines
@@ -35,11 +35,11 @@ public class GetItemMovementHistoryQueryHandler
                 && l.StockReceipt!.WarehouseId == warehouseId
                 && l.StockReceipt.Status == StockOperationStatus.Completed
                 && l.StockReceipt.ReceivedAtUtc != null)
-            .Select(l => new { l.StockReceipt!.Id, l.StockReceipt!.ReceivedAtUtc, l.StockReceipt.Number, l.Quantity, l.StockReceipt!.Notes })
+            .Select(l => new { l.StockReceipt!.Id, l.StockReceipt!.ReceivedAtUtc, l.StockReceipt.Number, l.Quantity, l.StockReceipt!.Notes, l.StockReceipt!.CreatedAt })
             .ToListAsync(cancellationToken);
 
         events.AddRange(receipts.Select(r =>
-            (r.ReceivedAtUtc!.Value, "Поступление", r.Number, r.Id, r.Quantity, r.Notes)));
+            (r.ReceivedAtUtc!.Value, "Поступление", r.Number, r.Id, r.Quantity, r.Notes, r.CreatedAt)));
 
         // 2. StockAdjustments
         var adjustments = await _context.StockAdjustmentLines
@@ -48,11 +48,11 @@ public class GetItemMovementHistoryQueryHandler
                 && l.StockAdjustment!.WarehouseId == warehouseId
                 && l.StockAdjustment.Status == StockOperationStatus.Completed
                 && l.StockAdjustment.AdjustedAtUtc != null)
-            .Select(l => new { l.StockAdjustment!.Id, l.StockAdjustment!.AdjustedAtUtc, l.StockAdjustment.Number, l.QuantityChange, Reason = l.StockAdjustment.Reason.ToString(), l.StockAdjustment!.Notes })
+            .Select(l => new { l.StockAdjustment!.Id, l.StockAdjustment!.AdjustedAtUtc, l.StockAdjustment.Number, l.QuantityChange, Reason = l.StockAdjustment.Reason.ToString(), l.StockAdjustment!.Notes, l.StockAdjustment!.CreatedAt })
             .ToListAsync(cancellationToken);
 
         events.AddRange(adjustments.Select(a =>
-            (a.AdjustedAtUtc!.Value, $"Корректировка ({a.Reason})", a.Number, a.Id, a.QuantityChange, a.Notes)));
+            (a.AdjustedAtUtc!.Value, $"Корректировка ({a.Reason})", a.Number, a.Id, a.QuantityChange, a.Notes, a.CreatedAt)));
 
         // 3. StockAudits
         var audits = await _context.StockAuditLines
@@ -61,11 +61,11 @@ public class GetItemMovementHistoryQueryHandler
                 && l.StockAudit!.WarehouseId == warehouseId
                 && l.StockAudit.Status == StockOperationStatus.Completed
                 && l.StockAudit.ReconciledAtUtc != null)
-            .Select(l => new { l.StockAudit!.Id, l.StockAudit!.ReconciledAtUtc, l.StockAudit.Number, l.CountedQuantity, l.SystemQuantity, l.StockAudit!.Notes })
+            .Select(l => new { l.StockAudit!.Id, l.StockAudit!.ReconciledAtUtc, l.StockAudit.Number, l.CountedQuantity, l.SystemQuantity, l.StockAudit!.Notes, l.StockAudit!.CreatedAt })
             .ToListAsync(cancellationToken);
 
         events.AddRange(audits.Select(a =>
-            (a.ReconciledAtUtc!.Value, "Аудит", a.Number, a.Id, a.CountedQuantity - a.SystemQuantity, a.Notes)));
+            (a.ReconciledAtUtc!.Value, "Аудит", a.Number, a.Id, a.CountedQuantity - a.SystemQuantity, a.Notes, a.CreatedAt)));
 
         // 4. StockTransfers — TO this warehouse
         var transfersIn = await _context.StockTransferLines
@@ -74,11 +74,11 @@ public class GetItemMovementHistoryQueryHandler
                 && l.StockTransfer!.DestinationWarehouseId == warehouseId
                 && l.StockTransfer.Status == StockOperationStatus.Completed
                 && l.StockTransfer.TransferredAtUtc != null)
-            .Select(l => new { l.StockTransfer!.Id, l.StockTransfer!.TransferredAtUtc, l.StockTransfer.Number, l.Quantity, l.StockTransfer!.Notes })
+            .Select(l => new { l.StockTransfer!.Id, l.StockTransfer!.TransferredAtUtc, l.StockTransfer.Number, l.Quantity, l.StockTransfer!.Notes, l.StockTransfer!.CreatedAt })
             .ToListAsync(cancellationToken);
 
         events.AddRange(transfersIn.Select(t =>
-            (t.TransferredAtUtc!.Value, "Перемещение (приход)", t.Number, t.Id, t.Quantity, t.Notes)));
+            (t.TransferredAtUtc!.Value, "Перемещение (приход)", t.Number, t.Id, t.Quantity, t.Notes, t.CreatedAt)));
 
         // 5. StockTransfers — FROM this warehouse
         var transfersOut = await _context.StockTransferLines
@@ -87,11 +87,11 @@ public class GetItemMovementHistoryQueryHandler
                 && l.StockTransfer!.SourceWarehouseId == warehouseId
                 && l.StockTransfer.Status == StockOperationStatus.Completed
                 && l.StockTransfer.TransferredAtUtc != null)
-            .Select(l => new { l.StockTransfer!.Id, l.StockTransfer!.TransferredAtUtc, l.StockTransfer.Number, l.Quantity, l.StockTransfer!.Notes })
+            .Select(l => new { l.StockTransfer!.Id, l.StockTransfer!.TransferredAtUtc, l.StockTransfer.Number, l.Quantity, l.StockTransfer!.Notes, l.StockTransfer!.CreatedAt })
             .ToListAsync(cancellationToken);
 
         events.AddRange(transfersOut.Select(t =>
-            (t.TransferredAtUtc!.Value, "Перемещение (расход)", t.Number, t.Id, -t.Quantity, t.Notes)));
+            (t.TransferredAtUtc!.Value, "Перемещение (расход)", t.Number, t.Id, -t.Quantity, t.Notes, t.CreatedAt)));
 
         // 6. PickOrders
         var picks = await _context.PickOrderLines
@@ -100,11 +100,11 @@ public class GetItemMovementHistoryQueryHandler
                 && l.PickOrder!.WarehouseId == warehouseId
                 && l.PickOrder.Status == StockOperationStatus.Completed
                 && l.PickOrder.PickedAtUtc != null)
-            .Select(l => new { l.PickOrder!.Id, l.PickOrder!.PickedAtUtc, l.PickOrder.Number, l.Quantity, l.PickOrder!.Notes })
+            .Select(l => new { l.PickOrder!.Id, l.PickOrder!.PickedAtUtc, l.PickOrder.Number, l.Quantity, l.PickOrder!.Notes, l.PickOrder!.CreatedAt })
             .ToListAsync(cancellationToken);
 
         events.AddRange(picks.Select(p =>
-            (p.PickedAtUtc!.Value, "Сборка", p.Number, p.Id, -p.Quantity, p.Notes)));
+            (p.PickedAtUtc!.Value, "Сборка", p.Number, p.Id, -p.Quantity, p.Notes, p.CreatedAt)));
 
         // 7. PurchaseOrders
         var pos = await _context.PurchaseOrderLines
@@ -113,11 +113,11 @@ public class GetItemMovementHistoryQueryHandler
                 && l.PurchaseOrder!.WarehouseId == warehouseId
                 && l.PurchaseOrder.Status == PurchaseOrderStatus.Received
                 && l.PurchaseOrder.ReceivedAtUtc != null)
-            .Select(l => new { l.PurchaseOrder!.Id, l.PurchaseOrder!.ReceivedAtUtc, l.PurchaseOrder.Number, l.Quantity, l.PurchaseOrder!.Notes })
+            .Select(l => new { l.PurchaseOrder!.Id, l.PurchaseOrder!.ReceivedAtUtc, l.PurchaseOrder.Number, l.Quantity, l.PurchaseOrder!.Notes, l.PurchaseOrder!.CreatedAt })
             .ToListAsync(cancellationToken);
 
         events.AddRange(pos.Select(p =>
-            (p.ReceivedAtUtc!.Value, "Закупка", p.Number, p.Id, p.Quantity, p.Notes)));
+            (p.ReceivedAtUtc!.Value, "Закупка", p.Number, p.Id, p.Quantity, p.Notes, p.CreatedAt)));
 
         // 8. SalesOrders
         var sos = await _context.SalesOrderLines
@@ -126,11 +126,11 @@ public class GetItemMovementHistoryQueryHandler
                 && l.SalesOrder!.WarehouseId == warehouseId
                 && l.SalesOrder.Status == SalesOrderStatus.Shipped
                 && l.SalesOrder.ShippedAtUtc != null)
-            .Select(l => new { l.SalesOrder!.Id, l.SalesOrder!.ShippedAtUtc, l.SalesOrder.Number, l.Quantity, l.SalesOrder!.Notes })
+            .Select(l => new { l.SalesOrder!.Id, l.SalesOrder!.ShippedAtUtc, l.SalesOrder.Number, l.Quantity, l.SalesOrder!.Notes, l.SalesOrder!.CreatedAt })
             .ToListAsync(cancellationToken);
 
         events.AddRange(sos.Select(s =>
-            (s.ShippedAtUtc!.Value, "Продажа", s.Number, s.Id, -s.Quantity, s.Notes)));
+            (s.ShippedAtUtc!.Value, "Продажа", s.Number, s.Id, -s.Quantity, s.Notes, s.CreatedAt)));
 
         // Sort chronologically and compute running balance
         var sorted = events.OrderBy(e => e.TimestampUtc).ToList();
@@ -148,7 +148,8 @@ public class GetItemMovementHistoryQueryHandler
                 DocumentId = e.DocId,
                 QuantityChange = e.Delta,
                 Notes = e.Notes,
-                RunningBalance = balance
+                RunningBalance = balance,
+                CreatedAt = e.CreatedAt
             });
         }
 

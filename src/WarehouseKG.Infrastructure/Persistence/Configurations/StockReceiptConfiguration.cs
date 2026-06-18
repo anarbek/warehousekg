@@ -16,7 +16,6 @@ public class StockReceiptConfiguration : IEntityTypeConfiguration<StockReceipt>
         builder.Property(r => r.SupplierReference).HasMaxLength(128);
         builder.Property(r => r.Notes).HasMaxLength(1024);
         builder.Property(r => r.Status).HasConversion<string>().HasMaxLength(32);
-        builder.Property(r => r.TransactionDate).IsRequired();
 
         builder.HasIndex(r => new { r.TenantId, r.Number }).IsUnique();
 

@@ -25,4 +25,7 @@ public class ItemMovementDto
 
     /// <summary>Running balance after this operation.</summary>
     public decimal RunningBalance { get; set; }
+
+    /// <summary>When the source record was created.</summary>
+    public DateTime CreatedAt { get; set; }
 }

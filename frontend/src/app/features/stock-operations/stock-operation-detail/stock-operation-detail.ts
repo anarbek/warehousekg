@@ -27,6 +27,9 @@ export class StockOperationDetail implements OnInit {
   get warehouseInfo():string{const d=this.doc();if(!d)return'—';const s=(d as any).sourceWarehouseName;if(s)return `${s||'—'} → ${(d as any).destinationWarehouseName||'—'}`;return(d as any).warehouseName||'—'}
   get referenceInfo():string|null{const d=this.doc();if(!d)return null;if(this.op==='receiving')return(d as any).supplierReference||null;if(this.op==='picking')return(d as any).reference||null;return null}
   get pickOrderIdInfo():string|null{const d=this.doc();return d?(d as any).pickOrderId||null:null}
+  get createdDate():string|null{const d=this.doc();return(d as any).createdAt||(d as any).receivedAtUtc||(d as any).pickedAtUtc||(d as any).packedAtUtc||(d as any).transferredAtUtc||null}
+  get opDateLabel():string{const m:Record<string,string>={receiving:'Дата поступления',picking:'Плановая дата',packing:'Факт. дата упаковки',transfer:'Дата перемещения'};return m[this.op]||''}
+  get opDateValue():string|null{const d=this.doc();if(!d)return null;const m:Record<string,string>={receiving:'receivedAtUtc',picking:'plannedPickDate',packing:'actualPackDate',transfer:'transferredAtUtc'};return(d as any)[m[this.op]]||null}
   ngOnInit(){this.load()}
   load(){
     this.loading.set(true); this.err.set(null);

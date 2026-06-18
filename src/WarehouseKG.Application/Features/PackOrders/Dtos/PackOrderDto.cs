@@ -18,6 +18,8 @@ public class PackOrderDto
 
     public DateTime? PackedAtUtc { get; set; }
 
+    public DateTime? ActualPackDate { get; set; }
+
     public string? Notes { get; set; }
 
     public List<PackOrderLineDto> Lines { get; set; } = new();
@@ -47,6 +49,16 @@ public class PackOrderSummaryDto
     public StockOperationStatus Status { get; set; }
 
     public DateTime? PackedAtUtc { get; set; }
+
+    public DateTime? ActualPackDate { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public DateTime UpdatedAt { get; set; }
+
+    public string? CreatedBy { get; set; }
+
+    public string? UpdatedBy { get; set; }
 
     public int LineCount { get; set; }
 }

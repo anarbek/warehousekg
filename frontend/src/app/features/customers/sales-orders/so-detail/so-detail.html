@@ -16,7 +16,7 @@
     <dt>Склад</dt><dd>{{s.warehouseName||s.warehouseId||'—'}}</dd>
     <dt>Статус</dt><dd><span class="badge">{{s.status}}</span></dd>
     <dt>Валюта</dt><dd>{{s.currency}}</dd>
-    <dt>Дата</dt><dd>{{s.orderDateUtc|date:'medium'}}</dd>
+    <dt>Дата</dt><dd>{{s.orderDateUtc|date:'dd.MM.yyyy'}}</dd>
     <dt>Сумма</dt><dd>{{s.totalAmount|number:'1.2-2'}} {{s.currency}}</dd>
     @if(s.notes){<dt>Примечание</dt><dd>{{s.notes}}</dd>}
   </dl></div>

@@ -18,6 +18,8 @@ public class PickOrderDto
 
     public DateTime? PickedAtUtc { get; set; }
 
+    public DateTime? PlannedPickDate { get; set; }
+
     public string? Notes { get; set; }
 
     public List<PickOrderLineDto> Lines { get; set; } = new();
@@ -49,6 +51,16 @@ public class PickOrderSummaryDto
     public StockOperationStatus Status { get; set; }
 
     public DateTime? PickedAtUtc { get; set; }
+
+    public DateTime? PlannedPickDate { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public DateTime UpdatedAt { get; set; }
+
+    public string? CreatedBy { get; set; }
+
+    public string? UpdatedBy { get; set; }
 
     public int LineCount { get; set; }
 }

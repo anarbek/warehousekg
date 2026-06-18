@@ -13,7 +13,7 @@
     <dt>Склад</dt><dd>{{a.warehouseName||a.warehouseId}}</dd>
     <dt>Причина</dt><dd>{{a.reason}}</dd>
     <dt>Статус</dt><dd><span class="badge">{{a.status}}</span></dd>
-    <dt>Дата</dt><dd>{{a.adjustedAtUtc|date:'medium'}}</dd>
+    <dt>Дата</dt><dd>{{a.adjustedAtUtc|date:'dd.MM.yyyy'}}</dd>
     @if(a.notes){<dt>Примечание</dt><dd>{{a.notes}}</dd>}
   </dl></div>
   <div class="dx-card"><h3>Позиции</h3>

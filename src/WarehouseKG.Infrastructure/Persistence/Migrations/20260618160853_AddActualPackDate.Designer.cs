@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WarehouseKG.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using WarehouseKG.Infrastructure.Persistence;
 namespace WarehouseKG.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(WarehouseKgDbContext))]
-    partial class WarehouseKgDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260618160853_AddActualPackDate")]
+    partial class AddActualPackDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -144,12 +147,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -173,12 +170,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("TenantId", "Code")
@@ -199,12 +190,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
 
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .HasMaxLength(1024)
@@ -235,12 +220,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("UnitOfMeasureId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
@@ -266,12 +245,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
                     b.Property<string>("Description")
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)");
@@ -286,12 +259,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -309,12 +276,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
 
                     b.Property<DateTime?>("ActualPackDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(1024)
@@ -339,12 +300,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
                     b.Property<Guid>("WarehouseId")
                         .HasColumnType("uuid");
 
@@ -366,12 +321,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
                     b.Property<Guid>("InventoryItemId")
                         .HasColumnType("uuid");
 
@@ -388,12 +337,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("InventoryItemId");
@@ -408,12 +351,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(1024)
@@ -442,12 +379,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
                     b.Property<Guid>("WarehouseId")
                         .HasColumnType("uuid");
 
@@ -467,12 +398,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
                     b.Property<Guid>("InventoryItemId")
                         .HasColumnType("uuid");
 
@@ -484,12 +409,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
 
                     b.Property<Guid?>("WarehouseLocationId")
                         .HasColumnType("uuid");
@@ -510,12 +429,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
 
                     b.Property<string>("Currency")
                         .IsRequired()
@@ -554,12 +467,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
                     b.Property<Guid?>("WarehouseId")
                         .HasColumnType("uuid");
 
@@ -581,12 +488,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
                     b.Property<Guid>("InventoryItemId")
                         .HasColumnType("uuid");
 
@@ -601,12 +502,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
 
                     b.Property<decimal>("UnitPrice")
                         .HasColumnType("numeric(18,2)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -625,12 +520,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
 
                     b.Property<DateTime?>("ConfirmedAtUtc")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
 
                     b.Property<string>("Currency")
                         .IsRequired()
@@ -666,12 +555,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
                     b.Property<Guid?>("WarehouseId")
                         .HasColumnType("uuid");
 
@@ -693,12 +576,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
                     b.Property<Guid>("InventoryItemId")
                         .HasColumnType("uuid");
 
@@ -713,12 +590,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
 
                     b.Property<decimal>("UnitPrice")
                         .HasColumnType("numeric(18,2)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -737,12 +608,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
 
                     b.Property<DateTime?>("AdjustedAtUtc")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(1024)
@@ -766,12 +631,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
                     b.Property<Guid>("WarehouseId")
                         .HasColumnType("uuid");
 
@@ -791,12 +650,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
                     b.Property<Guid>("InventoryItemId")
                         .HasColumnType("uuid");
 
@@ -813,12 +666,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("InventoryItemId");
@@ -833,12 +680,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(1024)
@@ -859,12 +700,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
 
                     b.Property<Guid>("WarehouseId")
                         .HasColumnType("uuid");
@@ -888,12 +723,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Property<decimal>("CountedQuantity")
                         .HasColumnType("numeric(18,3)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
                     b.Property<Guid>("InventoryItemId")
                         .HasColumnType("uuid");
 
@@ -905,12 +734,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -926,12 +749,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(1024)
@@ -957,11 +774,8 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime>("TransactionDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
 
                     b.Property<Guid>("WarehouseId")
                         .HasColumnType("uuid");
@@ -982,12 +796,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
                     b.Property<Guid>("InventoryItemId")
                         .HasColumnType("uuid");
 
@@ -999,12 +807,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
 
                     b.Property<Guid?>("WarehouseLocationId")
                         .HasColumnType("uuid");
@@ -1025,12 +827,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
 
                     b.Property<Guid>("DestinationWarehouseId")
                         .HasColumnType("uuid");
@@ -1058,12 +854,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("TransferredAtUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DestinationWarehouseId");
@@ -1082,12 +872,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
                     b.Property<Guid>("InventoryItemId")
                         .HasColumnType("uuid");
 
@@ -1099,12 +883,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -1134,12 +912,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -1162,12 +934,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -1192,12 +958,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Property<bool>("CanWrite")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
                     b.Property<int?>("MaxBackdateDays")
                         .HasColumnType("integer");
 
@@ -1211,12 +971,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -1234,12 +988,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                         .HasMaxLength(16)
                         .HasColumnType("character varying(16)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
                     b.Property<string>("Description")
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)");
@@ -1254,12 +1002,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -1284,12 +1026,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
@@ -1300,12 +1036,6 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -1334,23 +1064,11 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text");
 
                     b.Property<Guid>("WarehouseId")
                         .HasColumnType("uuid");

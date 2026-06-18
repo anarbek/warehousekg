@@ -12,13 +12,16 @@ public class WarehouseKgDbContext
     : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>, IApplicationDbContext
 {
     private readonly ITenantProvider _tenantProvider;
+    private readonly ICurrentUserService _currentUser;
 
     public WarehouseKgDbContext(
         DbContextOptions<WarehouseKgDbContext> options,
-        ITenantProvider tenantProvider)
+        ITenantProvider tenantProvider,
+        ICurrentUserService currentUser)
         : base(options)
     {
         _tenantProvider = tenantProvider;
+        _currentUser = currentUser;
     }
 
     public DbSet<Warehouse> Warehouses => Set<Warehouse>();
@@ -91,6 +94,7 @@ public class WarehouseKgDbContext
     public override int SaveChanges(bool acceptAllChangesOnSuccess)
     {
         ApplyTenantId();
+        ApplyAuditFields();
         return base.SaveChanges(acceptAllChangesOnSuccess);
     }
 
@@ -99,7 +103,31 @@ public class WarehouseKgDbContext
         CancellationToken cancellationToken = default)
     {
         ApplyTenantId();
+        ApplyAuditFields();
         return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    }
+
+    private void ApplyAuditFields()
+    {
+        var now = DateTime.UtcNow;
+        var user = _currentUser.UserName ?? "system";
+
+        foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+        {
+            if (entry.State == EntityState.Added)
+            {
+                entry.Entity.CreatedAt = now;
+                entry.Entity.CreatedBy = user;
+            }
+            else if (entry.State == EntityState.Modified)
+            {
+                entry.Property(nameof(BaseEntity.CreatedAt)).IsModified = false;
+                entry.Property(nameof(BaseEntity.CreatedBy)).IsModified = false;
+            }
+
+            entry.Entity.UpdatedAt = now;
+            entry.Entity.UpdatedBy = user;
+        }
     }
 
     private void ApplyTenantId()

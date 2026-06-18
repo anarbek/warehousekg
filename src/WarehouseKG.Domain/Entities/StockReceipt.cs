@@ -17,9 +17,6 @@ public class StockReceipt : BaseEntity
 
     public DateTime? ReceivedAtUtc { get; set; }
 
-    /// <summary>User-specified transaction date (defaults to now).</summary>
-    public DateTime TransactionDate { get; set; }
-
     public string? Notes { get; set; }
 
     public ICollection<StockReceiptLine> Lines { get; set; } = new List<StockReceiptLine>();

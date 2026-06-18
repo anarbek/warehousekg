@@ -17,7 +17,7 @@ public record CreateStockReceiptCommand(
     Guid WarehouseId,
     string? SupplierReference,
     string? Notes,
-    DateTime TransactionDate,
+    DateTime? ReceivedAtUtc,
     Guid TenantId,
     IReadOnlyList<string> UserRoles,
     IReadOnlyList<StockReceiptLineInput> Lines) : IRequest<Guid>;
@@ -33,12 +33,12 @@ public class CreateStockReceiptCommandHandler : IRequestHandler<CreateStockRecei
 
     public async Task<Guid> Handle(CreateStockReceiptCommand request, CancellationToken cancellationToken)
     {
-        // Validate back-in-time: if TransactionDate is in the past, check permission
+        // Validate back-in-time: if ReceivedAtUtc is in the past, check permission
         var now = DateTime.UtcNow.Date;
-        var txDate = request.TransactionDate.Date;
-        if (txDate < now)
+        var receivedDate = request.ReceivedAtUtc?.Date ?? now;
+        if (receivedDate < now)
         {
-            var daysBack = (now - txDate).Days;
+            var daysBack = (now - receivedDate).Days;
             var maxDays = int.MaxValue; // default: no backdating allowed unless permission exists
 
             foreach (var role in request.UserRoles)
@@ -65,7 +65,7 @@ public class CreateStockReceiptCommandHandler : IRequestHandler<CreateStockRecei
             if (daysBack > maxDays)
             {
                 throw new InvalidOperationException(
-                    $"Transaction date {txDate:yyyy-MM-dd} is {daysBack} days in the past. " +
+                    $"Receipt date {receivedDate:yyyy-MM-dd} is {daysBack} days in the past. " +
                     $"Maximum allowed is {maxDays} day(s).");
             }
         }
@@ -77,7 +77,7 @@ public class CreateStockReceiptCommandHandler : IRequestHandler<CreateStockRecei
             WarehouseId = request.WarehouseId,
             SupplierReference = request.SupplierReference,
             Notes = request.Notes,
-            TransactionDate = request.TransactionDate,
+            ReceivedAtUtc = request.ReceivedAtUtc,
             Status = StockOperationStatus.Draft,
             Lines = request.Lines.Select(l => new StockReceiptLine
             {

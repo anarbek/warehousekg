@@ -19,6 +19,8 @@ public class PackOrder : BaseEntity
 
     public DateTime? PackedAtUtc { get; set; }
 
+    public DateTime? ActualPackDate { get; set; }
+
     public string? Notes { get; set; }
 
     public ICollection<PackOrderLine> Lines { get; set; } = new List<PackOrderLine>();

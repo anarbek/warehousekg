@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using WarehouseKG.Application.Common.Interfaces;
+using WarehouseKG.Infrastructure.Identity;
 
 namespace WarehouseKG.Infrastructure.Persistence;
 
@@ -39,11 +40,16 @@ public class WarehouseKgDbContextFactory : IDesignTimeDbContextFactory<Warehouse
             .UseNpgsql(connectionString)
             .Options;
 
-        return new WarehouseKgDbContext(options, new DesignTimeTenantProvider());
+        return new WarehouseKgDbContext(options, new DesignTimeTenantProvider(), new DesignTimeCurrentUser());
     }
 
     private sealed class DesignTimeTenantProvider : ITenantProvider
     {
         public Guid GetTenantId() => Guid.Empty;
+    }
+
+    private sealed class DesignTimeCurrentUser : ICurrentUserService
+    {
+        public string? UserName => "migrations";
     }
 }

@@ -17,13 +17,15 @@
     @if(pickOrderIdInfo){<dt>Заказ на сборку</dt><dd>{{pickOrderIdInfo}}</dd>}
     <dt>Статус</dt><dd><span class="badge">{{d.status}}</span></dd>
     @if(d.notes){<dt>Примечание</dt><dd>{{d.notes}}</dd>}
+    @if(opDateValue){<dt>{{opDateLabel}}</dt><dd>{{opDateValue|date:'dd.MM.yyyy'}}</dd>}
+    @if(createdDate){<dt>Создан</dt><dd>{{createdDate|date:'dd.MM.yyyy'}}</dd>}
   </dl></div>
   <div class="dx-card"><h3>Позиции</h3>
     <dx-data-grid [dataSource]="editableLines()" [showBorders]="true" [hoverStateEnabled]="true">
       <dxi-column dataField="inventoryItemName" caption="Товар" cellTemplate="itemCell"/>
       <dxi-column dataField="quantity" caption="Кол-во" [width]="100"/>
-      <dxi-column dataField="warehouseLocationName" caption="Ячейка" [width]="120"/>
-      <dxi-column dataField="packageLabel" caption="Упаковка" [width]="120"/>
+      @if(op==='receiving'||op==='picking'){<dxi-column dataField="warehouseLocationName" caption="Ячейка" [width]="120"/>}
+      @if(op==='packing'){<dxi-column dataField="packageLabel" caption="Упаковка" [width]="120"/>}
       <div *dxTemplate="let c of 'itemCell'">
         <a [routerLink]="['/inventory/items', c.data.inventoryItemId]" [queryParams]="{ warehouseId: getWarehouseId() }">{{ c.value }}</a>
       </div>

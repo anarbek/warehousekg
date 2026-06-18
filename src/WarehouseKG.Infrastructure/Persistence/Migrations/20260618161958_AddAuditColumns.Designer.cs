@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WarehouseKG.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using WarehouseKG.Infrastructure.Persistence;
 namespace WarehouseKG.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(WarehouseKgDbContext))]
-    partial class WarehouseKgDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260618161958_AddAuditColumns")]
+    partial class AddAuditColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -956,6 +959,9 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime>("TransactionDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");

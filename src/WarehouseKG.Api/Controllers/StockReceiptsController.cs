@@ -60,7 +60,7 @@ public class StockReceiptsController : ApiControllerBase
         var roles = User.FindAll(ClaimTypes.Role).Select(r => r.Value).ToList();
         var command = new CreateStockReceiptCommand(
             body.Number, body.WarehouseId, body.SupplierReference,
-            body.Notes, body.TransactionDate, tenantId, roles, body.Lines);
+            body.Notes, body.ReceivedAtUtc, tenantId, roles, body.Lines);
         try
         {
             var id = await _sender.Send(command, cancellationToken);
@@ -137,5 +137,5 @@ public record CreateStockReceiptRequest(
     Guid WarehouseId,
     string? SupplierReference,
     string? Notes,
-    DateTime TransactionDate,
+    DateTime? ReceivedAtUtc,
     IReadOnlyList<StockReceiptLineInput> Lines);

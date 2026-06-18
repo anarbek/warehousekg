@@ -1,14 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
+import { DxFormModule, DxSelectBoxModule, DxTextBoxModule, DxDateBoxModule, DxButtonModule, DxProgressBarModule } from 'devextreme-angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Warehouse } from '../../inventory/models/warehouse.model';
 import { InventoryItem } from '../../inventory/models/inventory-item.model';
@@ -17,128 +10,31 @@ import { PickOrder } from '../models/stock-operation.model';
 import { StockOperationsService } from '../services/stock-operations.service';
 import { ErrorToastService } from '../../../core/services/error-toast.service';
 
-@Component({
-  selector: 'app-packing-form',
-  imports: [
-    ReactiveFormsModule,
-    MatAutocompleteModule,
-    MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatButtonModule, MatIconModule, MatProgressBarModule,
-  ],
-  templateUrl: './packing-form.html',
-  styleUrl: './packing-form.scss',
-})
+@Component({selector:'app-packing-form',imports:[ReactiveFormsModule,DxFormModule,DxSelectBoxModule,DxTextBoxModule,DxDateBoxModule,DxButtonModule,DxProgressBarModule],templateUrl:'./packing-form.html',styleUrl:'./packing-form.scss'})
 export class PackingForm implements OnInit {
-  private readonly fb = inject(FormBuilder);
-  private readonly service = inject(StockOperationsService);
-  private readonly inventoryService = inject(InventoryService);
-  private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
-  private readonly toast = inject(ErrorToastService);
-
-  protected readonly saving = signal(false);
-  protected readonly error = signal<string | null>(null);
-  protected readonly warehouses = signal<Warehouse[]>([]);
-  protected readonly items = signal<InventoryItem[]>([]);
-  protected readonly pickOrders = signal<PickOrder[]>([]);
-
-  /** Autocomplete: filtered list updated via valueChanges subscription */
-  protected readonly filteredPickOrders = signal<PickOrder[]>([]);
-
-  /** Display function for autocomplete: given an ID, show "number — warehouseName" */
-  protected readonly displayPickOrderFn = (id: string | null): string => {
-    if (!id) return '';
-    const po = this.pickOrders().find((p) => p.id === id);
-    if (!po) return id;
-    return po.warehouseName
-      ? `${po.number} — ${po.warehouseName}`
-      : po.number;
-  };
-
-  protected readonly form = this.fb.group({
-    number: ['', Validators.required],
-    warehouseId: ['', Validators.required],
-    pickOrderId: [''],
-    notes: [''],
-    lines: this.fb.array([this.createLine()]),
-  });
-
-  get lines(): FormArray { return this.form.get('lines') as FormArray; }
-
-  private createLine() {
-    return this.fb.group({
-      inventoryItemId: ['', Validators.required],
-      quantity: [0, [Validators.required, Validators.min(1)]],
-      packageLabel: [''],
-    });
-  }
-
-  ngOnInit(): void {
-    forkJoin({
-      warehouses: this.inventoryService.getWarehouses(),
-      items: this.inventoryService.getInventoryItems(),
-      pickOrders: this.service.getPickOrders(),
-    }).subscribe({
-      next: ({ warehouses, items, pickOrders }) => {
-        this.warehouses.set(warehouses);
-        this.items.set(items);
-        this.pickOrders.set(pickOrders);
-        this.filteredPickOrders.set(pickOrders);
-      },
-    });
-
-    this.form.controls.pickOrderId.valueChanges.subscribe((val) => {
-      const q = (val ?? '').toLowerCase().trim();
-      const all = this.pickOrders();
-      if (!q) {
-        this.filteredPickOrders.set(all);
-      } else {
-        this.filteredPickOrders.set(
-          all.filter((po) => po.number.toLowerCase().includes(q))
-        );
-      }
-    });
-  }
-
-  protected addLine(): void {
-    this.lines.push(this.createLine());
-  }
-
-  protected removeLine(index: number): void {
-    this.lines.removeAt(index);
-  }
-
-  protected submit(): void {
-    if (this.form.invalid) return;
-    this.saving.set(true);
-    this.error.set(null);
-
-    const v = this.form.getRawValue();
-    this.service
-      .createPackOrder({
-        number: v.number!,
-        warehouseId: v.warehouseId!,
-        pickOrderId: v.pickOrderId || null,
-        notes: v.notes || null,
-        lines: v.lines.map((l) => ({
-          inventoryItemId: l.inventoryItemId!,
-          quantity: Number(l.quantity),
-          packageLabel: l.packageLabel || null,
-        })),
-      })
-      .subscribe({
-        next: () => {
-          this.saving.set(false);
-          void this.router.navigate(['..'], { relativeTo: this.route });
-        },
-        error: (e) => {
-          this.toast.showSave(e);
-          this.saving.set(false);
-        },
-      });
-  }
-
-  protected cancel(): void {
-    void this.router.navigate(['..'], { relativeTo: this.route });
-  }
+  private readonly fb=inject(FormBuilder);private readonly svc=inject(StockOperationsService);private readonly inv=inject(InventoryService);private readonly router=inject(Router);private readonly route=inject(ActivatedRoute);private readonly toast=inject(ErrorToastService);
+  protected readonly saving=signal(false);protected readonly err=signal<string|null>(null);
+  protected readonly items=signal<InventoryItem[]>([]);
+  protected readonly headerItems=signal<any[]>([]);
+  protected readonly ready=signal(false);
+  protected formData:any={number:'',warehouseId:'',pickOrderId:'',notes:'',actualPackDate:null};
+  protected readonly form=this.fb.group({lines:this.fb.array([this.cl()])});
+  get lines():FormArray{return this.form.get('lines') as FormArray}
+  private cl(){return this.fb.group({inventoryItemId:['',Validators.required],quantity:[0,[Validators.required,Validators.min(1)]],packageLabel:['']})}
+  ngOnInit(){forkJoin({warehouses:this.inv.getWarehouses(),items:this.inv.getInventoryItems(),pickOrders:this.svc.getPickOrders()}).subscribe({next:d=>{
+    this.items.set(d.items);
+    this.headerItems.set([
+      {dataField:'number',label:{text:'Номер'},isRequired:true,editorOptions:{placeholder:'PACK-0001',stylingMode:'outlined'}},
+      {dataField:'warehouseId',editorType:'dxSelectBox',label:{text:'Склад'},isRequired:true,editorOptions:{dataSource:d.warehouses,displayExpr:'name',valueExpr:'id',stylingMode:'outlined'}},
+      {dataField:'pickOrderId',editorType:'dxSelectBox',label:{text:'ID заказа на сборку'},editorOptions:{dataSource:d.pickOrders,displayExpr:(item:any)=>item?`${item.number} — ${item.warehouseName||item.warehouseId}`:'',valueExpr:'id',searchEnabled:true,searchExpr:'number',placeholder:'Поиск по номеру...',stylingMode:'outlined'}},
+      {dataField:'notes',editorType:'dxTextArea',label:{text:'Примечание'},editorOptions:{stylingMode:'outlined',height:80}},
+      {dataField:'actualPackDate',editorType:'dxDateBox',label:{text:'Факт. дата упаковки'},editorOptions:{type:'date',displayFormat:'dd.MM.yyyy',stylingMode:'outlined'}},
+    ]);
+    this.ready.set(true);
+  }})}
+  addLine(){this.lines.push(this.cl())}
+  removeLine(i:number){this.lines.removeAt(i)}
+  submit(){this.saving.set(true);this.err.set(null);
+    this.svc.createPackOrder({number:this.formData.number,warehouseId:this.formData.warehouseId,pickOrderId:this.formData.pickOrderId||null,notes:this.formData.notes||null,actualPackDate:this.formData.actualPackDate?new Date(this.formData.actualPackDate).toISOString():null,lines:this.form.getRawValue().lines.map((l:any)=>({inventoryItemId:l.inventoryItemId!,quantity:Number(l.quantity),packageLabel:l.packageLabel||null}))}).subscribe({next:()=>{this.saving.set(false);void this.router.navigate(['..'],{relativeTo:this.route})},error:(e)=>{this.toast.showSave(e);this.saving.set(false)}})}
+  cancel(){void this.router.navigate(['..'],{relativeTo:this.route})}
 }

@@ -15,6 +15,7 @@ public record CreatePickOrderCommand(
     Guid WarehouseId,
     string? Reference,
     string? Notes,
+    DateTime? PlannedPickDate,
     IReadOnlyList<PickOrderLineInput> Lines) : IRequest<Guid>;
 
 public class CreatePickOrderCommandHandler : IRequestHandler<CreatePickOrderCommand, Guid>
@@ -35,6 +36,7 @@ public class CreatePickOrderCommandHandler : IRequestHandler<CreatePickOrderComm
             WarehouseId = request.WarehouseId,
             Reference = request.Reference,
             Notes = request.Notes,
+            PlannedPickDate = request.PlannedPickDate,
             Status = StockOperationStatus.Draft,
             Lines = request.Lines.Select(l => new PickOrderLine
             {
