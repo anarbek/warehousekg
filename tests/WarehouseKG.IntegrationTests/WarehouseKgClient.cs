@@ -103,5 +103,68 @@ public class WarehouseKgClient
         return await response.Content.ReadFromJsonAsync<JsonElement>();
     }
 
+    // ─── Stock Transfers ─────────────────────────────────────────────────
+
+    public async Task<string> CreateStockTransferAsync(object body)
+    {
+        var response = await _http.PostAsJsonAsync("/api/v1/stock-transfers", body);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    public async Task CompleteStockTransferAsync(string id)
+    {
+        var response = await _http.PostAsync($"/api/v1/stock-transfers/{id}/complete", null);
+        response.EnsureSuccessStatusCode();
+    }
+
+    // ─── Purchase Orders ─────────────────────────────────────────────────
+
+    public async Task<string> CreatePurchaseOrderAsync(object body)
+    {
+        var response = await _http.PostAsJsonAsync("/api/v1/purchase-orders", body);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    public async Task SubmitPurchaseOrderAsync(string id)
+    {
+        var response = await _http.PostAsync($"/api/v1/purchase-orders/{id}/submit", null);
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task ReceivePurchaseOrderAsync(string id)
+    {
+        var response = await _http.PostAsync($"/api/v1/purchase-orders/{id}/receive", null);
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task<JsonElement> GetSuppliersAsync()
+    {
+        var response = await _http.GetAsync("/api/v1/suppliers");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
+    // ─── Reports ─────────────────────────────────────────────────────────
+
+    public async Task<JsonElement> GetWarehouseStockAsync(Guid warehouseId, string? dateFrom = null, string? dateTo = null)
+    {
+        var url = $"/api/v1/reports/warehouse-stock?warehouseId={warehouseId}";
+        if (dateFrom != null) url += $"&dateFrom={dateFrom}";
+        if (dateTo != null) url += $"&dateTo={dateTo}";
+        var response = await _http.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
+    public async Task<JsonElement> GetItemMovementsAsync(Guid itemId, Guid warehouseId)
+    {
+        var url = $"/api/v1/reports/item-movements?itemId={itemId}&warehouseId={warehouseId}";
+        var response = await _http.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
     private record LoginResponse(string AccessToken);
 }

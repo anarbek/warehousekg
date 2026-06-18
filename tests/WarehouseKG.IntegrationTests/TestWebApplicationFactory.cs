@@ -61,43 +61,83 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
         }
 
         // Seed warehouse if none exist
-        if (!db.Warehouses.Any())
+        if (!db.Warehouses.IgnoreQueryFilters().Any(w => w.TenantId == tenantId))
         {
             db.Warehouses.Add(new WarehouseKG.Domain.Entities.Warehouse
             {
                 Id = Guid.NewGuid(), TenantId = tenantId,
                 Code = "DEPO-1", Name = "Test Warehouse", IsActive = true
             });
+            db.Warehouses.Add(new WarehouseKG.Domain.Entities.Warehouse
+            {
+                Id = Guid.NewGuid(), TenantId = tenantId,
+                Code = "DEPO-2", Name = "Second Warehouse", IsActive = true
+            });
+            await db.SaveChangesAsync();
         }
 
-        // Seed inventory item if none exist
-        if (!db.InventoryItems.Any())
+        // Seed supplier if none exist
+        if (!db.Suppliers.IgnoreQueryFilters().Any(s => s.TenantId == tenantId))
         {
-            // Seed category
+            db.Suppliers.Add(new WarehouseKG.Domain.Entities.Supplier
+            {
+                Id = Guid.NewGuid(), TenantId = tenantId,
+                Code = "SUP-1", Name = "Test Supplier", IsActive = true
+            });
+            await db.SaveChangesAsync();
+        }
+
+        // Seed category if none exist
+        Guid catId;
+        var existingCat = db.ItemCategories.IgnoreQueryFilters()
+            .FirstOrDefault(c => c.TenantId == tenantId && c.Code == "TEST");
+        if (existingCat is null)
+        {
             var cat = new WarehouseKG.Domain.Entities.ItemCategory
             {
                 Id = Guid.NewGuid(), TenantId = tenantId,
                 Code = "TEST", Name = "Test Category", IsActive = true
             };
             db.ItemCategories.Add(cat);
+            await db.SaveChangesAsync();
+            catId = cat.Id;
+        }
+        else
+        {
+            catId = existingCat.Id;
+        }
 
-            // Seed UOM
+        // Seed UOM if none exist
+        Guid uomId;
+        var existingUom = db.UnitsOfMeasure.IgnoreQueryFilters()
+            .FirstOrDefault(u => u.TenantId == tenantId && u.Code == "PCS");
+        if (existingUom is null)
+        {
             var uom = new WarehouseKG.Domain.Entities.UnitOfMeasure
             {
                 Id = Guid.NewGuid(), TenantId = tenantId,
                 Code = "PCS", Name = "Pieces", IsActive = true
             };
             db.UnitsOfMeasure.Add(uom);
-
             await db.SaveChangesAsync();
+            uomId = uom.Id;
+        }
+        else
+        {
+            uomId = existingUom.Id;
+        }
 
+        // Seed inventory item if none exist
+        if (!db.InventoryItems.IgnoreQueryFilters().Any(i => i.TenantId == tenantId))
+        {
             db.InventoryItems.Add(new WarehouseKG.Domain.Entities.InventoryItem
             {
                 Id = Guid.NewGuid(), TenantId = tenantId,
                 Sku = "TEST-001", Name = "Test Item",
-                CategoryId = cat.Id, UnitOfMeasureId = uom.Id,
+                CategoryId = catId, UnitOfMeasureId = uomId,
                 QuantityOnHand = 0, IsActive = true
             });
+            await db.SaveChangesAsync();
         }
 
         await db.SaveChangesAsync();
@@ -105,7 +145,7 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
         // Seed tenant permissions for Admin role (all resources, full access)
         var resources = new[] { "warehouses", "inventory-items", "item-categories", "units-of-measure",
             "stock-receipts", "pick-orders", "pack-orders", "stock-transfers", "stock-adjustments", "stock-audits",
-            "purchase-orders", "sales-orders", "reports", "stock-receipts-delete-completed", "add-items-back-in-time" };
+            "purchase-orders", "sales-orders", "reports", "suppliers", "stock-receipts-delete-completed", "add-items-back-in-time" };
         foreach (var res in resources)
         {
             if (!db.TenantPermissions.Any(p => p.TenantId == tenantId && p.RoleName == "Admin" && p.Resource == res))
@@ -116,7 +156,8 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
                     TenantId = tenantId,
                     RoleName = "Admin",
                     Resource = res,
-                    CanRead = true, CanWrite = true, CanDelete = true
+                    CanRead = true, CanWrite = true, CanDelete = true,
+                    MaxBackdateDays = 365
                 });
             }
         }

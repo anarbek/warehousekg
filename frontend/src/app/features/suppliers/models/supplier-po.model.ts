@@ -44,7 +44,6 @@ export interface PurchaseOrder {
   status: PurchaseOrderStatus;
   currency: string;
   orderDateUtc: string;
-  expectedDateUtc?: string | null;
   submittedAtUtc?: string | null;
   receivedAtUtc?: string | null;
   notes?: string | null;
@@ -61,6 +60,8 @@ export interface PurchaseOrderSummary {
   status: PurchaseOrderStatus;
   currency: string;
   orderDateUtc: string;
+  createdAt: string;
+  receivedAtUtc?: string | null;
   totalAmount: number;
   lineCount: number;
 }
@@ -70,7 +71,7 @@ export interface CreatePurchaseOrderRequest {
   supplierId: string;
   warehouseId?: string | null;
   currency?: string | null;
-  expectedDateUtc?: string | null;
+  receivedAtUtc?: string | null;
   notes?: string | null;
   lines: { inventoryItemId: string; quantity: number; unitPrice: number }[];
 }

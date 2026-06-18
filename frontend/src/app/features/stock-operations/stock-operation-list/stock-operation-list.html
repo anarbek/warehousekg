@@ -14,6 +14,7 @@
     @if(op==='receiving'){<dxi-column caption="Дата поступления" [width]="120" cellTemplate="dateCell"/>}
     @else if(op==='picking'){<dxi-column caption="Плановая дата" [width]="120" cellTemplate="dateCell"/>}
     @else if(op==='packing'){<dxi-column caption="Факт. дата упаковки" [width]="160" cellTemplate="packDateCell"/>}
+    @else if(op==='transfer'){<dxi-column caption="Дата перемещения" [width]="120" cellTemplate="dateCell"/>}
     <dxi-column dataField="createdAt" caption="Создан" [width]="160" cellTemplate="createdCell"/>
     <dxi-column caption="" [width]="60" cellTemplate="actCell"/>
     <div *dxTemplate="let c of 'numCell'"><a [routerLink]="[c.data.id]">{{c.value}}</a></div>

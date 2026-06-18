@@ -21,8 +21,6 @@ public class PurchaseOrder : BaseEntity
 
     public DateTime OrderDateUtc { get; set; }
 
-    public DateTime? ExpectedDateUtc { get; set; }
-
     public DateTime? SubmittedAtUtc { get; set; }
 
     public DateTime? ReceivedAtUtc { get; set; }

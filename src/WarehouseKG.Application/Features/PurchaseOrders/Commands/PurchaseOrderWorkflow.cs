@@ -84,7 +84,7 @@ public class ReceivePurchaseOrderCommandHandler : IRequestHandler<ReceivePurchas
         }
 
         order.Status = PurchaseOrderStatus.Received;
-        order.ReceivedAtUtc = DateTime.UtcNow;
+        order.ReceivedAtUtc ??= DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
 

@@ -35,6 +35,7 @@ public class GetStockTransfersQueryHandler
                 DestinationWarehouseName = t.DestinationWarehouse != null ? t.DestinationWarehouse.Name : null,
                 Status = t.Status,
                 TransferredAtUtc = t.TransferredAtUtc,
+                CreatedAt = t.CreatedAt,
                 LineCount = t.Lines.Count
             })
             .ToListAsync(cancellationToken);
@@ -70,6 +71,7 @@ public class GetStockTransferByIdQueryHandler
                 DestinationWarehouseName = t.DestinationWarehouse != null ? t.DestinationWarehouse.Name : null,
                 Status = t.Status,
                 TransferredAtUtc = t.TransferredAtUtc,
+                CreatedAt = t.CreatedAt,
                 Notes = t.Notes,
                 Lines = t.Lines.Select(l => new StockTransferLineDto
                 {

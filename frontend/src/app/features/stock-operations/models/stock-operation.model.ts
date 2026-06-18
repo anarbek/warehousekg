@@ -102,7 +102,7 @@ export interface StockTransfer {
   status: StockOperationStatus;
   lineCount: number;
   transferredAtUtc?: string | null;
-  createdAtUtc?: string | null;
+  createdAt: string;
   lines: StockOperationLine[];
 }
 
@@ -111,6 +111,7 @@ export interface CreateStockTransferRequest {
   sourceWarehouseId: string;
   destinationWarehouseId: string;
   notes?: string | null;
+  transferredAtUtc?: string | null;
   lines: StockOperationLine[];
 }
 

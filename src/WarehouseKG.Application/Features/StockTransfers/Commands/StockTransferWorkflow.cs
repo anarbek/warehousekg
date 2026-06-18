@@ -36,7 +36,7 @@ public class CompleteStockTransferCommandHandler : IRequestHandler<CompleteStock
         }
 
         transfer.Status = StockOperationStatus.Completed;
-        transfer.TransferredAtUtc = DateTime.UtcNow;
+        transfer.TransferredAtUtc ??= DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
 

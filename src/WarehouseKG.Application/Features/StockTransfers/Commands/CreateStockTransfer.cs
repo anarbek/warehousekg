@@ -14,6 +14,7 @@ public record CreateStockTransferCommand(
     Guid SourceWarehouseId,
     Guid DestinationWarehouseId,
     string? Notes,
+    DateTime? TransferredAtUtc,
     IReadOnlyList<StockTransferLineInput> Lines) : IRequest<Guid>;
 
 public class CreateStockTransferCommandHandler : IRequestHandler<CreateStockTransferCommand, Guid>
@@ -34,6 +35,7 @@ public class CreateStockTransferCommandHandler : IRequestHandler<CreateStockTran
             SourceWarehouseId = request.SourceWarehouseId,
             DestinationWarehouseId = request.DestinationWarehouseId,
             Notes = request.Notes,
+            TransferredAtUtc = request.TransferredAtUtc,
             Status = StockOperationStatus.Draft,
             Lines = request.Lines.Select(l => new StockTransferLine
             {

@@ -20,6 +20,8 @@ public class StockTransferDto
 
     public DateTime? TransferredAtUtc { get; set; }
 
+    public DateTime CreatedAt { get; set; }
+
     public string? Notes { get; set; }
 
     public List<StockTransferLineDto> Lines { get; set; } = new();
@@ -51,6 +53,8 @@ public class StockTransferSummaryDto
     public StockOperationStatus Status { get; set; }
 
     public DateTime? TransferredAtUtc { get; set; }
+
+    public DateTime CreatedAt { get; set; }
 
     public int LineCount { get; set; }
 }

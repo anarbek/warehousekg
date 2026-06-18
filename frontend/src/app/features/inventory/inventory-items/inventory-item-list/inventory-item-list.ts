@@ -57,8 +57,8 @@ export class InventoryItemList {
   private loadWarehouseStock(whId: string) {
     const df = this.dateFrom(); const dt = this.dateTo();
     return this.reports.getWarehouseStock(whId,
-      df ? df.toISOString() : undefined,
-      dt ? new Date(dt.getFullYear(), dt.getMonth(), dt.getDate(), 23, 59, 59).toISOString() : undefined);
+      df ? `${df.getFullYear()}-${String(df.getMonth()+1).padStart(2,'0')}-${String(df.getDate()).padStart(2,'0')}` : undefined,
+      dt ? `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}` : undefined);
   }
 
   private loadAllItems() { return this.inventory.getInventoryItems(); }

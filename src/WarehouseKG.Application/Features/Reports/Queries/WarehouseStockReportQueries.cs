@@ -118,7 +118,8 @@ public class GetWarehouseStockReportQueryHandler
 
         foreach (var p in picks)
         {
-            if (!IsInDateRange(p.PickedAtUtc, request.DateFrom, request.DateTo)) continue;
+            var pickDate = p.PlannedPickDate ?? p.PickedAtUtc;
+            if (!IsInDateRange(pickDate, request.DateFrom, request.DateTo)) continue;
             foreach (var l in p.Lines)
                 AddDelta(deltas, l.InventoryItemId, -l.Quantity);
         }
@@ -186,9 +187,10 @@ public class GetWarehouseStockReportQueryHandler
 
     private static bool IsInDateRange(DateTime? opDate, DateTime? from, DateTime? to)
     {
-        if (opDate == null) return true; // include if no date on operation
-        if (from.HasValue && opDate.Value < from.Value) return false;
-        if (to.HasValue && opDate.Value.Date > to.Value.Date) return false;
+        if (opDate == null) return false;
+        var localDate = opDate.Value.ToLocalTime().Date;
+        if (from.HasValue && localDate < from.Value.Date) return false;
+        if (to.HasValue && localDate > to.Value.Date) return false;
         return true;
     }
 }

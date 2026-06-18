@@ -1,10 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { DxDataGridModule, DxButtonModule, DxProgressBarModule } from 'devextreme-angular';
 import { RouterLink } from '@angular/router';
 import { PurchaseOrderSummary } from '../../models/supplier-po.model';
 import { SupplierPoService } from '../../services/supplier-po.service';
 
-@Component({ selector: 'app-po-list', imports: [DxDataGridModule,DxButtonModule,DxProgressBarModule,RouterLink], templateUrl: './po-list.html', styleUrl: './po-list.scss' })
+@Component({ selector: 'app-po-list', imports: [DxDataGridModule,DxButtonModule,DxProgressBarModule,RouterLink,DatePipe], templateUrl: './po-list.html', styleUrl: './po-list.scss' })
 export class PoList {
   private readonly s = inject(SupplierPoService);
   protected readonly items = signal<PurchaseOrderSummary[]>([]);

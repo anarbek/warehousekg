@@ -88,7 +88,7 @@ public class ReceiptWorkflowTests
         {
             var id = await Client.CreateReceiptAsync(new
             {
-                number = $"BATCH-{i:D3}",
+                number = $"BATCH-{Guid.NewGuid():N}"[..12],
                 warehouseId,
                 receivedAtUtc = DateTime.UtcNow,
                 lines = new[]

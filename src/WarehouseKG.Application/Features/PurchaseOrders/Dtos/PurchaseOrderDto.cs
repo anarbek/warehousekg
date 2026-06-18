@@ -22,8 +22,6 @@ public class PurchaseOrderDto
 
     public DateTime OrderDateUtc { get; set; }
 
-    public DateTime? ExpectedDateUtc { get; set; }
-
     public DateTime? SubmittedAtUtc { get; set; }
 
     public DateTime? ReceivedAtUtc { get; set; }
@@ -63,6 +61,10 @@ public class PurchaseOrderSummaryDto
     public string Currency { get; set; } = "KGS";
 
     public DateTime OrderDateUtc { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public DateTime? ReceivedAtUtc { get; set; }
 
     public decimal TotalAmount { get; set; }
 

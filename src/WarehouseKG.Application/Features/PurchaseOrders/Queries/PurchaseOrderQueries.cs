@@ -34,6 +34,8 @@ public class GetPurchaseOrdersQueryHandler
                 Status = p.Status,
                 Currency = p.Currency,
                 OrderDateUtc = p.OrderDateUtc,
+                CreatedAt = p.CreatedAt,
+                ReceivedAtUtc = p.ReceivedAtUtc,
                 TotalAmount = p.Lines.Sum(l => l.Quantity * l.UnitPrice),
                 LineCount = p.Lines.Count
             })
@@ -71,7 +73,6 @@ public class GetPurchaseOrderByIdQueryHandler
                 Status = p.Status,
                 Currency = p.Currency,
                 OrderDateUtc = p.OrderDateUtc,
-                ExpectedDateUtc = p.ExpectedDateUtc,
                 SubmittedAtUtc = p.SubmittedAtUtc,
                 ReceivedAtUtc = p.ReceivedAtUtc,
                 Notes = p.Notes,

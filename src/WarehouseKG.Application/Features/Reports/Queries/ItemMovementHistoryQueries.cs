@@ -99,12 +99,12 @@ public class GetItemMovementHistoryQueryHandler
             .Where(l => l.InventoryItemId == itemId
                 && l.PickOrder!.WarehouseId == warehouseId
                 && l.PickOrder.Status == StockOperationStatus.Completed
-                && l.PickOrder.PickedAtUtc != null)
-            .Select(l => new { l.PickOrder!.Id, l.PickOrder!.PickedAtUtc, l.PickOrder.Number, l.Quantity, l.PickOrder!.Notes, l.PickOrder!.CreatedAt })
+                && (l.PickOrder.PlannedPickDate != null || l.PickOrder.PickedAtUtc != null))
+            .Select(l => new { l.PickOrder!.Id, l.PickOrder!.PlannedPickDate, l.PickOrder!.PickedAtUtc, l.PickOrder.Number, l.Quantity, l.PickOrder!.Notes, l.PickOrder!.CreatedAt })
             .ToListAsync(cancellationToken);
 
         events.AddRange(picks.Select(p =>
-            (p.PickedAtUtc!.Value, "Сборка", p.Number, p.Id, -p.Quantity, p.Notes, p.CreatedAt)));
+            ((p.PlannedPickDate ?? p.PickedAtUtc!.Value), "Сборка", p.Number, p.Id, -p.Quantity, p.Notes, p.CreatedAt)));
 
         // 7. PurchaseOrders
         var pos = await _context.PurchaseOrderLines

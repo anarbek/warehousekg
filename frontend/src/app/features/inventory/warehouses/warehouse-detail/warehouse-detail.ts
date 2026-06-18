@@ -49,8 +49,8 @@ export class WarehouseDetail {
     // Secondary: load stock levels (non-blocking)
     const df = this.dateFrom();
     const dt = this.dateTo();
-    const dateFromStr = df ? df.toISOString() : undefined;
-    const dateToStr = dt ? new Date(dt.getFullYear(), dt.getMonth(), dt.getDate(), 23, 59, 59).toISOString() : undefined;
+    const dateFromStr = df ? `${df.getFullYear()}-${String(df.getMonth()+1).padStart(2,'0')}-${String(df.getDate()).padStart(2,'0')}` : undefined;
+    const dateToStr = dt ? `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}` : undefined;
     this.reports.getWarehouseStock(this.id, dateFromStr, dateToStr).subscribe({
       next: (stock) => this.stockItems.set(stock),
       error: () => this.stockItems.set([]),
