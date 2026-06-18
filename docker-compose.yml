@@ -1,0 +1,100 @@
+# ─── WarehouseKG ─ Docker Compose Stack ───────────────────────────────────
+# Requires Docker Compose v2.20+ for the `include` directive.
+#
+# Quick start:
+#   1. cp .env.example .env   (then edit secrets)
+#   2. docker compose up -d
+#   3. Frontend → http://localhost:4200
+#      Grafana   → http://localhost:3000 (admin / admin)
+
+include:
+  - path: docker/docker-compose.observability.yml
+
+services:
+  # ─── PostgreSQL ──────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: wkg-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: "${DB_PASSWORD:?err: DB_PASSWORD must be set in .env}"
+      POSTGRES_DB: ${DB_NAME:-WAREHOUSEKG}
+    ports:
+      - "${DB_PORT:-15432}:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-WAREHOUSEKG}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  # ─── Backend API (.NET 10) ──────────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: wkg-backend
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_ENVIRONMENT=Production
+      # Connection string built from env vars
+      - ConnectionStrings__Default=Server=${DB_HOST:-postgres};Port=5432;Database=${DB_NAME:-WAREHOUSEKG};User ID=${DB_USER:-postgres};Password=${DB_PASSWORD};Enlist=true;Maximum Pool Size=500;Minimum Pool Size=20;Connection Idle Lifetime=300;Connection Lifetime=600;Timeout=30;Command Timeout=60;Pooling=true;
+      # JWT
+      - 'Jwt__SigningKey=${JWT_SIGNING_KEY:?err: JWT_SIGNING_KEY must be set in .env}'
+      - Jwt__Issuer=${JWT_ISSUER:-WarehouseKG}
+      - Jwt__Audience=${JWT_AUDIENCE:-WarehouseKG}
+      - Jwt__AccessTokenMinutes=${JWT_ACCESS_TOKEN_MINUTES:-15}
+      - Jwt__RefreshTokenDays=${JWT_REFRESH_TOKEN_DAYS:-7}
+      # OpenTelemetry
+      - OpenTelemetry__Endpoint=${OTEL_ENDPOINT:-http://otel-collector:4317}
+      # OAuth — Google
+      - Authentication__Google__ClientId=${GOOGLE_CLIENT_ID}
+      - Authentication__Google__ClientSecret=${GOOGLE_CLIENT_SECRET}
+      # OAuth — Facebook
+      - Authentication__Facebook__ClientId=${FACEBOOK_CLIENT_ID}
+      - Authentication__Facebook__ClientSecret=${FACEBOOK_CLIENT_SECRET}
+      # OAuth — Microsoft
+      - Authentication__Microsoft__ClientId=${MICROSOFT_CLIENT_ID}
+      - Authentication__Microsoft__ClientSecret=${MICROSOFT_CLIENT_SECRET}
+      # OAuth — Apple
+      - Authentication__Apple__ClientId=${APPLE_CLIENT_ID}
+      - Authentication__Apple__ClientSecret=${APPLE_CLIENT_SECRET}
+    ports:
+      - "5134:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --output /dev/null http://127.0.0.1:8080/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped
+
+  # ─── Frontend (Angular → nginx) ────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: wkg-frontend
+    ports:
+      - "4200:443"
+    volumes:
+      - ./certs:/etc/nginx/ssl:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-check-certificate --quiet --spider https://127.0.0.1:443/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+
+volumes:
+  pg-data:

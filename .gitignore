@@ -77,6 +77,8 @@ docker-compose.override.yml
 *.env
 .env.*
 !.env.example
+certs/
+!certs/.gitkeep
 
 # ---------------------------------------------------------------------------
 # IDE / Editor
