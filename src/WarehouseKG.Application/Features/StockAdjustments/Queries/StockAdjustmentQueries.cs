@@ -33,6 +33,7 @@ public class GetStockAdjustmentsQueryHandler
                 Reason = a.Reason,
                 Status = a.Status,
                 AdjustedAtUtc = a.AdjustedAtUtc,
+                CreatedAt = a.CreatedAt,
                 LineCount = a.Lines.Count
             })
             .ToListAsync(cancellationToken);

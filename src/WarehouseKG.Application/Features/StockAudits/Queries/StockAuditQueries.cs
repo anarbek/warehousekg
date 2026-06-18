@@ -32,6 +32,7 @@ public class GetStockAuditsQueryHandler
                 WarehouseId = a.WarehouseId,
                 Status = a.Status,
                 ReconciledAtUtc = a.ReconciledAtUtc,
+                CreatedAt = a.CreatedAt,
                 LineCount = a.Lines.Count,
                 TotalVariance = a.Lines.Sum(l => l.CountedQuantity - l.SystemQuantity)
             })

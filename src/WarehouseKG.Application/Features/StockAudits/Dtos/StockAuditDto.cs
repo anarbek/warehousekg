@@ -44,6 +44,8 @@ public class StockAuditSummaryDto
 
     public DateTime? ReconciledAtUtc { get; set; }
 
+    public DateTime CreatedAt { get; set; }
+
     public int LineCount { get; set; }
 
     public decimal TotalVariance { get; set; }

@@ -19,6 +19,7 @@ export interface StockAuditSummary {
   warehouseName?: string | null;
   status: StockOperationStatus;
   reconciledAtUtc?: string | null;
+  createdAt: string;
   lineCount: number;
   totalVariance: number;
 }
@@ -44,6 +45,7 @@ export interface StockAuditLineInput {
 export interface CreateStockAuditRequest {
   number: string;
   warehouseId: string;
+  reconciledAtUtc?: string | null;
   notes?: string | null;
   lines: StockAuditLineInput[];
 }

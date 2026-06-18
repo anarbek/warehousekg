@@ -146,6 +146,92 @@ public class WarehouseKgClient
         return await response.Content.ReadFromJsonAsync<JsonElement>();
     }
 
+    public async Task<JsonElement> GetCustomersAsync()
+    {
+        var response = await _http.GetAsync("/api/v1/customers");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
+    public async Task<JsonElement> GetCategoriesAsync()
+    {
+        var response = await _http.GetAsync("/api/v1/item-categories");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
+    public async Task<JsonElement> GetUnitsOfMeasureAsync()
+    {
+        var response = await _http.GetAsync("/api/v1/units-of-measure");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
+    public async Task<string> CreateCustomerAsync(object body)
+    {
+        var response = await _http.PostAsJsonAsync("/api/v1/customers", body);
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    public async Task<string> CreateInventoryItemAsync(object body)
+    {
+        var response = await _http.PostAsJsonAsync("/api/v1/inventory-items", body);
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    // ─── Sales Orders ────────────────────────────────────────────────────
+
+    public async Task<string> CreateSalesOrderAsync(object body)
+    {
+        var response = await _http.PostAsJsonAsync("/api/v1/sales-orders", body);
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    public async Task ConfirmSalesOrderAsync(string id)
+    {
+        var response = await _http.PostAsync($"/api/v1/sales-orders/{id}/confirm", null);
+        await EnsureSuccessAsync(response);
+    }
+
+    public async Task ShipSalesOrderAsync(string id)
+    {
+        var response = await _http.PostAsync($"/api/v1/sales-orders/{id}/ship", null);
+        await EnsureSuccessAsync(response);
+    }
+
+    // ─── Stock Adjustments ───────────────────────────────────────────────
+
+    public async Task<string> CreateStockAdjustmentAsync(object body)
+    {
+        var response = await _http.PostAsJsonAsync("/api/v1/stock-adjustments", body);
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    public async Task CompleteStockAdjustmentAsync(string id)
+    {
+        var response = await _http.PostAsync($"/api/v1/stock-adjustments/{id}/complete", null);
+        await EnsureSuccessAsync(response);
+    }
+
+    // ─── Stock Audits ────────────────────────────────────────────────────
+
+    public async Task<string> CreateStockAuditAsync(object body)
+    {
+        var response = await _http.PostAsJsonAsync("/api/v1/stock-audits", body);
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    public async Task CompleteStockAuditAsync(string id)
+    {
+        var response = await _http.PostAsync($"/api/v1/stock-audits/{id}/complete", null);
+        await EnsureSuccessAsync(response);
+    }
+
     // ─── Reports ─────────────────────────────────────────────────────────
 
     public async Task<JsonElement> GetWarehouseStockAsync(Guid warehouseId, string? dateFrom = null, string? dateTo = null)
@@ -164,6 +250,16 @@ public class WarehouseKgClient
         var response = await _http.GetAsync(url);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
+    private static async Task EnsureSuccessAsync(HttpResponseMessage response)
+    {
+        if (!response.IsSuccessStatusCode)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            throw new HttpRequestException(
+                $"Response status code {(int)response.StatusCode}: {body}");
+        }
     }
 
     private record LoginResponse(string AccessToken);

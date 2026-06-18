@@ -34,6 +34,8 @@ public class GetSalesOrdersQueryHandler
                 Status = s.Status,
                 Currency = s.Currency,
                 OrderDateUtc = s.OrderDateUtc,
+                CreatedAt = s.CreatedAt,
+                ExpectedDateUtc = s.ExpectedDateUtc,
                 TotalAmount = s.Lines.Sum(l => l.Quantity * l.UnitPrice),
                 LineCount = s.Lines.Count
             })

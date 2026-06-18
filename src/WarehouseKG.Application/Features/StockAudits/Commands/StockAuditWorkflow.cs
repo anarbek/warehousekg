@@ -46,12 +46,14 @@ public class CompleteStockAuditCommandHandler : IRequestHandler<CompleteStockAud
             var item = items.FirstOrDefault(i => i.Id == line.InventoryItemId);
             if (item is not null)
             {
-                item.QuantityOnHand = line.CountedQuantity;
+                // Apply the variance (counted − system) instead of overwriting QOH,
+                // so that operations at other warehouses are preserved.
+                item.QuantityOnHand += line.CountedQuantity - line.SystemQuantity;
             }
         }
 
         audit.Status = StockOperationStatus.Completed;
-        audit.ReconciledAtUtc = DateTime.UtcNow;
+        audit.ReconciledAtUtc ??= DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
 

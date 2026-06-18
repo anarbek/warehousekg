@@ -48,5 +48,7 @@ public class StockAdjustmentSummaryDto
 
     public DateTime? AdjustedAtUtc { get; set; }
 
+    public DateTime CreatedAt { get; set; }
+
     public int LineCount { get; set; }
 }

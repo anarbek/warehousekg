@@ -84,7 +84,7 @@ public class ShipSalesOrderCommandHandler : IRequestHandler<ShipSalesOrderComman
         }
 
         order.Status = SalesOrderStatus.Shipped;
-        order.ShippedAtUtc = DateTime.UtcNow;
+        order.ShippedAtUtc ??= DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
 

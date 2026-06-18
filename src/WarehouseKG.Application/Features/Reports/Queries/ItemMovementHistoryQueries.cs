@@ -132,8 +132,14 @@ public class GetItemMovementHistoryQueryHandler
         events.AddRange(sos.Select(s =>
             (s.ShippedAtUtc!.Value, "Продажа", s.Number, s.Id, -s.Quantity, s.Notes, s.CreatedAt)));
 
-        // Sort chronologically and compute running balance
-        var sorted = events.OrderBy(e => e.TimestampUtc).ToList();
+        // Sort by local date; within each day, audits come last so the running
+        // balance reflects all same-day operations before the audit adjustment.
+        var sorted = events
+            .OrderBy(e => e.TimestampUtc.ToLocalTime().Date)
+            .ThenBy(e => e.OperationType == "Аудит" ? 1 : 0)
+            .ThenBy(e => e.TimestampUtc)
+            .ThenBy(e => e.CreatedAt)
+            .ToList();
         var result = new List<ItemMovementDto>();
         decimal balance = 0;
 

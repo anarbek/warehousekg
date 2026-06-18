@@ -20,7 +20,7 @@
         <dt i18n="@@item.detail.barcode">Штрихкод</dt><dd>{{ it.barcode || '—' }}</dd>
         <dt i18n="@@item.detail.categoryId">Категория</dt><dd>{{ it.categoryName || '—' }}</dd>
         <dt i18n="@@item.detail.unitOfMeasureId">Ед. изм.</dt><dd>{{ it.unitOfMeasureName || '—' }}</dd>
-        <dt i18n="@@item.detail.quantityOnHand">На складе</dt><dd>{{ it.quantityOnHand }}</dd>
+        <dt i18n="@@item.detail.quantityOnHand">На складе</dt><dd>{{ selWarehouseId() ? runningBalance : it.quantityOnHand }}</dd>
         <dt i18n="@@item.detail.reorderLevel">Мин. остаток</dt><dd>{{ it.reorderLevel }}</dd>
         <dt i18n="@@item.detail.isActive">Статус</dt><dd>{{ it.isActive ? 'Активен' : 'Неактивен' }}</dd>
       </dl>

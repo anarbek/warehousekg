@@ -29,6 +29,7 @@ export interface StockAdjustmentSummary {
   reason: StockAdjustmentReason;
   status: StockOperationStatus;
   adjustedAtUtc?: string | null;
+  createdAt: string;
   lineCount: number;
 }
 
@@ -56,6 +57,7 @@ export interface CreateStockAdjustmentRequest {
   number: string;
   warehouseId: string;
   reason: StockAdjustmentReason;
+  adjustedAtUtc?: string | null;
   notes?: string | null;
   lines: StockAdjustmentLineInput[];
 }

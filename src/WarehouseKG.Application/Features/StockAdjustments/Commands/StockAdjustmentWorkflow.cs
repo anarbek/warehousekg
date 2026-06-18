@@ -50,7 +50,7 @@ public class CompleteStockAdjustmentCommandHandler : IRequestHandler<CompleteSto
         }
 
         adjustment.Status = StockOperationStatus.Completed;
-        adjustment.AdjustedAtUtc = DateTime.UtcNow;
+        adjustment.AdjustedAtUtc ??= DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
 

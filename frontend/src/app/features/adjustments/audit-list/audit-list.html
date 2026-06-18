@@ -59,7 +59,8 @@
     <dxi-column dataField="lineCount" i18n-caption="@@audit.column.lines" caption="Позиций" [width]="80" />
     <dxi-column dataField="totalVariance" i18n-caption="@@audit.column.variance" caption="Расхождение" [width]="120" cellTemplate="varCell" />
     <dxi-column dataField="status" i18n-caption="@@audit.column.status" caption="Статус" [width]="120" />
-    <dxi-column dataField="reconciledAtUtc" i18n-caption="@@audit.column.date" caption="Дата" [width]="160" cellTemplate="dateCell" />
+    <dxi-column dataField="reconciledAtUtc" i18n-caption="@@audit.column.date" caption="Дата" [width]="120" cellTemplate="audDateCell" />
+    <dxi-column dataField="createdAt" caption="Создан" [width]="160" cellTemplate="createdCell" />
     <dxi-column caption="" [width]="60" cellTemplate="actCell" />
 
     <div *dxTemplate="let c of 'numCell'">
@@ -71,7 +72,8 @@
         {{ c.value > 0 ? '+' : '' }}{{ c.value }}
       </span>
     </div>
-    <div *dxTemplate="let c of 'dateCell'">{{ c.value | date: 'short' }}</div>
+    <div *dxTemplate="let c of 'audDateCell'">{{ c.value|date:'dd.MM.yyyy' }}</div>
+    <div *dxTemplate="let c of 'createdCell'">{{ c.value|date:'dd.MM.yyyy, HH:mm' }}</div>
     <div *dxTemplate="let c of 'actCell'">
       <a [routerLink]="[c.data.id]"><dx-button icon="info" hint="View" stylingMode="text" /></a>
     </div>

@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
-import { DxFormModule, DxSelectBoxModule, DxButtonModule, DxNumberBoxModule, DxTextBoxModule, DxProgressBarModule } from 'devextreme-angular';
+import { DxFormModule, DxSelectBoxModule, DxDateBoxModule, DxButtonModule, DxNumberBoxModule, DxTextBoxModule, DxProgressBarModule } from 'devextreme-angular';
 import { CreateStockAuditRequest, StockAuditLineInput } from '../models/audit.model';
 import { Warehouse } from '../../inventory/models/warehouse.model';
 import { InventoryItem } from '../../inventory/models/inventory-item.model';
@@ -13,12 +13,13 @@ interface FormHeader {
   number: string;
   warehouseId: string;
   notes: string;
+  reconciledAtUtc: Date|null;
 }
 
 @Component({
   selector: 'app-audit-form',
   standalone: true,
-  imports: [ReactiveFormsModule, DxFormModule, DxSelectBoxModule, DxButtonModule, DxNumberBoxModule, DxTextBoxModule, DxProgressBarModule],
+  imports: [ReactiveFormsModule, DxFormModule, DxSelectBoxModule, DxDateBoxModule, DxButtonModule, DxNumberBoxModule, DxTextBoxModule, DxProgressBarModule],
   templateUrl: './audit-form.html',
   styleUrl: './audit-form.scss',
 })
@@ -39,6 +40,7 @@ export class AuditForm implements OnInit {
     number: '',
     warehouseId: '',
     notes: '',
+    reconciledAtUtc: null,
   };
 
   protected readonly form = this.fb.group({
@@ -95,6 +97,12 @@ export class AuditForm implements OnInit {
         label: { text: $localize`:@@audit.form.notes:Примечание` },
         editorOptions: { stylingMode: 'outlined' },
       },
+      {
+        dataField: 'reconciledAtUtc',
+        editorType: 'dxDateBox',
+        label: { text: 'Дата аудита' },
+        editorOptions: { type: 'date', displayFormat: 'dd.MM.yyyy', stylingMode: 'outlined' },
+      },
     ]);
   }
 
@@ -132,6 +140,9 @@ export class AuditForm implements OnInit {
     const request: CreateStockAuditRequest = {
       number: this.formData.number,
       warehouseId: this.formData.warehouseId,
+      reconciledAtUtc: this.formData.reconciledAtUtc
+        ? `${this.formData.reconciledAtUtc.getFullYear()}-${String(this.formData.reconciledAtUtc.getMonth() + 1).padStart(2, '0')}-${String(this.formData.reconciledAtUtc.getDate()).padStart(2, '0')}`
+        : null,
       notes: this.formData.notes || null,
       lines,
     };

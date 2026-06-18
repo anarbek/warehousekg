@@ -64,6 +64,10 @@ public class SalesOrderSummaryDto
 
     public DateTime OrderDateUtc { get; set; }
 
+    public DateTime CreatedAt { get; set; }
+
+    public DateTime? ExpectedDateUtc { get; set; }
+
     public decimal TotalAmount { get; set; }
 
     public int LineCount { get; set; }

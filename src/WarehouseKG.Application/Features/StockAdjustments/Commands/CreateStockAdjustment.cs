@@ -15,6 +15,7 @@ public record CreateStockAdjustmentCommand(
     Guid WarehouseId,
     StockAdjustmentReason Reason,
     string? Notes,
+    DateTime? AdjustedAtUtc,
     IReadOnlyList<StockAdjustmentLineInput> Lines) : IRequest<Guid>;
 
 public class CreateStockAdjustmentCommandHandler : IRequestHandler<CreateStockAdjustmentCommand, Guid>
@@ -35,6 +36,7 @@ public class CreateStockAdjustmentCommandHandler : IRequestHandler<CreateStockAd
             WarehouseId = request.WarehouseId,
             Reason = request.Reason,
             Notes = request.Notes,
+            AdjustedAtUtc = request.AdjustedAtUtc,
             Status = StockOperationStatus.Draft,
             Lines = request.Lines.Select(l => new StockAdjustmentLine
             {

@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
-import { DxFormModule, DxSelectBoxModule, DxButtonModule, DxNumberBoxModule, DxTextBoxModule, DxProgressBarModule } from 'devextreme-angular';
+import { DxFormModule, DxSelectBoxModule, DxDateBoxModule, DxButtonModule, DxNumberBoxModule, DxTextBoxModule, DxProgressBarModule } from 'devextreme-angular';
 import { StockAdjustmentReason, CreateStockAdjustmentRequest, StockAdjustmentLineInput } from '../models/stock-adjustment.model';
 import { Warehouse } from '../../inventory/models/warehouse.model';
 import { InventoryItem } from '../../inventory/models/inventory-item.model';
@@ -14,6 +14,7 @@ interface FormHeader {
   warehouseId: string;
   reason: StockAdjustmentReason;
   notes: string;
+  adjustedAtUtc: Date|null;
 }
 
 const REASONS: StockAdjustmentReason[] = ['Correction', 'Damage', 'Loss', 'Theft', 'Found', 'Expired', 'Other'];
@@ -21,7 +22,7 @@ const REASONS: StockAdjustmentReason[] = ['Correction', 'Damage', 'Loss', 'Theft
 @Component({
   selector: 'app-stock-adjustment-form',
   standalone: true,
-  imports: [ReactiveFormsModule, DxFormModule, DxSelectBoxModule, DxButtonModule, DxNumberBoxModule, DxTextBoxModule, DxProgressBarModule],
+  imports: [ReactiveFormsModule, DxFormModule, DxSelectBoxModule, DxDateBoxModule, DxButtonModule, DxNumberBoxModule, DxTextBoxModule, DxProgressBarModule],
   templateUrl: './stock-adjustment-form.html',
   styleUrl: './stock-adjustment-form.scss',
 })
@@ -43,6 +44,7 @@ export class StockAdjustmentForm implements OnInit {
     warehouseId: '',
     reason: 'Correction',
     notes: '',
+    adjustedAtUtc: null,
   };
 
   protected readonly form = this.fb.group({
@@ -109,6 +111,12 @@ export class StockAdjustmentForm implements OnInit {
         label: { text: $localize`:@@adj.form.notes:Примечание` },
         editorOptions: { stylingMode: 'outlined' },
       },
+      {
+        dataField: 'adjustedAtUtc',
+        editorType: 'dxDateBox',
+        label: { text: 'Дата корректировки' },
+        editorOptions: { type: 'date', displayFormat: 'dd.MM.yyyy', stylingMode: 'outlined' },
+      },
     ]);
   }
 
@@ -149,6 +157,9 @@ export class StockAdjustmentForm implements OnInit {
       number: this.formData.number,
       warehouseId: this.formData.warehouseId,
       reason: this.formData.reason,
+      adjustedAtUtc: this.formData.adjustedAtUtc
+        ? `${this.formData.adjustedAtUtc.getFullYear()}-${String(this.formData.adjustedAtUtc.getMonth() + 1).padStart(2, '0')}-${String(this.formData.adjustedAtUtc.getDate()).padStart(2, '0')}`
+        : null,
       notes: this.formData.notes || null,
       lines,
     };
