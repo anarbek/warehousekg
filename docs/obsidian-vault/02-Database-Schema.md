@@ -114,12 +114,16 @@ Document-style operations that move inventory. Migration: `AddStockOperations`. 
 header + lines (both inherit `Id` + `TenantId` from `BaseEntity`) and a `Status` stored as text
 (`Draft`, `Completed`, `Cancelled`). Header `Number` is unique per tenant: `(TenantId, Number)`.
 
-| Operation     | Header table        | Line table               | Stock effect on **Complete**          |
-| ------------- | ------------------- | ------------------------ | ------------------------------------- |
-| Receiving     | `stock_receipts`    | `stock_receipt_lines`    | `QuantityOnHand += line.Quantity`     |
-| Picking       | `pick_orders`       | `pick_order_lines`       | `QuantityOnHand -= line.Quantity`     |
-| Packing       | `pack_orders`       | `pack_order_lines`       | none (status only)                    |
-| Transfers     | `stock_transfers`   | `stock_transfer_lines`   | none (status only — see note below)   |
+| Operation       | Header table        | Line table               | Stock effect on **Complete**                    |
+| --------------- | ------------------- | ------------------------ | ----------------------------------------------- |
+| Receiving       | `stock_receipts`    | `stock_receipt_lines`    | `QuantityOnHand += line.Quantity`               |
+| Picking         | `pick_orders`       | `pick_order_lines`       | `QuantityOnHand -= line.Quantity`               |
+| Packing         | `pack_orders`       | `pack_order_lines`       | none (status only)                              |
+| Transfers       | `stock_transfers`   | `stock_transfer_lines`   | none (status only)                              |
+| Adjustment      | `stock_adjustments` | `stock_adjustment_lines` | `QuantityOnHand += line.QuantityChange`         |
+| Audit           | `stock_audits`      | `stock_audit_lines`      | `QuantityOnHand += (counted − system)`          |
+| Purchase (recv) | `purchase_orders`   | `purchase_order_lines`   | `QuantityOnHand += line.Quantity`               |
+| Sales (ship)    | `sales_orders`      | `sales_order_lines`      | `QuantityOnHand -= line.Quantity`               |
 
 ### Headers
 
@@ -139,10 +143,11 @@ header (deleting a header removes its lines). Receipt/pick lines also have an op
 Operations are created as `Draft`. `Complete` and `Cancel` are only valid from `Draft` (otherwise the
 API returns `409 Conflict`). Completing applies the stock effect in the table above.
 
-> **Known limitation:** `InventoryItem.QuantityOnHand` is a single tenant-wide figure, not per-warehouse.
-> Consequently transfers (and the per-location aspect of receiving/picking) don't yet adjust per-location
-> stock. A future `StockLevel (InventoryItem × WarehouseLocation → Quantity)` entity is the planned way to
-> track location-level stock. See [[09-Roadmap]].
+> **Note:** `InventoryItem.QuantityOnHand` is a single tenant-wide figure, maintained as the sum of all
+> completed operation deltas across all warehouses. The `warehouse-stock` report endpoint computes per-warehouse
+> balances by replaying operations filtered by warehouse — so Оборот (turnover, excluding audit deltas) and
+> Всего (ending balance, including all deltas) are always consistent with the item movement history for that
+> warehouse. Per-location stock tracking (`StockLevel`) is a planned enhancement (see [[09-Roadmap]]).
 
 ## Suppliers & Purchase Orders Module
 
@@ -348,7 +353,7 @@ Warehouse 1───* StockAudit      1───* StockAuditLine
 Both start `Draft`. **Complete** and **Cancel** are only valid from `Draft` (otherwise `409 Conflict`):
 
 - **Adjustment complete** — applies each line's signed `QuantityChange` to `InventoryItem.QuantityOnHand`.
-- **Audit complete** — reconciles, setting `InventoryItem.QuantityOnHand` to each line's `CountedQuantity`.
+- **Audit complete** — applies the variance of each line (`CountedQuantity − SystemQuantity`) to `InventoryItem.QuantityOnHand`, preserving adjustments made at other warehouses since the audit was created.
 
 > Like the rest of the system these adjust the single tenant-wide `InventoryItem.QuantityOnHand`. Per-location
 > reconciliation is part of the planned `StockLevel` work (see [[09-Roadmap]]).

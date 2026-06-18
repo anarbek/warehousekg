@@ -6,9 +6,9 @@ using WarehouseKG.Domain.Enums;
 
 namespace WarehouseKG.Application.Features.StockAudits.Commands;
 
-// Completing an audit reconciles the system: each item's tenant-wide QuantityOnHand is set to the
-// physically counted quantity, applying the variance. Per-location stock is a planned enhancement
-// (see docs/02-Database-Schema).
+// Completing an audit reconciles the system: each item's tenant-wide QuantityOnHand is adjusted
+// by the variance (CountedQuantity − SystemQuantity), preserving changes at other warehouses
+// since the audit was created. Per-location stock is a planned enhancement (see docs/02-Database-Schema).
 public record CompleteStockAuditCommand(Guid Id) : IRequest<OperationResult>;
 
 public class CompleteStockAuditCommandHandler : IRequestHandler<CompleteStockAuditCommand, OperationResult>

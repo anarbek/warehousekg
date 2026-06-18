@@ -381,7 +381,7 @@ shape as the stock operations above:
 | Operation   | Base route                   | Complete stock effect                            |
 | ----------- | ---------------------------- | ------------------------------------------------ |
 | Adjustments | `/api/v1/stock-adjustments`  | applies each line's signed `quantityChange`      |
-| Audits      | `/api/v1/stock-audits`       | sets `QuantityOnHand` to each line's `countedQuantity` |
+| Audits      | `/api/v1/stock-audits`       | applies variance (`countedQuantity − systemQuantity`) to `QuantityOnHand` |
 
 ### Create body examples
 
@@ -418,7 +418,7 @@ exposes a per-line `variance` (`countedQuantity − systemQuantity`) and the sum
 }
 ```
 
-Completing an audit reconciles stock: each item's `QuantityOnHand` is set to its `countedQuantity`.
+Completing an audit reconciles stock: each item's `QuantityOnHand` is adjusted by the variance (`countedQuantity − systemQuantity`), preserving changes at other warehouses since the audit was created.
 
 ## Reporting Module — `/api/v1/reports`
 
