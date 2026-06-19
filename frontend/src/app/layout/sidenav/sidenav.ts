@@ -70,7 +70,11 @@ export class Sidenav implements OnInit {
       id: 'vehicles-group', icon: 'car',
       text: $localize`:@@nav.groups.vehicles:Автопарк`,
       items: [
-        // Planned — added in Phase 7 (Vehicle Management)
+        { id: 'vehicles', text: $localize`:@@nav.vehicles:Транспорт`, path: '/vehicles/list', resource: 'vehicles' },
+        { id: 'vehicle-types', text: $localize`:@@nav.vehicleTypes:Типы транспорта`, path: '/vehicles/types', resource: 'vehicleTypes' },
+        { id: 'maintenance', text: $localize`:@@nav.maintenance:ТО`, path: '/vehicles/maintenance', resource: 'maintenance' },
+        { id: 'insurance', text: $localize`:@@nav.insurance:Страховка`, path: '/vehicles/insurance', resource: 'insurance' },
+        { id: 'inspections', text: $localize`:@@nav.inspections:Техосмотр`, path: '/vehicles/inspections', resource: 'inspections' },
       ],
     },
     { id: 'reports', icon: 'chart', text: $localize`:@@nav.reports:Отчёты`, path: '/reports', resource: 'reports' },
@@ -85,7 +89,8 @@ export class Sidenav implements OnInit {
     ).subscribe({
       next: (data) => {
         this.perms.setAll(data.resources, data.roles);
-        this.items.set(this.filterItems(this.allItems, data.resources));
+        const isAdmin = data.roles.includes('Admin');
+        this.items.set(this.filterItems(this.allItems, data.resources, isAdmin));
       },
       error: () => {
         this.items.set(this.allItems);
@@ -93,16 +98,16 @@ export class Sidenav implements OnInit {
     });
   }
 
-  /// Recursively filter items: a parent is visible if any child passes the filter.
-  private filterItems(items: NavItem[], permissions: Record<string, ResourcePermissions>): NavItem[] {
+  /// Recursively filter items: Admin sees everything, others by permission.
+  private filterItems(items: NavItem[], permissions: Record<string, ResourcePermissions>, isAdmin: boolean): NavItem[] {
     const result: NavItem[] = [];
     for (const item of items) {
       if (item.items && item.items.length > 0) {
-        const filteredChildren = this.filterItems(item.items, permissions);
+        const filteredChildren = this.filterItems(item.items, permissions, isAdmin);
         if (filteredChildren.length > 0) {
           result.push({ ...item, items: filteredChildren });
         }
-      } else if (!item.resource || permissions[item.resource]?.canRead === true) {
+      } else if (!item.resource || isAdmin || permissions[item.resource]?.canRead === true) {
         result.push(item);
       }
     }

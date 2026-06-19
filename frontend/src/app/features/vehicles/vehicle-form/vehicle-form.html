@@ -1,0 +1,11 @@
+<div class="form-page">
+  <h1>{{ isEdit ? 'Изменить транспорт' : 'Новый транспорт' }}</h1>
+  @if(loading()){ <dx-progress-bar [visible]="true"/> }
+
+  <dx-form [formData]="formData" [colCount]="2" [items]="formItems()" />
+
+  <div class="form-page__actions">
+    <dx-button text="Сохранить" icon="check" type="default" stylingMode="contained" (onClick)="submit()" [disabled]="loading()" />
+    <dx-button text="Отмена" stylingMode="outlined" [routerLink]="['/vehicles/list']" />
+  </div>
+</div>

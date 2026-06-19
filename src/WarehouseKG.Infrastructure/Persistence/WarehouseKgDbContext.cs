@@ -88,6 +88,14 @@ public class WarehouseKgDbContext
 
     public DbSet<AttendanceRecord> AttendanceRecords => Set<AttendanceRecord>();
 
+    public DbSet<VehicleType> VehicleTypes => Set<VehicleType>();
+    public DbSet<Vehicle> Vehicles => Set<Vehicle>();
+    public DbSet<VehicleDriverAssignment> VehicleDriverAssignments => Set<VehicleDriverAssignment>();
+    public DbSet<VehicleMaintenanceRecord> VehicleMaintenanceRecords => Set<VehicleMaintenanceRecord>();
+    public DbSet<VehicleInsuranceRecord> VehicleInsuranceRecords => Set<VehicleInsuranceRecord>();
+    public DbSet<VehicleInspectionRecord> VehicleInspectionRecords => Set<VehicleInspectionRecord>();
+    public DbSet<VehicleFuelRecord> VehicleFuelRecords => Set<VehicleFuelRecord>();
+
     public Guid CurrentTenantId => _tenantProvider.GetTenantId();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

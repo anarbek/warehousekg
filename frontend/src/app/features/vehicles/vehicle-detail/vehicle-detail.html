@@ -1,0 +1,240 @@
+<div class="detail-page">
+  @if(loading()){ <dx-progress-bar [visible]="true"/> }
+  @if(vehicle(); as v){
+    <div class="detail-page__toolbar">
+      <h1>{{ v.brand }} {{ v.model }} ({{ v.licensePlate }})</h1>
+      <div class="detail-page__toolbar-actions">
+        <dx-button text="Изменить" icon="edit" stylingMode="outlined" [routerLink]="['../',v.id,'edit']"/>
+        <dx-button text="Назад" icon="arrowleft" stylingMode="text" routerLink="/vehicles/list"/>
+      </div>
+    </div>
+
+    <!-- Tab bar -->
+    <div class="tabs">
+      <button [class.tabs__tab--active]="activeTab()==='info'" (click)="activeTab.set('info')" class="tabs__tab">Информация</button>
+      <button [class.tabs__tab--active]="activeTab()==='maintenance'" (click)="activeTab.set('maintenance')" class="tabs__tab">ТО ({{v.maintenanceRecords.length}})</button>
+      <button [class.tabs__tab--active]="activeTab()==='insurance'" (click)="activeTab.set('insurance')" class="tabs__tab">Страховка ({{v.insuranceRecords.length}})</button>
+      <button [class.tabs__tab--active]="activeTab()==='inspections'" (click)="activeTab.set('inspections')" class="tabs__tab">Техосмотр ({{v.inspectionRecords.length}})</button>
+    </div>
+
+    <!-- Info tab -->
+    @if(activeTab()==='info'){
+      <div class="detail-grid">
+        <div class="detail-grid__group">
+          <h3>Основное</h3>
+          <dl class="detail-list">
+            <dt>Код</dt><dd>{{v.code}}</dd>
+            <dt>Госномер</dt><dd>{{v.licensePlate}}</dd>
+            <dt>VIN</dt><dd>{{v.vin || '—'}}</dd>
+            <dt>Марка</dt><dd>{{v.brand}}</dd>
+            <dt>Модель</dt><dd>{{v.model || '—'}}</dd>
+            <dt>Год выпуска</dt><dd>{{v.manufactureYear || '—'}}</dd>
+            <dt>Тип</dt><dd>{{v.vehicleTypeName || '—'}}</dd>
+            <dt>Владение</dt><dd>{{ownershipLabel(v.ownershipType)}}</dd>
+            <dt>Статус</dt><dd>{{statusLabel(v.status)}}</dd>
+            <dt>Водитель</dt><dd>{{v.assignedDriverName || '—'}}</dd>
+            <dt>GPS трекер</dt><dd>{{v.hasGpsTracker ? 'Да' : 'Нет'}}</dd>
+          </dl>
+        </div>
+        <div class="detail-grid__group">
+          <h3>Характеристики</h3>
+          <dl class="detail-list">
+            <dt>Топливо</dt><dd>{{v.fuelType}}</dd>
+            <dt>Расход (л/100км)</dt><dd>{{v.fuelConsumptionRate || '—'}}</dd>
+            <dt>Грузоподъёмность</dt><dd>{{v.maxCapacityKg ? v.maxCapacityKg + ' кг' : '—'}}</dd>
+            <dt>Объём кузова</dt><dd>{{v.maxCapacityM3 ? v.maxCapacityM3 + ' м³' : '—'}}</dd>
+            <dt>Пробег</dt><dd>{{v.currentMileageKm | number:'1.0-1'}} км</dd>
+            <dt>Дата покупки</dt><dd>{{v.purchaseDate ? (v.purchaseDate | date:'dd.MM.yyyy') : '—'}}</dd>
+            <dt>Цена покупки</dt><dd>{{v.purchasePrice ? (v.purchasePrice | number:'1.2-2') : '—'}}</dd>
+          </dl>
+        </div>
+        <div class="detail-grid__group">
+          <h3>Страховка и ТО</h3>
+          <dl class="detail-list">
+            <dt>№ полиса</dt><dd>{{v.insurancePolicyNumber || '—'}}</dd>
+            <dt>Страховая</dt><dd>{{v.insuranceProvider || '—'}}</dd>
+            <dt>Страховка до</dt><dd>{{v.insuranceExpiryDate ? (v.insuranceExpiryDate | date:'dd.MM.yyyy') : '—'}}</dd>
+            <dt>Техосмотр до</dt><dd>{{v.techInspectionExpiryDate ? (v.techInspectionExpiryDate | date:'dd.MM.yyyy') : '—'}}</dd>
+            <dt>След. ТО (км)</dt><dd>{{v.nextMaintenanceMileageKm ? (v.nextMaintenanceMileageKm | number:'1.0-1') + ' км' : '—'}}</dd>
+            <dt>След. ТО (дата)</dt><dd>{{v.nextMaintenanceDate ? (v.nextMaintenanceDate | date:'dd.MM.yyyy') : '—'}}</dd>
+          </dl>
+        </div>
+        @if(v.notes){
+          <div class="detail-grid__group">
+            <h3>Заметки</h3>
+            <p>{{v.notes}}</p>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Maintenance tab -->
+    @if(activeTab()==='maintenance'){
+      <div class="tab-toolbar">
+        <h3>Записи ТО</h3>
+        <dx-button text="Добавить" icon="add" type="default" stylingMode="contained" (onClick)="openMaint()"/>
+      </div>
+      <dx-data-grid [dataSource]="v.maintenanceRecords" [showBorders]="true">
+        <dxi-column caption="Тип" [width]="160" cellTemplate="mtCell"/>
+        <dxi-column dataField="date" caption="Дата" dataType="date" [width]="110"/>
+        <dxi-column dataField="mileageKm" caption="Пробег" [width]="100"/>
+        <dxi-column dataField="cost" caption="Стоимость" [width]="110"/>
+        <dxi-column dataField="serviceProvider" caption="Сервис"/>
+        <dxi-column dataField="nextDueDate" caption="След. ТО" dataType="date" [width]="110"/>
+        <dxi-column dataField="notes" caption="Заметки"/>
+        <dxi-column caption="" [width]="80" cellTemplate="maintActions"/>
+        <div *dxTemplate="let cell of 'mtCell'">{{maintenanceTypeLabel(cell.data.maintenanceType)}}</div>
+        <div *dxTemplate="let cell of 'maintActions'">
+          <dx-button icon="edit" hint="Edit" stylingMode="text" (onClick)="editMaint(cell.data)"/>
+          <dx-button icon="trash" hint="Delete" stylingMode="text" (onClick)="deleteMaint(cell.data.id)"/>
+        </div>
+      </dx-data-grid>
+    }
+
+    <!-- Insurance tab -->
+    @if(activeTab()==='insurance'){
+      <div class="tab-toolbar">
+        <h3>Страховки</h3>
+        <dx-button text="Добавить" icon="add" type="default" stylingMode="contained" (onClick)="openInsur()"/>
+      </div>
+      <dx-data-grid [dataSource]="v.insuranceRecords" [showBorders]="true">
+        <dxi-column dataField="policyNumber" caption="№ полиса"/>
+        <dxi-column dataField="provider" caption="Страховая"/>
+        <dxi-column dataField="coverageType" caption="Тип"/>
+        <dxi-column dataField="startDate" caption="Начало" dataType="date" [width]="110"/>
+        <dxi-column dataField="endDate" caption="Конец" dataType="date" [width]="110"/>
+        <dxi-column dataField="premiumAmount" caption="Премия" [width]="110"/>
+        <dxi-column dataField="description" caption="Описание"/>
+        <dxi-column caption="" [width]="80" cellTemplate="insurActions"/>
+        <div *dxTemplate="let cell of 'insurActions'">
+          <dx-button icon="edit" hint="Edit" stylingMode="text" (onClick)="editInsur(cell.data)"/>
+          <dx-button icon="trash" hint="Delete" stylingMode="text" (onClick)="deleteInsur(cell.data.id)"/>
+        </div>
+      </dx-data-grid>
+    }
+
+    <!-- Inspections tab -->
+    @if(activeTab()==='inspections'){
+      <div class="tab-toolbar">
+        <h3>Техосмотры</h3>
+        <dx-button text="Добавить" icon="add" type="default" stylingMode="contained" (onClick)="openInsp()"/>
+      </div>
+      <dx-data-grid [dataSource]="v.inspectionRecords" [showBorders]="true">
+        <dxi-column dataField="inspectionDate" caption="Дата" dataType="date" [width]="110"/>
+        <dxi-column dataField="expiryDate" caption="Действует до" dataType="date" [width]="120"/>
+        <dxi-column dataField="result" caption="Результат" [width]="120"/>
+        <dxi-column dataField="inspector" caption="Инспектор"/>
+        <dxi-column dataField="notes" caption="Заметки"/>
+        <dxi-column caption="" [width]="80" cellTemplate="inspActions"/>
+        <div *dxTemplate="let cell of 'inspActions'">
+          <dx-button icon="edit" hint="Edit" stylingMode="text" (onClick)="editInsp(cell.data)"/>
+          <dx-button icon="trash" hint="Delete" stylingMode="text" (onClick)="deleteInsp(cell.data.id)"/>
+        </div>
+      </dx-data-grid>
+    }
+
+    <!-- Driver assignments -->
+    <div class="detail-grid__group" style="margin-top:1rem">
+      <div class="tab-toolbar">
+        <h3>Водители</h3>
+        <dx-button text="Добавить" icon="add" type="default" stylingMode="contained" (onClick)="openDriverPopup()"/>
+      </div>
+      @if(v.driverAssignments.length){
+        <dx-data-grid [dataSource]="v.driverAssignments" [showBorders]="true">
+          <dxi-column dataField="employeeName" caption="Водитель"/>
+          <dxi-column dataField="assignedFromUtc" caption="Назначен с" dataType="date" [width]="120"/>
+          <dxi-column dataField="assignedToUtc" caption="По" dataType="date" [width]="120"/>
+          <dxi-column dataField="isPrimary" caption="Основной" [width]="90" cellTemplate="primCell"/>
+          <dxi-column caption="" [width]="60" cellTemplate="driverActions"/>
+          <div *dxTemplate="let cell of 'primCell'">{{cell.value?'Да':'Нет'}}</div>
+          <div *dxTemplate="let cell of 'driverActions'">
+            <dx-button icon="trash" hint="Delete" stylingMode="text" (onClick)="deleteDriver(cell.data.id)"/>
+          </div>
+        </dx-data-grid>
+      } @else {
+        <p style="color:rgba(0,0,0,.5);margin:0">Нет назначенных водителей</p>
+      }
+    </div>
+
+    <!-- Driver popup -->
+    <dx-popup [(visible)]="driverPopup" title="Назначить водителя" [width]="450">
+      <div class="popup-form">
+        <div class="form-row">
+          <dx-select-box [dataSource]="driverEmployees()" displayExpr="lastName" valueExpr="id"
+            [(value)]="driverForm.employeeId" label="Водитель" labelMode="floating" [searchEnabled]="true"/>
+        </div>
+        <div class="form-row">
+          <dx-date-box [(value)]="driverForm.assignedFromUtc" label="Назначен с" labelMode="floating" dateSerializationFormat="yyyy-MM-dd"/>
+          <dx-date-box [(value)]="driverForm.assignedToUtc" label="По" labelMode="floating" dateSerializationFormat="yyyy-MM-dd"/>
+        </div>
+      </div>
+      <div class="popup-actions">
+        <dx-button text="Сохранить" type="default" stylingMode="contained" (onClick)="saveDriver()"/>
+        <dx-button text="Отмена" stylingMode="text" (onClick)="closeDriverPopup()"/>
+      </div>
+    </dx-popup>
+
+    <!-- Maintenance popup -->
+    <dx-popup [(visible)]="maintPopup" [title]="editingMaintId() ? 'Изменить ТО' : 'Добавить ТО'" [width]="500">
+      <div class="popup-form">
+        <div class="form-row">
+          <dx-select-box [dataSource]="maintenanceTypes" displayExpr="name" valueExpr="id" [(value)]="maintForm.maintenanceType" label="Тип обслуживания" labelMode="floating"/>
+          <dx-date-box [(value)]="maintForm.date" label="Дата" labelMode="floating" dateSerializationFormat="yyyy-MM-dd"/>
+        </div>
+        <div class="form-row">
+          <dx-number-box [(value)]="maintForm.mileageKm" label="Пробег (км)" labelMode="floating"/>
+          <dx-number-box [(value)]="maintForm.cost" label="Стоимость" labelMode="floating"/>
+        </div>
+        <div class="form-row"><dx-text-box [(value)]="maintForm.serviceProvider" label="Сервис" labelMode="floating"/></div>
+        <div class="form-row">
+          <dx-number-box [(value)]="maintForm.nextDueMileageKm" label="След. ТО пробег (км)" labelMode="floating"/>
+          <dx-date-box [(value)]="maintForm.nextDueDate" label="След. ТО дата" labelMode="floating" dateSerializationFormat="yyyy-MM-dd"/>
+        </div>
+        <div class="form-row"><dx-text-area [(value)]="maintForm.notes" label="Заметки" labelMode="floating" [height]="80"/></div>
+      </div>
+      <div class="popup-actions">
+        <dx-button text="Сохранить" type="default" stylingMode="contained" [disabled]="saving()" (onClick)="saveMaint()"/>
+        <dx-button text="Отмена" stylingMode="text" (onClick)="closeMaint()"/>
+      </div>
+    </dx-popup>
+
+    <!-- Insurance popup -->
+    <dx-popup [(visible)]="insurPopup" [title]="editingInsurId() ? 'Изменить страховку' : 'Добавить страховку'" [width]="500">
+      <div class="popup-form">
+        <div class="form-row">
+          <dx-text-box [(value)]="insurForm.policyNumber" label="№ полиса" labelMode="floating"/>
+          <dx-text-box [(value)]="insurForm.provider" label="Страховая" labelMode="floating"/>
+        </div>
+        <div class="form-row"><dx-text-box [(value)]="insurForm.coverageType" label="Тип покрытия" labelMode="floating"/></div>
+        <div class="form-row">
+          <dx-date-box [(value)]="insurForm.startDate" label="Начало" labelMode="floating" dateSerializationFormat="yyyy-MM-dd"/>
+          <dx-date-box [(value)]="insurForm.endDate" label="Конец" labelMode="floating" dateSerializationFormat="yyyy-MM-dd"/>
+        </div>
+        <div class="form-row"><dx-number-box [(value)]="insurForm.premiumAmount" label="Премия" labelMode="floating"/></div>
+      </div>
+      <div class="popup-actions">
+        <dx-button text="Сохранить" type="default" stylingMode="contained" [disabled]="saving()" (onClick)="saveInsur()"/>
+        <dx-button text="Отмена" stylingMode="text" (onClick)="closeInsur()"/>
+      </div>
+    </dx-popup>
+
+    <!-- Inspection popup -->
+    <dx-popup [(visible)]="inspPopup" [title]="editingInspId() ? 'Изменить техосмотр' : 'Добавить техосмотр'" [width]="500">
+      <div class="popup-form">
+        <div class="form-row">
+          <dx-date-box [(value)]="inspForm.inspectionDate" label="Дата осмотра" labelMode="floating" dateSerializationFormat="yyyy-MM-dd"/>
+          <dx-date-box [(value)]="inspForm.expiryDate" label="Действует до" labelMode="floating" dateSerializationFormat="yyyy-MM-dd"/>
+        </div>
+        <div class="form-row">
+          <dx-select-box [dataSource]="resultOptions" displayExpr="name" valueExpr="id" [(value)]="inspForm.result" label="Результат" labelMode="floating"/>
+          <dx-text-box [(value)]="inspForm.inspector" label="Инспектор" labelMode="floating"/>
+        </div>
+        <div class="form-row"><dx-text-area [(value)]="inspForm.notes" label="Заметки" labelMode="floating" [height]="80"/></div>
+      </div>
+      <div class="popup-actions">
+        <dx-button text="Сохранить" type="default" stylingMode="contained" [disabled]="saving()" (onClick)="saveInsp()"/>
+        <dx-button text="Отмена" stylingMode="text" (onClick)="closeInsp()"/>
+      </div>
+    </dx-popup>
+  }
+</div>

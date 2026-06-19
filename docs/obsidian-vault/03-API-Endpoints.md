@@ -402,6 +402,117 @@ shape as the stock operations above:
 }
 ```
 
+
+## Vehicle Management Module
+
+> Full module reference: [[10-Vehicle-Management]]
+
+### Vehicle Types
+
+| Method | Route | Auth |
+|---|---|---|
+| `GET` | `/api/v1/vehicle-types` | Authorize |
+| `GET` | `/api/v1/vehicle-types/{id:guid}` | Authorize |
+| `POST` | `/api/v1/vehicle-types` | Authorize |
+| `PUT` | `/api/v1/vehicle-types/{id:guid}` | Authorize |
+| `DELETE` | `/api/v1/vehicle-types/{id:guid}` | Authorize |
+
+### Vehicles
+
+| Method | Route | Auth |
+|---|---|---|
+| `GET` | `/api/v1/vehicles` | Authorize |
+| `GET` | `/api/v1/vehicles/{id:guid}` | Authorize |
+| `GET` | `/api/v1/vehicles/{id:guid}/detail` | Authorize |
+| `POST` | `/api/v1/vehicles` | Authorize |
+| `PUT` | `/api/v1/vehicles/{id:guid}` | Authorize |
+| `DELETE` | `/api/v1/vehicles/{id:guid}` | Authorize |
+
+### Driver Assignments
+
+| Method | Route | Auth |
+|---|---|---|
+| `GET` | `/api/v1/vehicles/{vehicleId:guid}/assignments` | Authorize |
+| `POST` | `/api/v1/vehicles/{vehicleId:guid}/assignments` | Authorize |
+| `PUT` | `/api/v1/vehicles/{vehicleId:guid}/assignments/{id:guid}` | Authorize |
+| `DELETE` | `/api/v1/vehicles/{vehicleId:guid}/assignments/{id:guid}` | Authorize |
+
+### Maintenance / Insurance / Inspections
+
+| Method | Route | Auth |
+|---|---|---|
+| `GET` | `/api/v1/vehicles/{vehicleId:guid}/maintenance` | Authorize |
+| `GET` | `/api/v1/maintenance` | Authorize |
+| `POST` | `/api/v1/vehicles/{vehicleId:guid}/maintenance` | Authorize |
+| `PUT` | `/api/v1/vehicles/{vehicleId:guid}/maintenance/{id:guid}` | Authorize |
+| `DELETE` | `/api/v1/vehicles/{vehicleId:guid}/maintenance/{id:guid}` | Authorize |
+| `GET` | `/api/v1/vehicles/{vehicleId:guid}/insurance` | Authorize |
+| `GET` | `/api/v1/insurance` | Authorize |
+| `POST` | `/api/v1/vehicles/{vehicleId:guid}/insurance` | Authorize |
+| `PUT` | `/api/v1/vehicles/{vehicleId:guid}/insurance/{id:guid}` | Authorize |
+| `DELETE` | `/api/v1/vehicles/{vehicleId:guid}/insurance/{id:guid}` | Authorize |
+| `GET` | `/api/v1/vehicles/{vehicleId:guid}/inspections` | Authorize |
+| `GET` | `/api/v1/inspections` | Authorize |
+| `POST` | `/api/v1/vehicles/{vehicleId:guid}/inspections` | Authorize |
+| `PUT` | `/api/v1/vehicles/{vehicleId:guid}/inspections/{id:guid}` | Authorize |
+| `DELETE` | `/api/v1/vehicles/{vehicleId:guid}/inspections/{id:guid}` | Authorize |
+
+
+## Personnel Management Module
+
+> Full module reference: [[11-Personnel-Management]]
+
+### Employees
+
+| Method | Route | Auth |
+|---|---|---|
+| `GET` | `/api/v1/employees` | `employees:read` |
+| `GET` | `/api/v1/employees/{id:guid}` | `employees:read` |
+| `GET` | `/api/v1/employees/{id:guid}/detail` | `employees:read` |
+| `POST` | `/api/v1/employees` | `employees:write` |
+| `PUT` | `/api/v1/employees/{id:guid}` | `employees:write` |
+| `DELETE` | `/api/v1/employees/{id:guid}` | `employees:delete` |
+
+### Departments
+
+| Method | Route | Auth |
+|---|---|---|
+| `GET` | `/api/v1/departments` | `departments:read` |
+| `GET` | `/api/v1/departments/{id:guid}` | `departments:read` |
+| `POST` | `/api/v1/departments` | `departments:write` |
+| `PUT` | `/api/v1/departments/{id:guid}` | `departments:write` |
+| `DELETE` | `/api/v1/departments/{id:guid}` | `departments:delete` |
+
+### Positions
+
+| Method | Route | Auth |
+|---|---|---|
+| `GET` | `/api/v1/positions` | `positions:read` |
+| `GET` | `/api/v1/positions/{id:guid}` | `positions:read` |
+| `POST` | `/api/v1/positions` | `positions:write` |
+| `PUT` | `/api/v1/positions/{id:guid}` | `positions:write` |
+| `DELETE` | `/api/v1/positions/{id:guid}` | `positions:delete` |
+
+### Shifts
+
+| Method | Route | Auth |
+|---|---|---|
+| `GET` | `/api/v1/shifts` | `shifts:read` |
+| `GET` | `/api/v1/shifts/{id:guid}` | `shifts:read` |
+| `POST` | `/api/v1/shifts` | `shifts:write` |
+| `PUT` | `/api/v1/shifts/{id:guid}` | `shifts:write` |
+| `DELETE` | `/api/v1/shifts/{id:guid}` | `shifts:delete` |
+
+### Attendance
+
+| Method | Route | Auth |
+|---|---|---|
+| `GET` | `/api/v1/attendance?from=&to=` | `attendance:read` |
+| `GET` | `/api/v1/attendance/{id:guid}` | `attendance:read` |
+| `POST` | `/api/v1/attendance` | `attendance:write` |
+| `PUT` | `/api/v1/attendance/{id:guid}` | `attendance:write` |
+| `DELETE` | `/api/v1/attendance/{id:guid}` | `attendance:delete` |
+
 **Stock audit** — `POST /api/v1/stock-audits`
 
 On creation each line snapshots the item's current on-hand figure as `systemQuantity`. The read model

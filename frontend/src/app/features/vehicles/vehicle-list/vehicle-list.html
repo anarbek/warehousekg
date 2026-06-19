@@ -1,0 +1,33 @@
+<div class="list-page">
+  <div class="list-page__toolbar">
+    <h1 i18n="@@veh.list.title">Транспорт</h1>
+    @if(canWrite()){ <dx-button text="Добавить" icon="add" type="default" stylingMode="contained" [routerLink]="['../new']"/> }
+  </div>
+  @if(loading()){ <dx-progress-bar [visible]="true"/> }
+  @if(error()){ <p class="list-page__error">{{error()}}</p> }
+  <dx-data-grid [dataSource]="items()" [showBorders]="true" [hoverStateEnabled]="true">
+    <dxi-column dataField="code" caption="Код" [width]="90" [sortOrder]="'asc'"/>
+    <dxi-column dataField="licensePlate" caption="Госномер" [width]="120"/>
+    <dxi-column caption="Марка/Модель" [width]="160" cellTemplate="brandCell"/>
+    <dxi-column dataField="vehicleTypeName" caption="Тип" [width]="120"/>
+    <dxi-column caption="Статус" [width]="110" cellTemplate="statusCell"/>
+    <dxi-column dataField="assignedDriverName" caption="Водитель" [width]="160"/>
+    <dxi-column caption="Страховка до" [width]="120" cellTemplate="insCell"/>
+    <dxi-column caption="" [width]="110" cellTemplate="actionsCell"/>
+
+    <div *dxTemplate="let cell of 'brandCell'">{{cell.data.brand}} {{cell.data.model}}</div>
+    <div *dxTemplate="let cell of 'statusCell'">
+      <span [class]="statusClass(cell.data.status)">{{statusLabel(cell.data.status)}}</span>
+    </div>
+    <div *dxTemplate="let cell of 'insCell'">
+      <span [style.color]="isExpired(cell.data.insuranceExpiryDate) ? 'var(--dx-color-danger)' : 'inherit'">
+        {{cell.data.insuranceExpiryDate | date:'dd.MM.yyyy'}}
+      </span>
+    </div>
+    <div *dxTemplate="let cell of 'actionsCell'">
+      <a [routerLink]="['../', cell.data.id]"><dx-button icon="info" hint="View" stylingMode="text"/></a>
+      @if(canWrite()){ <a [routerLink]="['../', cell.data.id,'edit']"><dx-button icon="edit" hint="Edit" stylingMode="text"/></a> }
+      @if(canDelete()){ <dx-button icon="trash" hint="Delete" stylingMode="text" (onClick)="delete(cell.data.id)"/> }
+    </div>
+  </dx-data-grid>
+</div>

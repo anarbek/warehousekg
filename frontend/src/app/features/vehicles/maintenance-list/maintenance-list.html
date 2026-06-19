@@ -1,0 +1,52 @@
+<div class="list-page">
+  <div class="list-page__toolbar">
+    <h1>Техническое обслуживание</h1>
+    <dx-button text="Добавить" icon="add" type="default" stylingMode="contained" (onClick)="openAdd()"/>
+  </div>
+  @if(loading()){ <dx-progress-bar [visible]="true"/> }
+  @if(error()){ <p class="list-page__error">{{error()}}</p> }
+  <dx-data-grid [dataSource]="items()" [showBorders]="true" [hoverStateEnabled]="true">
+    <dxi-column dataField="vehicleCode" caption="Транспорт" [width]="80"/>
+    <dxi-column dataField="vehiclePlate" caption="Госномер" [width]="110"/>
+    <dxi-column caption="Тип" [width]="150" cellTemplate="typeCell"/>
+    <dxi-column dataField="date" caption="Дата" dataType="date" [width]="110"/>
+    <dxi-column dataField="mileageKm" caption="Пробег" [width]="100"/>
+    <dxi-column dataField="cost" caption="Стоимость" [width]="110"/>
+    <dxi-column dataField="serviceProvider" caption="Сервис"/>
+    <dxi-column dataField="nextDueDate" caption="След. ТО" dataType="date" [width]="110"/>
+    <dxi-column dataField="notes" caption="Заметки"/>
+    <div *dxTemplate="let cell of 'typeCell'">{{typeLabel(cell.data.maintenanceType)}}</div>
+  </dx-data-grid>
+
+  <dx-popup [(visible)]="popupVisible" title="Добавить ТО" [width]="500">
+    <div class="popup-form">
+      <div class="form-row">
+        <dx-select-box [dataSource]="vehicles()" displayExpr="licensePlate" valueExpr="id"
+          placeholder="Выберите транспорт" [(value)]="formData.vehicleId" label="Транспорт" labelMode="floating"/>
+      </div>
+      <div class="form-row">
+        <dx-select-box [dataSource]="maintenanceTypes" displayExpr="name" valueExpr="id"
+          [(value)]="formData.maintenanceType" label="Тип обслуживания" labelMode="floating"/>
+        <dx-date-box [(value)]="formData.date" label="Дата" labelMode="floating"/>
+      </div>
+      <div class="form-row">
+        <dx-number-box [(value)]="formData.mileageKm" label="Пробег (км)" labelMode="floating"/>
+        <dx-number-box [(value)]="formData.cost" label="Стоимость" labelMode="floating"/>
+      </div>
+      <div class="form-row">
+        <dx-text-box [(value)]="formData.serviceProvider" label="Сервис" labelMode="floating"/>
+      </div>
+      <div class="form-row">
+        <dx-number-box [(value)]="formData.nextDueMileageKm" label="След. ТО пробег (км)" labelMode="floating"/>
+        <dx-date-box [(value)]="formData.nextDueDate" label="След. ТО дата" labelMode="floating"/>
+      </div>
+      <div class="form-row">
+        <dx-text-area [(value)]="formData.notes" label="Заметки" labelMode="floating" [height]="80"/>
+      </div>
+    </div>
+    <div class="popup-actions">
+      <dx-button text="Сохранить" type="default" stylingMode="contained" [disabled]="saving()" (onClick)="save()"/>
+      <dx-button text="Отмена" stylingMode="text" (onClick)="closePopup()"/>
+    </div>
+  </dx-popup>
+</div>

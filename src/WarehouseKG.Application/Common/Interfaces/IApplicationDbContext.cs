@@ -60,6 +60,13 @@ public interface IApplicationDbContext
     DbSet<EmployeeShiftAssignment> EmployeeShiftAssignments { get; }
     DbSet<EmployeeWarehouseAssignment> EmployeeWarehouseAssignments { get; }
     DbSet<AttendanceRecord> AttendanceRecords { get; }
+    DbSet<VehicleType> VehicleTypes { get; }
+    DbSet<Vehicle> Vehicles { get; }
+    DbSet<VehicleDriverAssignment> VehicleDriverAssignments { get; }
+    DbSet<VehicleMaintenanceRecord> VehicleMaintenanceRecords { get; }
+    DbSet<VehicleInsuranceRecord> VehicleInsuranceRecords { get; }
+    DbSet<VehicleInspectionRecord> VehicleInspectionRecords { get; }
+    DbSet<VehicleFuelRecord> VehicleFuelRecords { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

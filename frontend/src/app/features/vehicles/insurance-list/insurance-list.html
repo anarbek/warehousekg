@@ -1,0 +1,48 @@
+<div class="list-page">
+  <div class="list-page__toolbar">
+    <h1>Страховки</h1>
+    <dx-button text="Добавить" icon="add" type="default" stylingMode="contained" (onClick)="openAdd()"/>
+  </div>
+  @if(loading()){ <dx-progress-bar [visible]="true"/> }
+  @if(error()){ <p class="list-page__error">{{error()}}</p> }
+  <dx-data-grid [dataSource]="items()" [showBorders]="true" [hoverStateEnabled]="true">
+    <dxi-column dataField="vehicleCode" caption="Транспорт" [width]="80"/>
+    <dxi-column dataField="vehiclePlate" caption="Госномер" [width]="110"/>
+    <dxi-column dataField="policyNumber" caption="№ полиса"/>
+    <dxi-column dataField="provider" caption="Страховая"/>
+    <dxi-column dataField="coverageType" caption="Тип"/>
+    <dxi-column dataField="startDate" caption="Начало" dataType="date" [width]="110"/>
+    <dxi-column dataField="endDate" caption="Конец" dataType="date" [width]="110" cellTemplate="endCell"/>
+    <dxi-column dataField="premiumAmount" caption="Премия" [width]="110"/>
+    <div *dxTemplate="let cell of 'endCell'">
+      <span [style.color]="isExpired(cell.data.endDate) ? 'var(--dx-color-danger)' : 'inherit'">{{cell.data.endDate | date:'dd.MM.yyyy'}}</span>
+    </div>
+  </dx-data-grid>
+
+  <dx-popup [(visible)]="popupVisible" title="Добавить страховку" [width]="500">
+    <div class="popup-form">
+      <div class="form-row">
+        <dx-select-box [dataSource]="vehicles()" displayExpr="licensePlate" valueExpr="id"
+          placeholder="Выберите транспорт" [(value)]="formData.vehicleId" label="Транспорт" labelMode="floating"/>
+      </div>
+      <div class="form-row">
+        <dx-text-box [(value)]="formData.policyNumber" label="№ полиса" labelMode="floating"/>
+        <dx-text-box [(value)]="formData.provider" label="Страховая" labelMode="floating"/>
+      </div>
+      <div class="form-row">
+        <dx-text-box [(value)]="formData.coverageType" label="Тип покрытия" labelMode="floating"/>
+      </div>
+      <div class="form-row">
+        <dx-date-box [(value)]="formData.startDate" label="Начало" labelMode="floating"/>
+        <dx-date-box [(value)]="formData.endDate" label="Конец" labelMode="floating"/>
+      </div>
+      <div class="form-row">
+        <dx-number-box [(value)]="formData.premiumAmount" label="Премия" labelMode="floating"/>
+      </div>
+    </div>
+    <div class="popup-actions">
+      <dx-button text="Сохранить" type="default" stylingMode="contained" [disabled]="saving()" (onClick)="save()"/>
+      <dx-button text="Отмена" stylingMode="text" (onClick)="closePopup()"/>
+    </div>
+  </dx-popup>
+</div>

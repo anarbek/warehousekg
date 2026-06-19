@@ -282,6 +282,72 @@ Orders start `Draft`. **Confirm** (`Draft → Confirmed`), **Ship** (`Confirmed 
 `InventoryItem.QuantityOnHand` by line quantities), **Cancel** (`Draft`/`Confirmed → Cancelled`). Invalid
 transitions return `409 Conflict`. See [[03-API-Endpoints]].
 
+## Vehicle Management Module
+
+> Full module reference: [[10-Vehicle-Management]]
+
+Migration: `20260619112152_AddVehicleManagement`
+
+### `vehicle_types`
+Lookup catalog. Columns: `Code`, `Name`, `Description`, `DefaultCapacityKg`, `DefaultCapacityM3`, `IsActive`.
+
+### `vehicles`
+Main aggregate. Columns: `Code`, `LicensePlate`, `VIN`, `Brand`, `Model`, `ManufactureYear`, `VehicleTypeId` (FK), `OwnershipType`, `Status`, `FuelType`, `FuelConsumptionRate`, `MaxCapacityKg`, `MaxCapacityM3`, `CurrentMileageKm`, `PurchaseDate`, `PurchasePrice`, `InsurancePolicyNumber`, `InsuranceProvider`, `InsuranceExpiryDate`, `TechInspectionExpiryDate`, `NextMaintenanceMileageKm`, `NextMaintenanceDate`, `HasGpsTracker`, `Notes`.
+
+Enums stored as strings: `OwnershipType`, `Status`, `FuelType`.
+
+### `vehicle_driver_assignments`
+Columns: `VehicleId` (FK, Cascade), `EmployeeId` (FK, Restrict), `AssignedFromUtc`, `AssignedToUtc?`, `IsPrimary`.
+
+### `vehicle_maintenance_records`
+Columns: `VehicleId` (FK, Cascade), `MaintenanceType` (string enum), `Date`, `MileageKm`, `Cost`, `Description?`, `ServiceProvider?`, `Notes?`, `NextDueMileageKm?`, `NextDueDate?`.
+
+Creating a record auto-updates `Vehicle.NextMaintenanceMileageKm` and `Vehicle.NextMaintenanceDate`.
+
+### `vehicle_insurance_records`
+Columns: `VehicleId` (FK, Cascade), `PolicyNumber`, `Provider`, `CoverageType?`, `StartDate`, `EndDate`, `PremiumAmount`, `Description?`.
+
+Creating a record auto-updates `Vehicle.InsuranceExpiryDate`.
+
+### `vehicle_inspection_records`
+Columns: `VehicleId` (FK, Cascade), `InspectionDate`, `ExpiryDate`, `Result` (string enum), `Inspector?`, `Notes?`.
+
+Creating a record auto-updates `Vehicle.TechInspectionExpiryDate`.
+
+### `vehicle_fuel_records`
+Columns: `VehicleId` (FK, Cascade), `Date`, `Liters`, `Cost`, `MileageKm`, `FuelType`, `Station?`.
+
+> CRUD not yet implemented — entity and table exist.
+
+> **DateTime note**: All `DateTime` columns use `timestamp with time zone`. Application code uses `DateTime.SpecifyKind(..., DateTimeKind.Utc)` to ensure UTC Kind before saving.
+
+## Personnel Management Module
+
+> Full module reference: [[11-Personnel-Management]]
+
+Migration: `InitialPersonnel`
+
+### `employees`
+Columns: `Code`, `FirstName`, `LastName`, `MiddleName?`, `Email?`, `Phone?`, `HireDate?`, `TerminationDate?`, `PositionId?` (FK→positions), `DepartmentId?` (FK→departments), `ApplicationUserId?`, `IsActive`. Unique per tenant on `(TenantId, Code)`.
+
+### `departments`
+Columns: `Code`, `Name`, `Description?`, `IsActive`. Unique per tenant on `(TenantId, Code)`.
+
+### `positions`
+Columns: `Code`, `Name`, `Description?`, `IsActive`. Unique per tenant on `(TenantId, Code)`.
+
+### `shifts`
+Columns: `Code`, `Name`, `StartTime` (TimeOnly), `EndTime` (TimeOnly), `IsActive`. Unique per tenant on `(TenantId, Code)`.
+
+### `attendance_records`
+Columns: `EmployeeId` (FK→employees, Cascade), `ShiftId` (FK→shifts, Restrict), `Date`, `ClockInUtc?`, `ClockOutUtc?`, `Status` (string enum: Present/Absent/Late/EarlyDeparture/Overtime), `Notes?`.
+
+### `employee_shift_assignments`
+Columns: `EmployeeId` (FK→employees, Cascade), `ShiftId` (FK→shifts, Restrict), `EffectiveFromUtc`, `EffectiveToUtc?`. Unique per tenant on `(TenantId, EmployeeId, EffectiveFromUtc)`.
+
+### `employee_warehouse_assignments`
+Columns: `EmployeeId` (FK→employees, Cascade), `WarehouseId` (FK→warehouses, Restrict), `IsPrimary`. Unique per tenant on `(TenantId, EmployeeId, WarehouseId)`.
+
 ## Stock Adjustments & Audits Module
 
 Migration: `AddStockAdjustmentsAndAudits`. Two document-style operations for keeping the catalog's

@@ -32,6 +32,14 @@ public static class Resources
     public const string Shifts = "shifts";
     public const string Attendance = "attendance";
 
+    // Vehicle / Fleet resources
+    public const string Vehicles = "vehicles";
+    public const string VehicleTypes = "vehicle-types";
+    public const string Maintenance = "maintenance";
+    public const string Insurance = "insurance";
+    public const string Inspections = "inspections";
+    public const string FuelLogs = "fuel-logs";
+
     public static readonly IReadOnlyList<string> All = new[]
     {
         Warehouses, InventoryItems, ItemCategories, UnitsOfMeasure,
@@ -39,6 +47,7 @@ public static class Resources
         StockAdjustments, StockAudits,
         Suppliers, PurchaseOrders, Customers, SalesOrders,
         Reports, Users, AddItemsBackInTime, ReceivingDelete,
-        Employees, Positions, Departments, Shifts, Attendance
+        Employees, Positions, Departments, Shifts, Attendance,
+        Vehicles, VehicleTypes, Maintenance, Insurance, Inspections, FuelLogs
     };
 }

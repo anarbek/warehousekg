@@ -61,7 +61,12 @@ public static class IdentitySeeder
 
         // Dispatcher: read all, write purchase-orders+sales-orders+suppliers+customers, delete nothing
         var dispatcherWrite = new[] { "purchase-orders", "sales-orders", "suppliers", "customers" };
-        await SeedPermissionRows(db, tenantId, Roles.Dispatcher, dispatcherWrite, Array.Empty<string>(), ct);
+        var dispatcherDelete = new[] { "purchase-orders", "sales-orders", "suppliers", "customers" };
+        // Dispatcher also manages fleet
+        var fleetResources = new[] { "vehicles", "vehicle-types", "maintenance", "insurance", "inspections" };
+        dispatcherWrite = dispatcherWrite.Concat(fleetResources).ToArray();
+        dispatcherDelete = dispatcherDelete.Concat(fleetResources).ToArray();
+        await SeedPermissionRows(db, tenantId, Roles.Dispatcher, dispatcherWrite, dispatcherDelete, ct);
 
         // HR: read all, write personnel resources, delete personnel resources
         var personnelResources = new[] { "employees", "positions", "departments", "shifts", "attendance" };

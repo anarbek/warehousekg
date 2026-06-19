@@ -1,0 +1,42 @@
+<div class="list-page">
+  <div class="list-page__toolbar">
+    <h1>Техосмотры</h1>
+    <dx-button text="Добавить" icon="add" type="default" stylingMode="contained" (onClick)="openAdd()"/>
+  </div>
+  @if(loading()){ <dx-progress-bar [visible]="true"/> }
+  @if(error()){ <p class="list-page__error">{{error()}}</p> }
+  <dx-data-grid [dataSource]="items()" [showBorders]="true" [hoverStateEnabled]="true">
+    <dxi-column dataField="vehicleCode" caption="Транспорт" [width]="80"/>
+    <dxi-column dataField="vehiclePlate" caption="Госномер" [width]="110"/>
+    <dxi-column dataField="inspectionDate" caption="Дата" dataType="date" [width]="110"/>
+    <dxi-column dataField="expiryDate" caption="Действует до" dataType="date" [width]="120"/>
+    <dxi-column dataField="result" caption="Результат" [width]="120"/>
+    <dxi-column dataField="inspector" caption="Инспектор"/>
+    <dxi-column dataField="notes" caption="Заметки"/>
+  </dx-data-grid>
+
+  <dx-popup [(visible)]="popupVisible" title="Добавить техосмотр" [width]="500">
+    <div class="popup-form">
+      <div class="form-row">
+        <dx-select-box [dataSource]="vehicles()" displayExpr="licensePlate" valueExpr="id"
+          placeholder="Выберите транспорт" [(value)]="formData.vehicleId" label="Транспорт" labelMode="floating"/>
+      </div>
+      <div class="form-row">
+        <dx-date-box [(value)]="formData.inspectionDate" label="Дата осмотра" labelMode="floating"/>
+        <dx-date-box [(value)]="formData.expiryDate" label="Действует до" labelMode="floating"/>
+      </div>
+      <div class="form-row">
+        <dx-select-box [dataSource]="resultOptions" displayExpr="name" valueExpr="id"
+          [(value)]="formData.result" label="Результат" labelMode="floating"/>
+        <dx-text-box [(value)]="formData.inspector" label="Инспектор" labelMode="floating"/>
+      </div>
+      <div class="form-row">
+        <dx-text-area [(value)]="formData.notes" label="Заметки" labelMode="floating" [height]="80"/>
+      </div>
+    </div>
+    <div class="popup-actions">
+      <dx-button text="Сохранить" type="default" stylingMode="contained" [disabled]="saving()" (onClick)="save()"/>
+      <dx-button text="Отмена" stylingMode="text" (onClick)="closePopup()"/>
+    </div>
+  </dx-popup>
+</div>
