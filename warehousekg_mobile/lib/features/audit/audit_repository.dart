@@ -153,6 +153,7 @@ class AuditRepository {
           inventoryItemId: item.id,
           inventoryItemName: item.name,
           inventoryItemSku: item.sku,
+          barcode: item.barcode,
           systemQuantity: item.quantityOnHand,
         )).toList();
     final audit = AuditModel(
@@ -179,6 +180,7 @@ class AuditRepository {
       inventoryItemId: line.inventoryItemId,
       inventoryItemName: line.inventoryItemName,
       inventoryItemSku: line.inventoryItemSku,
+      barcode: line.barcode,
       systemQuantity: line.systemQuantity,
       countedQuantity: quantity,
     );

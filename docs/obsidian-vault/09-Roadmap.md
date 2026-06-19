@@ -35,7 +35,7 @@ and app should create a basic setup with admin user, some categories and other b
 - Remote audit list with detail view (lines, variance, employee name)
 
 **v2+ — Excluded from v1**
-- Barcode scanning (camera integration)
+- Barcode scanning (camera integration) ✅ (implemented 2026-06-20)
 - Photo attachments for audit items
 - Push notifications for pending sync / audit assignments
 - Offline login (currently requires online auth at least once per session)

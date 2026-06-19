@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'audit_repository.dart';
+import 'barcode_scanner_screen.dart';
 import 'models/audit_model.dart';
 
 class AuditCountScreen extends ConsumerStatefulWidget {
@@ -16,11 +17,23 @@ class _AuditCountScreenState extends ConsumerState<AuditCountScreen> {
   String _filter = 'all';
   String _search = '';
   final _searchCtrl = TextEditingController();
+  final _searchFocus = FocusNode();
   final Map<String, TextEditingController> _qtyCtrls = {};
+
+  @override
+  void initState() {
+    super.initState();
+    // Auto-focus search field so physical barcode scanners (HID keyboard mode)
+    // can type directly without the worker tapping the screen first.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _searchFocus.requestFocus();
+    });
+  }
 
   @override
   void dispose() {
     _searchCtrl.dispose();
+    _searchFocus.dispose();
     for (final c in _qtyCtrls.values) {
       c.dispose();
     }
@@ -50,7 +63,9 @@ class _AuditCountScreenState extends ConsumerState<AuditCountScreen> {
       if (_filter == 'variance' && (l.countedQuantity == null || l.variance == 0)) return false;
       if (_search.isNotEmpty) {
         final q = _search.toLowerCase();
-        if (!l.inventoryItemName.toLowerCase().contains(q) && !l.inventoryItemSku.toLowerCase().contains(q)) return false;
+        if (!l.inventoryItemName.toLowerCase().contains(q) &&
+            !l.inventoryItemSku.toLowerCase().contains(q) &&
+            !(l.barcode?.toLowerCase().contains(q) ?? false)) return false;
       }
       return true;
     }).toList();
@@ -67,6 +82,11 @@ class _AuditCountScreenState extends ConsumerState<AuditCountScreen> {
           Text('${audit.countedItems}/${audit.totalItems} посчитано', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal)),
         ]),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.qr_code_scanner),
+            tooltip: 'Сканировать штрихкод',
+            onPressed: () => _scanBarcode(audit),
+          ),
           IconButton(
             icon: const Icon(Icons.pause),
             tooltip: 'Пауза',
@@ -87,12 +107,39 @@ class _AuditCountScreenState extends ConsumerState<AuditCountScreen> {
             padding: const EdgeInsets.all(8),
             child: TextField(
               controller: _searchCtrl,
+              focusNode: _searchFocus,
+              textInputAction: TextInputAction.search,
               decoration: const InputDecoration(
                 hintText: 'Поиск по названию или SKU...',
                 prefixIcon: Icon(Icons.search),
+                suffixText: 'сканировать',
                 isDense: true,
               ),
               onChanged: (v) => setState(() => _search = v),
+              onSubmitted: (v) {
+                // Physical barcode scanner sends Enter after barcode.
+                // If exactly one item matches, jump to its quantity field.
+                final audit = ref.read(auditRepositoryProvider).getLocalAudit(widget.auditId);
+                if (audit == null) return;
+                final matches = audit.lines.where((l) {
+                  final q = v.toLowerCase().trim();
+                  return l.inventoryItemName.toLowerCase().contains(q) ||
+                      l.inventoryItemSku.toLowerCase().contains(q) ||
+                      (l.barcode?.toLowerCase().contains(q) ?? false);
+                }).toList();
+                if (matches.length == 1 && matches[0].countedQuantity == null) {
+                  // Focus the quantity field for that item
+                  final ctrl = _qtyCtrls[matches[0].id];
+                  if (ctrl != null) {
+                    FocusScope.of(context).requestFocus(FocusNode());
+                    // Delay to let keyboard settle, then refocus quantity
+                    Future.delayed(const Duration(milliseconds: 100), () {
+                      // The quantity field is inside the card's trailing widget
+                      _searchFocus.unfocus();
+                    });
+                  }
+                }
+              },
             ),
           ),
           SingleChildScrollView(
@@ -123,6 +170,8 @@ class _AuditCountScreenState extends ConsumerState<AuditCountScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('SKU: ${line.inventoryItemSku}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                        if (line.barcode != null && line.barcode!.isNotEmpty)
+                          Text('Штрихкод: ${line.barcode}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
                         Text('Система: ${line.systemQuantity.toStringAsFixed(1)}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
                         if (isCounted && variance != null)
                           Text('Расхождение: ${variance > 0 ? "+" : ""}${variance.toStringAsFixed(1)}',
@@ -157,6 +206,41 @@ class _AuditCountScreenState extends ConsumerState<AuditCountScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _scanBarcode(AuditModel audit) async {
+    final barcode = await Navigator.of(context).push<String>(
+      MaterialPageRoute(builder: (_) => const BarcodeScannerScreen()),
+    );
+
+    if (barcode == null || !mounted) return;
+
+    // Search for item by barcode or SKU — case-insensitive exact match
+    final q = barcode.toLowerCase().trim();
+    AuditLine? match;
+    for (final line in audit.lines) {
+      if (line.inventoryItemSku.toLowerCase().trim() == q ||
+          (line.barcode?.toLowerCase().trim() == q)) {
+        match = line;
+        break;
+      }
+    }
+
+    if (match != null) {
+      // Clear filters and focus on the matched item
+      final sku = match.inventoryItemSku;
+      setState(() {
+        _filter = 'all';
+        _searchCtrl.text = sku;
+        _search = sku;
+      });
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Товар со штрихкодом "$barcode" не найден')),
+        );
+      }
+    }
   }
 
   Widget _filterChip(String label, String value) {

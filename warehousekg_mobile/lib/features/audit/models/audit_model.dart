@@ -35,6 +35,7 @@ class AuditLine {
   final String inventoryItemId;
   final String inventoryItemName;
   final String inventoryItemSku;
+  final String? barcode;
   final double systemQuantity;
   final double? countedQuantity;
 
@@ -43,6 +44,7 @@ class AuditLine {
     required this.inventoryItemId,
     this.inventoryItemName = '',
     this.inventoryItemSku = '',
+    this.barcode,
     required this.systemQuantity,
     this.countedQuantity,
   });
