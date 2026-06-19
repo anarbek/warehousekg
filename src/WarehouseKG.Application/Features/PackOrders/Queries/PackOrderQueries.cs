@@ -38,6 +38,8 @@ public class GetPackOrdersQueryHandler
                 UpdatedAt = p.UpdatedAt,
                 CreatedBy = p.CreatedBy,
                 UpdatedBy = p.UpdatedBy,
+                EmployeeId = p.EmployeeId,
+                EmployeeName = p.Employee != null ? p.Employee.LastName + " " + p.Employee.FirstName : null,
                 LineCount = p.Lines.Count
             })
             .ToListAsync(cancellationToken);

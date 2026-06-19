@@ -35,6 +35,7 @@
     <dxi-column i18n-caption="@@adj.column.warehouse" caption="Склад" cellTemplate="whCell" />
     <dxi-column dataField="reason" i18n-caption="@@adj.column.reason" caption="Причина" [width]="140" cellTemplate="reasonCell" />
     <dxi-column dataField="lineCount" i18n-caption="@@adj.column.lines" caption="Позиций" [width]="80" />
+    <dxi-column caption="Сотрудник" [width]="120" cellTemplate="empCell" />
     <dxi-column dataField="status" i18n-caption="@@adj.column.status" caption="Статус" [width]="120" />
     <dxi-column dataField="adjustedAtUtc" i18n-caption="@@adj.column.date" caption="Дата" [width]="120" cellTemplate="adjDateCell" />
     <dxi-column dataField="createdAt" caption="Создан" [width]="160" cellTemplate="createdCell" />
@@ -50,5 +51,6 @@
     <div *dxTemplate="let c of 'actCell'">
       <a [routerLink]="[c.data.id]"><dx-button icon="info" hint="View" stylingMode="text" /></a>
     </div>
+    <div *dxTemplate="let c of 'empCell'">{{ c.data.employeeName || '\u2014' }}</div>
   </dx-data-grid>
 </div>

@@ -74,6 +74,20 @@ public class WarehouseKgDbContext
 
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
+    public DbSet<Position> Positions => Set<Position>();
+
+    public DbSet<Department> Departments => Set<Department>();
+
+    public DbSet<Employee> Employees => Set<Employee>();
+
+    public DbSet<Shift> Shifts => Set<Shift>();
+
+    public DbSet<EmployeeShiftAssignment> EmployeeShiftAssignments => Set<EmployeeShiftAssignment>();
+
+    public DbSet<EmployeeWarehouseAssignment> EmployeeWarehouseAssignments => Set<EmployeeWarehouseAssignment>();
+
+    public DbSet<AttendanceRecord> AttendanceRecords => Set<AttendanceRecord>();
+
     public Guid CurrentTenantId => _tenantProvider.GetTenantId();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

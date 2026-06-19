@@ -22,6 +22,10 @@ public class PackOrderDto
 
     public string? Notes { get; set; }
 
+    public Guid? EmployeeId { get; set; }
+
+    public string? EmployeeName { get; set; }
+
     public List<PackOrderLineDto> Lines { get; set; } = new();
 }
 
@@ -59,6 +63,10 @@ public class PackOrderSummaryDto
     public string? CreatedBy { get; set; }
 
     public string? UpdatedBy { get; set; }
+
+    public Guid? EmployeeId { get; set; }
+
+    public string? EmployeeName { get; set; }
 
     public int LineCount { get; set; }
 }

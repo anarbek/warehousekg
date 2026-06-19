@@ -29,5 +29,9 @@ public class SalesOrder : BaseEntity
 
     public string? Notes { get; set; }
 
+    public Guid? EmployeeId { get; set; }
+
+    public Employee? Employee { get; set; }
+
     public ICollection<SalesOrderLine> Lines { get; set; } = new List<SalesOrderLine>();
 }

@@ -18,6 +18,22 @@
         <source>Товары</source>
         <target>Товары</target>
       </trans-unit>
+      <trans-unit id="nav.groups.warehouse" datatype="html">
+        <source>Склад</source>
+        <target>Склад</target>
+      </trans-unit>
+      <trans-unit id="nav.groups.crm" datatype="html">
+        <source>Клиенты и поставщики</source>
+        <target>Клиенты и поставщики</target>
+      </trans-unit>
+      <trans-unit id="nav.groups.personnel" datatype="html">
+        <source>Персонал</source>
+        <target>Персонал</target>
+      </trans-unit>
+      <trans-unit id="nav.groups.vehicles" datatype="html">
+        <source>Автопарк</source>
+        <target>Автопарк</target>
+      </trans-unit>
       <trans-unit id="nav.logout" datatype="html">
         <source>Выйти</source>
         <target>Выйти</target>
@@ -1035,6 +1051,12 @@
       <!-- Adjustments Nav -->
       <trans-unit id="nav.adjustments" datatype="html"><source>Корректировки</source><target>Корректировки</target></trans-unit>
       <trans-unit id="nav.audits" datatype="html"><source>Аудиты</source><target>Аудиты</target></trans-unit>
+      <!-- Personnel Nav -->
+      <trans-unit id="nav.employees" datatype="html"><source>Сотрудники</source><target>Сотрудники</target></trans-unit>
+      <trans-unit id="nav.positions" datatype="html"><source>Должности</source><target>Должности</target></trans-unit>
+      <trans-unit id="nav.departments" datatype="html"><source>Отделы</source><target>Отделы</target></trans-unit>
+      <trans-unit id="nav.shifts" datatype="html"><source>Смены</source><target>Смены</target></trans-unit>
+      <trans-unit id="nav.attendance" datatype="html"><source>Посещаемость</source><target>Посещаемость</target></trans-unit>
     </body>
   </file>
 </xliff>

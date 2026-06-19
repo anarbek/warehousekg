@@ -57,6 +57,7 @@
     <dxi-column dataField="number" i18n-caption="@@audit.column.number" caption="Номер" cellTemplate="numCell" />
     <dxi-column i18n-caption="@@audit.column.warehouse" caption="Склад" [width]="160" cellTemplate="whCell" />
     <dxi-column dataField="lineCount" i18n-caption="@@audit.column.lines" caption="Позиций" [width]="80" />
+    <dxi-column caption="Сотрудник" [width]="120" cellTemplate="empCell" />
     <dxi-column dataField="totalVariance" i18n-caption="@@audit.column.variance" caption="Расхождение" [width]="120" cellTemplate="varCell" />
     <dxi-column dataField="status" i18n-caption="@@audit.column.status" caption="Статус" [width]="120" />
     <dxi-column dataField="reconciledAtUtc" i18n-caption="@@audit.column.date" caption="Дата" [width]="120" cellTemplate="audDateCell" />
@@ -77,5 +78,6 @@
     <div *dxTemplate="let c of 'actCell'">
       <a [routerLink]="[c.data.id]"><dx-button icon="info" hint="View" stylingMode="text" /></a>
     </div>
+    <div *dxTemplate="let c of 'empCell'">{{ c.data.employeeName || '\u2014' }}</div>
   </dx-data-grid>
 </div>

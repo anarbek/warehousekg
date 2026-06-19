@@ -28,6 +28,11 @@ public class StockTransferConfiguration : IEntityTypeConfiguration<StockTransfer
             .HasForeignKey(t => t.DestinationWarehouseId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(t => t.Employee)
+            .WithMany()
+            .HasForeignKey(t => t.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasMany(t => t.Lines)
             .WithOne(l => l.StockTransfer!)
             .HasForeignKey(l => l.StockTransferId)

@@ -33,6 +33,8 @@ public class GetStockAuditsQueryHandler
                 Status = a.Status,
                 ReconciledAtUtc = a.ReconciledAtUtc,
                 CreatedAt = a.CreatedAt,
+                EmployeeId = a.EmployeeId,
+                EmployeeName = a.Employee != null ? a.Employee.LastName + " " + a.Employee.FirstName : null,
                 LineCount = a.Lines.Count,
                 TotalVariance = a.Lines.Sum(l => l.CountedQuantity - l.SystemQuantity)
             })

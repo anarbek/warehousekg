@@ -24,6 +24,15 @@ public class SharedFixture : IAsyncLifetime
         await Client.LoginAsync("admin", "Admin1234!");
     }
 
+    /// <summary>Create a new client from the factory and login as the given user.</summary>
+    public async Task<WarehouseKgClient> CreateClientAsync(string userName, string password)
+    {
+        var http = _factory.CreateClient();
+        var client = new WarehouseKgClient(http);
+        await client.LoginAsync(userName, password);
+        return client;
+    }
+
     public async Task DisposeAsync()
     {
         _factory?.Dispose();

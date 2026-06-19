@@ -19,5 +19,9 @@ public class StockReceipt : BaseEntity
 
     public string? Notes { get; set; }
 
+    public Guid? EmployeeId { get; set; }
+
+    public Employee? Employee { get; set; }
+
     public ICollection<StockReceiptLine> Lines { get; set; } = new List<StockReceiptLine>();
 }

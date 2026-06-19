@@ -23,6 +23,11 @@ public class StockAuditConfiguration : IEntityTypeConfiguration<StockAudit>
             .HasForeignKey(a => a.WarehouseId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(a => a.Employee)
+            .WithMany()
+            .HasForeignKey(a => a.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasMany(a => a.Lines)
             .WithOne(l => l.StockAudit!)
             .HasForeignKey(l => l.StockAuditId)

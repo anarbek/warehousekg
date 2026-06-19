@@ -29,6 +29,11 @@ public class PurchaseOrderConfiguration : IEntityTypeConfiguration<PurchaseOrder
             .HasForeignKey(p => p.WarehouseId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(p => p.Employee)
+            .WithMany()
+            .HasForeignKey(p => p.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasMany(p => p.Lines)
             .WithOne(l => l.PurchaseOrder!)
             .HasForeignKey(l => l.PurchaseOrderId)

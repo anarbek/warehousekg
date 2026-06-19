@@ -32,7 +32,7 @@ public static class AuthorizationPolicies
             .AddPolicy(RequireOperator, policy =>
                 policy.RequireRole(Roles.Admin, Roles.Manager, Roles.WarehouseOperator))
             .AddPolicy(RequireViewer, policy =>
-                policy.RequireRole(Roles.Admin, Roles.Manager, Roles.WarehouseOperator, Roles.Viewer));
+                policy.RequireRole(Roles.Admin, Roles.Manager, Roles.WarehouseOperator, Roles.Auditor, Roles.Dispatcher, Roles.HR, Roles.Viewer));
 
         // Resource-based policies for tenant-scoped permission overrides
         foreach (var resource in Resources.All)

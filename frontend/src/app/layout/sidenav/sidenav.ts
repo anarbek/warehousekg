@@ -8,9 +8,11 @@ import { PermissionsService, ResourcePermissions } from '../../core/services/per
 interface NavItem {
   id: string;
   text: string;
-  icon: string;
-  path: string;
+  icon?: string;
+  path?: string;
   resource?: string;
+  items?: NavItem[];
+  expanded?: boolean;
 }
 
 @Component({
@@ -26,20 +28,51 @@ export class Sidenav implements OnInit {
 
   private readonly allItems: NavItem[] = [
     { id: 'dashboard', icon: 'chart', text: $localize`:@@nav.dashboard:Панель управления`, path: '/dashboard' },
-    { id: 'warehouses', icon: 'home', text: $localize`:@@nav.warehouses:Склады`, path: '/inventory/warehouses', resource: 'warehouses' },
-    { id: 'items', icon: 'product', text: $localize`:@@nav.inventory:Товары`, path: '/inventory/items', resource: 'inventory-items' },
-    { id: 'categories', icon: 'folder', text: $localize`:@@nav.categories:Категории`, path: '/inventory/categories', resource: 'item-categories' },
-    { id: 'uoms', icon: 'info', text: $localize`:@@nav.uoms:Ед. измерения`, path: '/inventory/units-of-measure', resource: 'units-of-measure' },
-    { id: 'receiving', icon: 'download', text: $localize`:@@nav.receiving:Поступления`, path: '/stock-operations/receiving', resource: 'stock-receipts' },
-    { id: 'picking', icon: 'export', text: $localize`:@@nav.picking:Сборка`, path: '/stock-operations/picking', resource: 'pick-orders' },
-    { id: 'packing', icon: 'box', text: $localize`:@@nav.packing:Упаковка`, path: '/stock-operations/packing', resource: 'pack-orders' },
-    { id: 'transfer', icon: 'movetofolder', text: $localize`:@@nav.transfer:Перемещения`, path: '/stock-operations/transfer', resource: 'stock-transfers' },
-    { id: 'suppliers', icon: 'group', text: $localize`:@@nav.suppliers:Поставщики`, path: '/suppliers/suppliers', resource: 'suppliers' },
-    { id: 'po', icon: 'cart', text: $localize`:@@nav.purchaseOrders:Заказы поставщикам`, path: '/suppliers/purchase-orders', resource: 'purchase-orders' },
-    { id: 'customers', icon: 'user', text: $localize`:@@nav.customers:Клиенты`, path: '/customers/customers', resource: 'customers' },
-    { id: 'so', icon: 'money', text: $localize`:@@nav.salesOrders:Заказы клиентов`, path: '/customers/sales-orders', resource: 'sales-orders' },
-    { id: 'adjustments', icon: 'preferences', text: $localize`:@@nav.adjustments:Корректировки`, path: '/adjustments/adjustments', resource: 'stock-adjustments' },
-    { id: 'audits', icon: 'checklist', text: $localize`:@@nav.audits:Аудиты`, path: '/adjustments/audits', resource: 'stock-audits' },
+    {
+      id: 'warehouse-group', icon: 'home',
+      text: $localize`:@@nav.groups.warehouse:Склад`,
+      expanded: true,
+      items: [
+        { id: 'warehouses', text: $localize`:@@nav.warehouses:Склады`, path: '/inventory/warehouses', resource: 'warehouses' },
+        { id: 'items', text: $localize`:@@nav.inventory:Товары`, path: '/inventory/items', resource: 'inventory-items' },
+        { id: 'categories', text: $localize`:@@nav.categories:Категории`, path: '/inventory/categories', resource: 'item-categories' },
+        { id: 'uoms', text: $localize`:@@nav.uoms:Ед. измерения`, path: '/inventory/units-of-measure', resource: 'units-of-measure' },
+        { id: 'receiving', text: $localize`:@@nav.receiving:Поступления`, path: '/stock-operations/receiving', resource: 'stock-receipts' },
+        { id: 'picking', text: $localize`:@@nav.picking:Сборка`, path: '/stock-operations/picking', resource: 'pick-orders' },
+        { id: 'packing', text: $localize`:@@nav.packing:Упаковка`, path: '/stock-operations/packing', resource: 'pack-orders' },
+        { id: 'transfer', text: $localize`:@@nav.transfer:Перемещения`, path: '/stock-operations/transfer', resource: 'stock-transfers' },
+        { id: 'adjustments', text: $localize`:@@nav.adjustments:Корректировки`, path: '/adjustments/adjustments', resource: 'stock-adjustments' },
+        { id: 'audits', text: $localize`:@@nav.audits:Аудиты`, path: '/adjustments/audits', resource: 'stock-audits' },
+      ],
+    },
+    {
+      id: 'crm-group', icon: 'user',
+      text: $localize`:@@nav.groups.crm:Клиенты и поставщики`,
+      items: [
+        { id: 'suppliers', text: $localize`:@@nav.suppliers:Поставщики`, path: '/suppliers/suppliers', resource: 'suppliers' },
+        { id: 'po', text: $localize`:@@nav.purchaseOrders:Заказы поставщикам`, path: '/suppliers/purchase-orders', resource: 'purchase-orders' },
+        { id: 'customers', text: $localize`:@@nav.customers:Клиенты`, path: '/customers/customers', resource: 'customers' },
+        { id: 'so', text: $localize`:@@nav.salesOrders:Заказы клиентов`, path: '/customers/sales-orders', resource: 'sales-orders' },
+      ],
+    },
+    {
+      id: 'personnel-group', icon: 'card',
+      text: $localize`:@@nav.groups.personnel:Персонал`,
+      items: [
+        { id: 'employees', text: $localize`:@@nav.employees:Сотрудники`, path: '/personnel/employees', resource: 'employees' },
+        { id: 'positions', text: $localize`:@@nav.positions:Должности`, path: '/personnel/positions', resource: 'positions' },
+        { id: 'departments', text: $localize`:@@nav.departments:Отделы`, path: '/personnel/departments', resource: 'departments' },
+        { id: 'shifts', text: $localize`:@@nav.shifts:Смены`, path: '/personnel/shifts', resource: 'shifts' },
+        { id: 'attendance', text: $localize`:@@nav.attendance:Посещаемость`, path: '/personnel/attendance', resource: 'attendance' },
+      ],
+    },
+    {
+      id: 'vehicles-group', icon: 'car',
+      text: $localize`:@@nav.groups.vehicles:Автопарк`,
+      items: [
+        // Planned — added in Phase 7 (Vehicle Management)
+      ],
+    },
     { id: 'reports', icon: 'chart', text: $localize`:@@nav.reports:Отчёты`, path: '/reports', resource: 'reports' },
     { id: 'admin', icon: 'key', text: $localize`:@@nav.admin:Администрирование`, path: '/admin', resource: 'users' },
   ];
@@ -52,17 +85,28 @@ export class Sidenav implements OnInit {
     ).subscribe({
       next: (data) => {
         this.perms.setAll(data.resources, data.roles);
-        const p = data.resources;
-        this.items.set(this.allItems.filter(item => {
-          if (!item.resource) return true; // Dashboard always visible
-          return p[item.resource]?.canRead === true;
-        }));
+        this.items.set(this.filterItems(this.allItems, data.resources));
       },
       error: () => {
-        // On error, show everything (backend will enforce)
         this.items.set(this.allItems);
       },
     });
+  }
+
+  /// Recursively filter items: a parent is visible if any child passes the filter.
+  private filterItems(items: NavItem[], permissions: Record<string, ResourcePermissions>): NavItem[] {
+    const result: NavItem[] = [];
+    for (const item of items) {
+      if (item.items && item.items.length > 0) {
+        const filteredChildren = this.filterItems(item.items, permissions);
+        if (filteredChildren.length > 0) {
+          result.push({ ...item, items: filteredChildren });
+        }
+      } else if (!item.resource || permissions[item.resource]?.canRead === true) {
+        result.push(item);
+      }
+    }
+    return result;
   }
 
   protected onItemClick(e: any): void {

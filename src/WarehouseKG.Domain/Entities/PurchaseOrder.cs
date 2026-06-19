@@ -27,5 +27,9 @@ public class PurchaseOrder : BaseEntity
 
     public string? Notes { get; set; }
 
+    public Guid? EmployeeId { get; set; }
+
+    public Employee? Employee { get; set; }
+
     public ICollection<PurchaseOrderLine> Lines { get; set; } = new List<PurchaseOrderLine>();
 }

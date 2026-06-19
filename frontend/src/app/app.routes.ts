@@ -44,6 +44,11 @@ export const routes: Routes = [
           import('./features/customers/customer-so.routes').then((m) => m.customerRoutes),
       },
       {
+        path: 'personnel',
+        loadChildren: () =>
+          import('./features/personnel/personnel.routes').then((m) => m.personnelRoutes),
+      },
+      {
         path: 'adjustments',
         loadChildren: () =>
           import('./features/adjustments/adjustments.routes').then((m) => m.adjustmentRoutes),

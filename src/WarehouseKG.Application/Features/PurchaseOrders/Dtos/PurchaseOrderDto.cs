@@ -30,6 +30,10 @@ public class PurchaseOrderDto
 
     public decimal TotalAmount { get; set; }
 
+    public Guid? EmployeeId { get; set; }
+
+    public string? EmployeeName { get; set; }
+
     public List<PurchaseOrderLineDto> Lines { get; set; } = new();
 }
 
@@ -67,6 +71,10 @@ public class PurchaseOrderSummaryDto
     public DateTime? ReceivedAtUtc { get; set; }
 
     public decimal TotalAmount { get; set; }
+
+    public Guid? EmployeeId { get; set; }
+
+    public string? EmployeeName { get; set; }
 
     public int LineCount { get; set; }
 }

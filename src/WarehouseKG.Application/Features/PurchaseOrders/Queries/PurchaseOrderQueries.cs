@@ -37,6 +37,8 @@ public class GetPurchaseOrdersQueryHandler
                 CreatedAt = p.CreatedAt,
                 ReceivedAtUtc = p.ReceivedAtUtc,
                 TotalAmount = p.Lines.Sum(l => l.Quantity * l.UnitPrice),
+                EmployeeId = p.EmployeeId,
+                EmployeeName = p.Employee != null ? p.Employee.LastName + " " + p.Employee.FirstName : null,
                 LineCount = p.Lines.Count
             })
             .ToListAsync(cancellationToken);

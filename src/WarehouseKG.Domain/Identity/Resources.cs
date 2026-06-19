@@ -25,12 +25,20 @@ public static class Resources
     /// <summary>Permission to delete completed stock receipts.</summary>
     public const string ReceivingDelete = "stock-receipts-delete-completed";
 
+    // Personnel resources
+    public const string Employees = "employees";
+    public const string Positions = "positions";
+    public const string Departments = "departments";
+    public const string Shifts = "shifts";
+    public const string Attendance = "attendance";
+
     public static readonly IReadOnlyList<string> All = new[]
     {
         Warehouses, InventoryItems, ItemCategories, UnitsOfMeasure,
         StockReceipts, PickOrders, PackOrders, StockTransfers,
         StockAdjustments, StockAudits,
         Suppliers, PurchaseOrders, Customers, SalesOrders,
-        Reports, Users, AddItemsBackInTime, ReceivingDelete
+        Reports, Users, AddItemsBackInTime, ReceivingDelete,
+        Employees, Positions, Departments, Shifts, Attendance
     };
 }

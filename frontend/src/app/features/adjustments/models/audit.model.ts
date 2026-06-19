@@ -47,5 +47,6 @@ export interface CreateStockAuditRequest {
   warehouseId: string;
   reconciledAtUtc?: string | null;
   notes?: string | null;
+  employeeId?: string | null;
   lines: StockAuditLineInput[];
 }

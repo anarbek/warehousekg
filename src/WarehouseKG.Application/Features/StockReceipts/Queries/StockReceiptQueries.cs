@@ -35,6 +35,8 @@ public class GetStockReceiptsQueryHandler
                 Status = r.Status,
                 ReceivedAtUtc = r.ReceivedAtUtc,
                 CreatedAt = r.CreatedAt,
+                EmployeeId = r.EmployeeId,
+                EmployeeName = r.Employee != null ? r.Employee.LastName + " " + r.Employee.FirstName : null,
                 LineCount = r.Lines.Count
             })
             .ToListAsync(cancellationToken);
@@ -71,6 +73,8 @@ public class GetStockReceiptByIdQueryHandler
                 ReceivedAtUtc = r.ReceivedAtUtc,
                 CreatedAt = r.CreatedAt,
                 Notes = r.Notes,
+                EmployeeId = r.EmployeeId,
+                EmployeeName = r.Employee != null ? r.Employee.LastName + " " + r.Employee.FirstName : null,
                 Lines = r.Lines.Select(l => new StockReceiptLineDto
                 {
                     Id = l.Id,

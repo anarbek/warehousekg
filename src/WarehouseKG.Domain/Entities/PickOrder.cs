@@ -21,5 +21,9 @@ public class PickOrder : BaseEntity
 
     public string? Notes { get; set; }
 
+    public Guid? EmployeeId { get; set; }
+
+    public Employee? Employee { get; set; }
+
     public ICollection<PickOrderLine> Lines { get; set; } = new List<PickOrderLine>();
 }

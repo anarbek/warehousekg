@@ -28,6 +28,11 @@ public class PackOrderConfiguration : IEntityTypeConfiguration<PackOrder>
             .HasForeignKey(p => p.PickOrderId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(p => p.Employee)
+            .WithMany()
+            .HasForeignKey(p => p.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasMany(p => p.Lines)
             .WithOne(l => l.PackOrder!)
             .HasForeignKey(l => l.PackOrderId)

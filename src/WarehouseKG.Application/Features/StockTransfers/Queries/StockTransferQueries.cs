@@ -36,6 +36,8 @@ public class GetStockTransfersQueryHandler
                 Status = t.Status,
                 TransferredAtUtc = t.TransferredAtUtc,
                 CreatedAt = t.CreatedAt,
+                EmployeeId = t.EmployeeId,
+                EmployeeName = t.Employee != null ? t.Employee.LastName + " " + t.Employee.FirstName : null,
                 LineCount = t.Lines.Count
             })
             .ToListAsync(cancellationToken);

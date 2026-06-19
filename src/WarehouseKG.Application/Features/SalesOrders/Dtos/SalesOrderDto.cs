@@ -32,6 +32,10 @@ public class SalesOrderDto
 
     public decimal TotalAmount { get; set; }
 
+    public Guid? EmployeeId { get; set; }
+
+    public string? EmployeeName { get; set; }
+
     public List<SalesOrderLineDto> Lines { get; set; } = new();
 }
 
@@ -69,6 +73,10 @@ public class SalesOrderSummaryDto
     public DateTime? ExpectedDateUtc { get; set; }
 
     public decimal TotalAmount { get; set; }
+
+    public Guid? EmployeeId { get; set; }
+
+    public string? EmployeeName { get; set; }
 
     public int LineCount { get; set; }
 }

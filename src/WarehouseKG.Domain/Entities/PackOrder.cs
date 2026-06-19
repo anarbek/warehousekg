@@ -23,5 +23,9 @@ public class PackOrder : BaseEntity
 
     public string? Notes { get; set; }
 
+    public Guid? EmployeeId { get; set; }
+
+    public Employee? Employee { get; set; }
+
     public ICollection<PackOrderLine> Lines { get; set; } = new List<PackOrderLine>();
 }

@@ -17,7 +17,7 @@ export interface StockAdjustment {
 }
 
 export interface CreateStockAdjustmentRequest {
-  number: string; warehouseId: string; reason: number; notes?: string | null;
+  number: string; warehouseId: string; reason: number; notes?: string | null; employeeId?: string | null;
   lines: { inventoryItemId: string; quantityChange: number; notes?: string | null }[];
 }
 

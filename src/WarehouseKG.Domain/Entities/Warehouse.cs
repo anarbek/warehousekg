@@ -13,4 +13,5 @@ public class Warehouse : BaseEntity
     public bool IsActive { get; set; } = true;
 
     public ICollection<WarehouseLocation> Locations { get; set; } = new List<WarehouseLocation>();
+    public ICollection<EmployeeWarehouseAssignment> EmployeeAssignments { get; set; } = new List<EmployeeWarehouseAssignment>();
 }

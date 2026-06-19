@@ -24,6 +24,11 @@ public class StockAdjustmentConfiguration : IEntityTypeConfiguration<StockAdjust
             .HasForeignKey(a => a.WarehouseId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(a => a.Employee)
+            .WithMany()
+            .HasForeignKey(a => a.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasMany(a => a.Lines)
             .WithOne(l => l.StockAdjustment!)
             .HasForeignKey(l => l.StockAdjustmentId)

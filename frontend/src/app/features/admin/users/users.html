@@ -61,10 +61,11 @@
   <dx-data-grid [dataSource]="users()" [showBorders]="true" [hoverStateEnabled]="true" [showColumnLines]="true" [showRowLines]="true">
     <dxi-column dataField="userName" caption="Пользователь" [width]="180" />
     <dxi-column dataField="email" caption="Email" [width]="220" />
-    <dxi-column caption="Роли" [width]="300" cellTemplate="rolesCell" />
+    <dxi-column caption="Роли" [width]="'auto'" cellTemplate="rolesCell" />
     <dxi-column caption="" [width]="80" cellTemplate="actCell" />
 
     <div *dxTemplate="let c of 'rolesCell'">
+      <div style="display:flex;flex-wrap:wrap;gap:2px;">
       @for (role of roles(); track role) {
         <dx-button
           [text]="role"
@@ -79,6 +80,7 @@
           "
         />
       }
+      </div>
     </div>
     <div *dxTemplate="let c of 'actCell'">
       <dx-button icon="trash" type="danger" stylingMode="text" (onClick)="deleteUser(c.data)" />

@@ -17,5 +17,9 @@ public class StockAudit : BaseEntity
 
     public string? Notes { get; set; }
 
+    public Guid? EmployeeId { get; set; }
+
+    public Employee? Employee { get; set; }
+
     public ICollection<StockAuditLine> Lines { get; set; } = new List<StockAuditLine>();
 }

@@ -49,6 +49,7 @@ export interface PurchaseOrder {
   notes?: string | null;
   totalAmount: number;
   lines: PurchaseOrderLine[];
+  employeeName?: string | null;
 }
 
 export interface PurchaseOrderSummary {
@@ -64,6 +65,7 @@ export interface PurchaseOrderSummary {
   receivedAtUtc?: string | null;
   totalAmount: number;
   lineCount: number;
+  employeeName?: string | null;
 }
 
 export interface CreatePurchaseOrderRequest {

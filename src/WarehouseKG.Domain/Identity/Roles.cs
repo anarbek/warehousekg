@@ -13,11 +13,20 @@ public static class Roles
 
     public const string Viewer = "Viewer";
 
+    public const string Auditor = "Auditor";
+
+    public const string Dispatcher = "Dispatcher";
+
+    public const string HR = "HR";
+
     public static readonly IReadOnlyList<string> All = new[]
     {
         Admin,
         Manager,
+        Auditor,
+        Dispatcher,
         WarehouseOperator,
+        HR,
         Viewer
     };
 

@@ -20,6 +20,10 @@ public class StockAdjustmentDto
 
     public string? Notes { get; set; }
 
+    public Guid? EmployeeId { get; set; }
+
+    public string? EmployeeName { get; set; }
+
     public List<StockAdjustmentLineDto> Lines { get; set; } = new();
 }
 
@@ -49,6 +53,10 @@ public class StockAdjustmentSummaryDto
     public DateTime? AdjustedAtUtc { get; set; }
 
     public DateTime CreatedAt { get; set; }
+
+    public Guid? EmployeeId { get; set; }
+
+    public string? EmployeeName { get; set; }
 
     public int LineCount { get; set; }
 }

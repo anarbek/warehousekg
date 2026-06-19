@@ -1,0 +1,43 @@
+@if(loading()){ <dx-progress-bar [visible]="true"/> }
+@if(error()){ <div class="detail-page detail-page--error"><p>{{error()}}</p><dx-button text="Назад" icon="arrowleft" stylingMode="outlined" [routerLink]="['../..']"/></div> }
+@if(item(); as emp){
+  <div class="detail-page">
+    <div class="detail-page__toolbar">
+      <dx-button icon="arrowleft" stylingMode="text" [routerLink]="['../..']"/>
+      <h1 class="detail-page__title">{{emp.lastName}} {{emp.firstName}} {{emp.middleName||''}}</h1>
+      <span class="detail-page__spacer"></span>
+      <dx-button text="Редактировать" icon="edit" stylingMode="outlined" [routerLink]="['edit']"/>
+      @if(canDelete()){ <dx-button text="Удалить" icon="trash" stylingMode="outlined" type="danger" (onClick)="delete()"/> }
+    </div>
+    <div class="dx-card">
+      <dl class="detail-list">
+        <dt>Код</dt><dd>{{emp.code}}</dd>
+        <dt>Фамилия</dt><dd>{{emp.lastName}}</dd>
+        <dt>Имя</dt><dd>{{emp.firstName}}</dd>
+        <dt>Отчество</dt><dd>{{emp.middleName||'—'}}</dd>
+        <dt>Email</dt><dd>{{emp.email||'—'}}</dd>
+        <dt>Телефон</dt><dd>{{emp.phone||'—'}}</dd>
+        <dt>Должность</dt><dd>{{emp.positionName||'—'}}</dd>
+        <dt>Отдел</dt><dd>{{emp.departmentName||'—'}}</dd>
+        <dt>Дата найма</dt><dd>{{emp.hireDate||'—'}}</dd>
+        <dt>Статус</dt><dd>{{emp.isActive?'Активен':'Неактивен'}}</dd>
+      </dl>
+    </div>
+    @if(emp.shiftAssignments.length > 0){
+      <div class="dx-card" style="margin-top:16px">
+        <h3>Смены</h3>
+        @for(s of emp.shiftAssignments; track s.id){
+          <div style="margin-bottom:4px">{{s.shiftName}} — с {{s.effectiveFromUtc}}</div>
+        }
+      </div>
+    }
+    @if(emp.warehouseAssignments.length > 0){
+      <div class="dx-card" style="margin-top:16px">
+        <h3>Склады</h3>
+        @for(w of emp.warehouseAssignments; track w.id){
+          <div style="margin-bottom:4px">{{w.warehouseName}} {{w.isPrimary?'(основной)':''}}</div>
+        }
+      </div>
+    }
+  </div>
+}

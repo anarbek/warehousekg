@@ -8,12 +8,14 @@ import { Warehouse } from '../../inventory/models/warehouse.model';
 import { InventoryItem } from '../../inventory/models/inventory-item.model';
 import { InventoryService } from '../../inventory/services/inventory.service';
 import { AuditsService } from '../services/audits.service';
+import { PersonnelService } from '../../personnel/services/personnel.service';
 
 interface FormHeader {
   number: string;
   warehouseId: string;
   notes: string;
   reconciledAtUtc: Date|null;
+  employeeId: string|null;
 }
 
 @Component({
@@ -26,6 +28,7 @@ interface FormHeader {
 export class AuditForm implements OnInit {
   private readonly svc = inject(AuditsService);
   private readonly inv = inject(InventoryService);
+  private readonly personnel = inject(PersonnelService);
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
 
@@ -41,6 +44,7 @@ export class AuditForm implements OnInit {
     warehouseId: '',
     notes: '',
     reconciledAtUtc: null,
+    employeeId: null,
   };
 
   protected readonly form = this.fb.group({
@@ -58,12 +62,13 @@ export class AuditForm implements OnInit {
     forkJoin({
       warehouses: this.inv.getWarehouses(),
       items: this.inv.getInventoryItems(),
+      employees: this.personnel.getEmployees(),
     }).subscribe({
-      next: ({ warehouses, items }) => {
+      next: ({ warehouses, items, employees }) => {
         this.warehouses.set(warehouses.filter((w) => w.isActive));
         this.items.set(items.filter((i) => i.isActive));
         this.loading.set(false);
-        this.buildHeaderItems();
+        this.buildHeaderItems(employees);
       },
       error: () => {
         this.err.set($localize`:@@common.loadError:Не удалось загрузить данные`);
@@ -72,7 +77,7 @@ export class AuditForm implements OnInit {
     });
   }
 
-  private buildHeaderItems(): void {
+  private buildHeaderItems(employees: any[]): void {
     this.headerItems.set([
       {
         dataField: 'number',
@@ -89,6 +94,18 @@ export class AuditForm implements OnInit {
           dataSource: this.warehouses(),
           displayExpr: 'name',
           valueExpr: 'id',
+          stylingMode: 'outlined',
+        },
+      },
+      {
+        dataField: 'employeeId',
+        editorType: 'dxSelectBox',
+        label: { text: 'Сотрудник (опц.)' },
+        editorOptions: {
+          dataSource: employees,
+          displayExpr: 'lastName',
+          valueExpr: 'id',
+          placeholder: 'Не указан',
           stylingMode: 'outlined',
         },
       },
@@ -144,6 +161,7 @@ export class AuditForm implements OnInit {
         ? `${this.formData.reconciledAtUtc.getFullYear()}-${String(this.formData.reconciledAtUtc.getMonth() + 1).padStart(2, '0')}-${String(this.formData.reconciledAtUtc.getDate()).padStart(2, '0')}`
         : null,
       notes: this.formData.notes || null,
+      employeeId: this.formData.employeeId || null,
       lines,
     };
 

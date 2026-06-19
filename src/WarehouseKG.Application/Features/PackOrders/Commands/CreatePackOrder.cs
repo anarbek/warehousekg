@@ -16,7 +16,8 @@ public record CreatePackOrderCommand(
     Guid? PickOrderId,
     string? Notes,
     DateTime? ActualPackDate,
-    IReadOnlyList<PackOrderLineInput> Lines) : IRequest<Guid>;
+    IReadOnlyList<PackOrderLineInput> Lines,
+    Guid? EmployeeId = null) : IRequest<Guid>;
 
 public class CreatePackOrderCommandHandler : IRequestHandler<CreatePackOrderCommand, Guid>
 {
@@ -38,6 +39,7 @@ public class CreatePackOrderCommandHandler : IRequestHandler<CreatePackOrderComm
             Notes = request.Notes,
             ActualPackDate = request.ActualPackDate,
             Status = StockOperationStatus.Draft,
+            EmployeeId = request.EmployeeId,
             Lines = request.Lines.Select(l => new PackOrderLine
             {
                 Id = Guid.NewGuid(),

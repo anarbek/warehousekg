@@ -35,6 +35,43 @@ public class WarehouseKgClient
             _http.DefaultRequestHeaders.Add("X-Tenant-Id", "ffffffff-ffff-ffff-ffff-ffffffffffff");
     }
 
+    /// <summary>Create a user with specified roles (requires admin). Returns the new user ID.</summary>
+    public async Task<string> CreateUserAsync(string userName, string password, List<string> roles)
+    {
+        var response = await _http.PostAsJsonAsync("/api/v1/users", new
+        {
+            userName,
+            email = $"{userName}@test.local",
+            password,
+            roles
+        });
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    /// <summary>Login as a specific user and return a new client authenticated as that user.</summary>
+    public async Task<WarehouseKgClient> LoginAsUserAsync(string userName, string password)
+    {
+        var http = new HttpClient { BaseAddress = _http.BaseAddress };
+        var client = new WarehouseKgClient(http);
+        await client.LoginAsync(userName, password);
+        return client;
+    }
+
+    /// <summary>Raw HTTP GET — returns full response for permission testing.</summary>
+    public async Task<HttpResponseMessage> GetRawAsync(string url)
+    {
+        return await _http.GetAsync(url);
+    }
+
+    /// <summary>Raw HTTP POST — returns full response for permission testing.</summary>
+    public async Task<HttpResponseMessage> PostRawAsync(string url, object? body = null)
+    {
+        if (body is null)
+            return await _http.PostAsync(url, null);
+        return await _http.PostAsJsonAsync(url, body);
+    }
+
     // ─── Stock Receipts ──────────────────────────────────────────────────
 
     public async Task<string> CreateReceiptAsync(object body)

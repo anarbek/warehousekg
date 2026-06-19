@@ -37,6 +37,8 @@ public class GetSalesOrdersQueryHandler
                 CreatedAt = s.CreatedAt,
                 ExpectedDateUtc = s.ExpectedDateUtc,
                 TotalAmount = s.Lines.Sum(l => l.Quantity * l.UnitPrice),
+                EmployeeId = s.EmployeeId,
+                EmployeeName = s.Employee != null ? s.Employee.LastName + " " + s.Employee.FirstName : null,
                 LineCount = s.Lines.Count
             })
             .ToListAsync(cancellationToken);

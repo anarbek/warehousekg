@@ -15,7 +15,8 @@ public record CreateStockAuditCommand(
     Guid WarehouseId,
     string? Notes,
     DateTime? ReconciledAtUtc,
-    IReadOnlyList<StockAuditLineInput> Lines) : IRequest<Guid>;
+    IReadOnlyList<StockAuditLineInput> Lines,
+    Guid? EmployeeId = null) : IRequest<Guid>;
 
 public class CreateStockAuditCommandHandler : IRequestHandler<CreateStockAuditCommand, Guid>
 {
@@ -72,6 +73,7 @@ public class CreateStockAuditCommandHandler : IRequestHandler<CreateStockAuditCo
             Notes = request.Notes,
             ReconciledAtUtc = storedDate,
             Status = StockOperationStatus.Draft,
+            EmployeeId = request.EmployeeId,
             Lines = request.Lines.Select(l => new StockAuditLine
             {
                 Id = Guid.NewGuid(),

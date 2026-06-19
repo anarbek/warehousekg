@@ -16,7 +16,8 @@ public record CreatePickOrderCommand(
     string? Reference,
     string? Notes,
     DateTime? PlannedPickDate,
-    IReadOnlyList<PickOrderLineInput> Lines) : IRequest<Guid>;
+    IReadOnlyList<PickOrderLineInput> Lines,
+    Guid? EmployeeId = null) : IRequest<Guid>;
 
 public class CreatePickOrderCommandHandler : IRequestHandler<CreatePickOrderCommand, Guid>
 {
@@ -38,6 +39,7 @@ public class CreatePickOrderCommandHandler : IRequestHandler<CreatePickOrderComm
             Notes = request.Notes,
             PlannedPickDate = request.PlannedPickDate,
             Status = StockOperationStatus.Draft,
+            EmployeeId = request.EmployeeId,
             Lines = request.Lines.Select(l => new PickOrderLine
             {
                 Id = Guid.NewGuid(),

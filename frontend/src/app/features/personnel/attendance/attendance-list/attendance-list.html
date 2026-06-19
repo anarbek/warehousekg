@@ -1,0 +1,24 @@
+<div class="list-page">
+  <div class="list-page__toolbar">
+    <h1 i18n="@@att.list.title">Посещаемость</h1>
+    <dx-button text="Добавить" icon="add" type="default" stylingMode="contained" [routerLink]="['new']"/>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center">
+    <span>С:</span><dx-date-box [(value)]="dateFrom" (onValueChanged)="applyFilter()"/>
+    <span>По:</span><dx-date-box [(value)]="dateTo" (onValueChanged)="applyFilter()"/>
+  </div>
+  @if(loading()){ <dx-progress-bar [visible]="true"/> }
+  @if(error()){ <p class="list-page__error">{{error()}}</p> }
+  <dx-data-grid [dataSource]="items()" [showBorders]="true" [hoverStateEnabled]="true">
+    <dxi-column dataField="employeeName" caption="Сотрудник"/>
+    <dxi-column dataField="shiftName" caption="Смена"/>
+    <dxi-column dataField="date" caption="Дата" dataType="date"/>
+    <dxi-column dataField="status" caption="Статус" cellTemplate="statusCell"/>
+    <dxi-column caption="" [width]="120" cellTemplate="actionsCell"/>
+    <div *dxTemplate="let cell of 'statusCell'">{{statusBadge(cell.value)}}</div>
+    <div *dxTemplate="let cell of 'actionsCell'">
+      <a [routerLink]="[cell.data.id,'edit']"><dx-button icon="edit" hint="Edit" stylingMode="text"/></a>
+      @if(canDelete()){ <dx-button icon="trash" hint="Delete" stylingMode="text" (onClick)="delete(cell.data.id)"/> }
+    </div>
+  </dx-data-grid>
+</div>

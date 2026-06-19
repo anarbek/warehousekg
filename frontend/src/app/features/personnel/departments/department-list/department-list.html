@@ -1,0 +1,20 @@
+<div class="list-page">
+  <div class="list-page__toolbar">
+    <h1 i18n="@@dep.list.title">Отделы</h1>
+    <dx-button text="Добавить" icon="add" type="default" stylingMode="contained" [routerLink]="['new']"/>
+  </div>
+  @if(loading()){ <dx-progress-bar [visible]="true"/> }
+  @if(error()){ <p class="list-page__error">{{error()}}</p> }
+  <dx-data-grid [dataSource]="items()" [showBorders]="true" [hoverStateEnabled]="true">
+    <dxi-column dataField="code" caption="Код" [sortOrder]="'asc'"/>
+    <dxi-column dataField="name" caption="Название"/>
+    <dxi-column dataField="description" caption="Описание"/>
+    <dxi-column dataField="isActive" caption="Статус" [width]="100" cellTemplate="activeCell"/>
+    <dxi-column caption="" [width]="100" cellTemplate="actionsCell"/>
+    <div *dxTemplate="let cell of 'activeCell'">{{cell.value?'Активен':'Неактивен'}}</div>
+    <div *dxTemplate="let cell of 'actionsCell'">
+      <a [routerLink]="[cell.data.id,'edit']"><dx-button icon="edit" hint="Edit" stylingMode="text"/></a>
+      @if(canDelete()){ <dx-button icon="trash" hint="Delete" stylingMode="text" (onClick)="delete(cell.data.id)"/> }
+    </div>
+  </dx-data-grid>
+</div>

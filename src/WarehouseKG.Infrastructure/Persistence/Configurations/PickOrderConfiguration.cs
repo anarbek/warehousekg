@@ -24,6 +24,11 @@ public class PickOrderConfiguration : IEntityTypeConfiguration<PickOrder>
             .HasForeignKey(p => p.WarehouseId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(p => p.Employee)
+            .WithMany()
+            .HasForeignKey(p => p.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasMany(p => p.Lines)
             .WithOne(l => l.PickOrder!)
             .HasForeignKey(l => l.PickOrderId)

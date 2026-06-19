@@ -10,6 +10,7 @@
     <dxi-column caption="Склад" cellTemplate="whCell"/>
     @if(cfg()?.showRef){<dxi-column caption="{{cfg()?.refLabel||''}}" cellTemplate="refCell"/>}
     <dxi-column dataField="lineCount" caption="Позиций" [width]="80"/>
+    <dxi-column caption="Сотрудник" [width]="120" cellTemplate="empCell"/>
     <dxi-column dataField="status" caption="Статус" [width]="120"/>
     @if(op==='receiving'){<dxi-column caption="Дата поступления" [width]="120" cellTemplate="dateCell"/>}
     @else if(op==='picking'){<dxi-column caption="Плановая дата" [width]="120" cellTemplate="dateCell"/>}
@@ -20,6 +21,7 @@
     <div *dxTemplate="let c of 'numCell'"><a [routerLink]="[c.data.id]">{{c.value}}</a></div>
     <div *dxTemplate="let c of 'whCell'">{{getWh(c.data)}}</div>
     <div *dxTemplate="let c of 'refCell'">{{getRef(c.data)}}</div>
+    <div *dxTemplate="let c of 'empCell'">{{c.data.employeeName || '\u2014'}}</div>
     <div *dxTemplate="let c of 'dateCell'">{{getDate(c.data)|date:'dd.MM.yyyy'}}</div>
     <div *dxTemplate="let c of 'packDateCell'">{{c.data.actualPackDate|date:'dd.MM.yyyy'}}</div>
     <div *dxTemplate="let c of 'createdCell'">{{c.data.createdAt|date:'dd.MM.yyyy, HH:mm'}}</div>

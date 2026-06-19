@@ -29,6 +29,11 @@ public class SalesOrderConfiguration : IEntityTypeConfiguration<SalesOrder>
             .HasForeignKey(s => s.WarehouseId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(s => s.Employee)
+            .WithMany()
+            .HasForeignKey(s => s.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasMany(s => s.Lines)
             .WithOne(l => l.SalesOrder!)
             .HasForeignKey(l => l.SalesOrderId)

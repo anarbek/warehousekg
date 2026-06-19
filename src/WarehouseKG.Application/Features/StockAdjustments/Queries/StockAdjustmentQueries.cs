@@ -34,6 +34,8 @@ public class GetStockAdjustmentsQueryHandler
                 Status = a.Status,
                 AdjustedAtUtc = a.AdjustedAtUtc,
                 CreatedAt = a.CreatedAt,
+                EmployeeId = a.EmployeeId,
+                EmployeeName = a.Employee != null ? a.Employee.LastName + " " + a.Employee.FirstName : null,
                 LineCount = a.Lines.Count
             })
             .ToListAsync(cancellationToken);

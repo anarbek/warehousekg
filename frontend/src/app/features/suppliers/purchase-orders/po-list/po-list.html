@@ -4,10 +4,12 @@
     <dxi-column dataField="number" caption="Номер" [sortOrder]="'asc'"/><dxi-column dataField="supplierName" caption="Поставщик"/>
     <dxi-column dataField="status" caption="Статус" [width]="120"/>
     <dxi-column dataField="currency" caption="Валюта" [width]="80"/>
+    <dxi-column caption="Сотрудник" [width]="120" cellTemplate="empCell"/>
     <dxi-column dataField="createdAt" caption="Дата" [width]="160" cellTemplate="dateCell"/>
     <dxi-column dataField="receivedAtUtc" caption="Дата получения" [width]="120" cellTemplate="dateCell"/>
     <dxi-column dataField="totalAmount" caption="Сумма" [width]="120"/>
     <dxi-column caption="" [width]="100" cellTemplate="act"/>
     <div *dxTemplate="let c of 'act'"><a [routerLink]="[c.data.id]"><dx-button icon="info" hint="View" stylingMode="text"/></a></div>
     <div *dxTemplate="let c of 'dateCell'">{{c.value|date:'dd.MM.yyyy, HH:mm'}}</div>
+    <div *dxTemplate="let c of 'empCell'">{{c.data.employeeName||'\u2014'}}</div>
 </dx-data-grid></div>

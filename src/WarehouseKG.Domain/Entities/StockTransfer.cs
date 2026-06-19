@@ -21,5 +21,9 @@ public class StockTransfer : BaseEntity
 
     public string? Notes { get; set; }
 
+    public Guid? EmployeeId { get; set; }
+
+    public Employee? Employee { get; set; }
+
     public ICollection<StockTransferLine> Lines { get; set; } = new List<StockTransferLine>();
 }

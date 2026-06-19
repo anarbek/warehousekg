@@ -16,6 +16,10 @@ public class StockAuditDto
 
     public string? Notes { get; set; }
 
+    public Guid? EmployeeId { get; set; }
+
+    public string? EmployeeName { get; set; }
+
     public List<StockAuditLineDto> Lines { get; set; } = new();
 }
 
@@ -45,6 +49,10 @@ public class StockAuditSummaryDto
     public DateTime? ReconciledAtUtc { get; set; }
 
     public DateTime CreatedAt { get; set; }
+
+    public Guid? EmployeeId { get; set; }
+
+    public string? EmployeeName { get; set; }
 
     public int LineCount { get; set; }
 

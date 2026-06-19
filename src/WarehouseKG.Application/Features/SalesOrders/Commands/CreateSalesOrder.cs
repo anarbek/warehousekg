@@ -17,7 +17,8 @@ public record CreateSalesOrderCommand(
     string? Currency,
     DateTime? ExpectedDateUtc,
     string? Notes,
-    IReadOnlyList<SalesOrderLineInput> Lines) : IRequest<Guid>;
+    IReadOnlyList<SalesOrderLineInput> Lines,
+    Guid? EmployeeId = null) : IRequest<Guid>;
 
 public class CreateSalesOrderCommandHandler : IRequestHandler<CreateSalesOrderCommand, Guid>
 {
@@ -41,6 +42,7 @@ public class CreateSalesOrderCommandHandler : IRequestHandler<CreateSalesOrderCo
             ExpectedDateUtc = request.ExpectedDateUtc,
             Notes = request.Notes,
             Status = SalesOrderStatus.Draft,
+            EmployeeId = request.EmployeeId,
             Lines = request.Lines.Select(l => new SalesOrderLine
             {
                 Id = Guid.NewGuid(),

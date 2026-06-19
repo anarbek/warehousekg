@@ -25,6 +25,7 @@ export interface StockReceipt {
   receivedAtUtc?: string | null;
   createdAt: string;
   lines: StockOperationLine[];
+  employeeName?: string | null;
 }
 
 export interface CreateStockReceiptRequest {
@@ -33,6 +34,7 @@ export interface CreateStockReceiptRequest {
   supplierReference?: string | null;
   notes?: string | null;
   receivedAtUtc?: string | null;
+  employeeId?: string | null;
   lines: StockOperationLine[];
 }
 
@@ -50,6 +52,7 @@ export interface PickOrder {
   createdAtUtc?: string | null;
   plannedPickDate?: string | null;
   lines: StockOperationLine[];
+  employeeName?: string | null;
 }
 
 export interface CreatePickOrderRequest {
@@ -58,6 +61,7 @@ export interface CreatePickOrderRequest {
   reference?: string | null;
   notes?: string | null;
   plannedPickDate?: string | null;
+  employeeId?: string | null;
   lines: StockOperationLine[];
 }
 
@@ -78,6 +82,7 @@ export interface PackOrder {
   updatedBy?: string | null;
   actualPackDate?: string | null;
   lines: StockOperationLine[];
+  employeeName?: string | null;
 }
 
 export interface CreatePackOrderRequest {
@@ -86,6 +91,7 @@ export interface CreatePackOrderRequest {
   pickOrderId?: string | null;
   notes?: string | null;
   actualPackDate?: string | null;
+  employeeId?: string | null;
   lines: StockOperationLine[];
 }
 
@@ -104,6 +110,7 @@ export interface StockTransfer {
   transferredAtUtc?: string | null;
   createdAt: string;
   lines: StockOperationLine[];
+  employeeName?: string | null;
 }
 
 export interface CreateStockTransferRequest {
@@ -112,6 +119,7 @@ export interface CreateStockTransferRequest {
   destinationWarehouseId: string;
   notes?: string | null;
   transferredAtUtc?: string | null;
+  employeeId?: string | null;
   lines: StockOperationLine[];
 }
 

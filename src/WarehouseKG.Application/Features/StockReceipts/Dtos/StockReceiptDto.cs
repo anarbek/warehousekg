@@ -22,6 +22,10 @@ public class StockReceiptDto
 
     public string? Notes { get; set; }
 
+    public Guid? EmployeeId { get; set; }
+
+    public string? EmployeeName { get; set; }
+
     public List<StockReceiptLineDto> Lines { get; set; } = new();
 }
 
@@ -53,6 +57,10 @@ public class StockReceiptSummaryDto
     public DateTime? ReceivedAtUtc { get; set; }
 
     public DateTime CreatedAt { get; set; }
+
+    public Guid? EmployeeId { get; set; }
+
+    public string? EmployeeName { get; set; }
 
     public int LineCount { get; set; }
 }

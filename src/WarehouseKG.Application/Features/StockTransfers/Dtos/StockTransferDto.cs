@@ -24,6 +24,10 @@ public class StockTransferDto
 
     public string? Notes { get; set; }
 
+    public Guid? EmployeeId { get; set; }
+
+    public string? EmployeeName { get; set; }
+
     public List<StockTransferLineDto> Lines { get; set; } = new();
 }
 
@@ -55,6 +59,10 @@ public class StockTransferSummaryDto
     public DateTime? TransferredAtUtc { get; set; }
 
     public DateTime CreatedAt { get; set; }
+
+    public Guid? EmployeeId { get; set; }
+
+    public string? EmployeeName { get; set; }
 
     public int LineCount { get; set; }
 }

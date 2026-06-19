@@ -53,5 +53,13 @@ public interface IApplicationDbContext
 
     DbSet<TenantPermission> TenantPermissions { get; }
 
+    DbSet<Position> Positions { get; }
+    DbSet<Department> Departments { get; }
+    DbSet<Employee> Employees { get; }
+    DbSet<Shift> Shifts { get; }
+    DbSet<EmployeeShiftAssignment> EmployeeShiftAssignments { get; }
+    DbSet<EmployeeWarehouseAssignment> EmployeeWarehouseAssignments { get; }
+    DbSet<AttendanceRecord> AttendanceRecords { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

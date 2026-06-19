@@ -134,6 +134,7 @@ var app = builder.Build();
 
 await SeedRolesAsync(app);
 await SeedAdminUserAsync(app);
+await SeedDefaultPermissionsAsync(app);
 
 if (app.Environment.IsDevelopment())
 {
@@ -180,5 +181,20 @@ static async Task SeedAdminUserAsync(WebApplication app)
     {
         var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
         logger.LogWarning(ex, "Admin user seeding skipped.");
+    }
+}
+
+// Seeds default TenantPermission rows for new roles (Auditor, Dispatcher, HR).
+static async Task SeedDefaultPermissionsAsync(WebApplication app)
+{
+    using var scope = app.Services.CreateScope();
+    try
+    {
+        await IdentitySeeder.SeedDefaultPermissionsAsync(scope.ServiceProvider);
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
+        logger.LogWarning(ex, "Default permission seeding skipped.");
     }
 }

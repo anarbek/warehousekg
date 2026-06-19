@@ -17,7 +17,8 @@ public record CreatePurchaseOrderCommand(
     string? Currency,
     DateTime? ReceivedAtUtc,
     string? Notes,
-    IReadOnlyList<PurchaseOrderLineInput> Lines) : IRequest<Guid>;
+    IReadOnlyList<PurchaseOrderLineInput> Lines,
+    Guid? EmployeeId = null) : IRequest<Guid>;
 
 public class CreatePurchaseOrderCommandHandler : IRequestHandler<CreatePurchaseOrderCommand, Guid>
 {
@@ -40,6 +41,7 @@ public class CreatePurchaseOrderCommandHandler : IRequestHandler<CreatePurchaseO
             OrderDateUtc = DateTime.UtcNow,
             ReceivedAtUtc = request.ReceivedAtUtc,
             Notes = request.Notes,
+            EmployeeId = request.EmployeeId,
             Status = PurchaseOrderStatus.Draft,
             Lines = request.Lines.Select(l => new PurchaseOrderLine
             {

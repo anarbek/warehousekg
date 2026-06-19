@@ -22,6 +22,10 @@ public class PickOrderDto
 
     public string? Notes { get; set; }
 
+    public Guid? EmployeeId { get; set; }
+
+    public string? EmployeeName { get; set; }
+
     public List<PickOrderLineDto> Lines { get; set; } = new();
 }
 
@@ -61,6 +65,10 @@ public class PickOrderSummaryDto
     public string? CreatedBy { get; set; }
 
     public string? UpdatedBy { get; set; }
+
+    public Guid? EmployeeId { get; set; }
+
+    public string? EmployeeName { get; set; }
 
     public int LineCount { get; set; }
 }

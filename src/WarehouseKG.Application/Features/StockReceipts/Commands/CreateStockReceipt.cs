@@ -20,7 +20,8 @@ public record CreateStockReceiptCommand(
     DateTime? ReceivedAtUtc,
     Guid TenantId,
     IReadOnlyList<string> UserRoles,
-    IReadOnlyList<StockReceiptLineInput> Lines) : IRequest<Guid>;
+    IReadOnlyList<StockReceiptLineInput> Lines,
+    Guid? EmployeeId = null) : IRequest<Guid>;
 
 public class CreateStockReceiptCommandHandler : IRequestHandler<CreateStockReceiptCommand, Guid>
 {
@@ -79,6 +80,7 @@ public class CreateStockReceiptCommandHandler : IRequestHandler<CreateStockRecei
             Notes = request.Notes,
             ReceivedAtUtc = request.ReceivedAtUtc,
             Status = StockOperationStatus.Draft,
+            EmployeeId = request.EmployeeId,
             Lines = request.Lines.Select(l => new StockReceiptLine
             {
                 Id = Guid.NewGuid(),
