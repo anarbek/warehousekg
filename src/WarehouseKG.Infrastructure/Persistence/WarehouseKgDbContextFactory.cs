@@ -51,5 +51,6 @@ public class WarehouseKgDbContextFactory : IDesignTimeDbContextFactory<Warehouse
     private sealed class DesignTimeCurrentUser : ICurrentUserService
     {
         public string? UserName => "migrations";
+        public Guid? UserId => null;
     }
 }

@@ -78,7 +78,9 @@ public static class IdentitySeeder
         string roleName, string[] writeResources, string[] deleteResources, CancellationToken ct)
     {
         // Fast check: if ANY permission row exists for this role+tenant, skip entirely
+        // Ignore query filters because the global tenant filter may use an unset tenant during startup
         var anyExist = await db.TenantPermissions
+            .IgnoreQueryFilters()
             .AnyAsync(p => p.TenantId == tenantId && p.RoleName == roleName, ct);
 
         if (anyExist) return;

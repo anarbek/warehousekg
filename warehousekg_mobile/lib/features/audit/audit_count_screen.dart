@@ -16,11 +16,24 @@ class _AuditCountScreenState extends ConsumerState<AuditCountScreen> {
   String _filter = 'all';
   String _search = '';
   final _searchCtrl = TextEditingController();
+  final Map<String, TextEditingController> _qtyCtrls = {};
 
   @override
   void dispose() {
     _searchCtrl.dispose();
+    for (final c in _qtyCtrls.values) {
+      c.dispose();
+    }
     super.dispose();
+  }
+
+  TextEditingController _ctrlFor(AuditLine line) {
+    if (!_qtyCtrls.containsKey(line.id)) {
+      _qtyCtrls[line.id] = TextEditingController(
+        text: line.countedQuantity?.toString() ?? '',
+      );
+    }
+    return _qtyCtrls[line.id]!;
   }
 
   @override
@@ -128,7 +141,7 @@ class _AuditCountScreenState extends ConsumerState<AuditCountScreen> {
                           filled: true,
                           fillColor: isCounted ? Colors.white : null,
                         ),
-                        controller: TextEditingController(text: line.countedQuantity?.toString() ?? ''),
+                        controller: _ctrlFor(line),
                         onChanged: (v) {
                           final qty = double.tryParse(v.replaceAll(',', '.'));
                           repo.updateCountedQuantity(audit.id, line.id, qty);

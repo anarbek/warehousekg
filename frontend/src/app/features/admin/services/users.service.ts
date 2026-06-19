@@ -8,6 +8,8 @@ export interface UserDto {
   userName: string;
   email: string;
   roles: string[];
+  employeeId?: string;
+  employeeName?: string;
 }
 
 export interface CreateUserDto {
@@ -15,6 +17,11 @@ export interface CreateUserDto {
   email: string;
   password: string;
   roles: string[];
+  employeeId?: string | null;
+}
+
+export interface ChangePasswordDto {
+  newPassword: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -36,6 +43,14 @@ export class UsersService {
 
   deleteUser(id: string): Observable<void> {
     return this.http.delete<void>(`${this.base}/${id}`);
+  }
+
+  changePassword(userId: string, dto: ChangePasswordDto): Observable<void> {
+    return this.http.put<void>(`${this.base}/${userId}/password`, dto);
+  }
+
+  linkEmployee(userId: string, employeeId: string | null): Observable<void> {
+    return this.http.put<void>(`${this.base}/${userId}/employee`, { employeeId });
   }
 
   getAvailableRoles(): Observable<string[]> {

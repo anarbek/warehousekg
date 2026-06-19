@@ -50,6 +50,8 @@ public class StockAuditSummaryDto
 
     public Guid WarehouseId { get; set; }
 
+    public string? WarehouseName { get; set; }
+
     public StockOperationStatus Status { get; set; }
 
     public DateTime? ReconciledAtUtc { get; set; }

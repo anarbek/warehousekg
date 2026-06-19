@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { DxDataGridModule, DxButtonModule, DxProgressBarModule } from 'devextreme-angular';
@@ -7,6 +7,7 @@ import { StockAudit } from '../models/audit.model';
 import { InventoryItem } from '../../inventory/models/inventory-item.model';
 import { InventoryService } from '../../inventory/services/inventory.service';
 import { AuditsService } from '../services/audits.service';
+import { PermissionsService } from '../../../core/services/permissions.service';
 
 interface DisplayLine {
   inventoryItemId: string;
@@ -28,6 +29,7 @@ export class AuditDetail implements OnInit {
   private readonly inv = inject(InventoryService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly perms = inject(PermissionsService);
 
   protected readonly id = this.route.snapshot.paramMap.get('id')!;
   protected readonly aud = signal<StockAudit | null>(null);
@@ -35,6 +37,10 @@ export class AuditDetail implements OnInit {
   protected readonly saving = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly items = signal<InventoryItem[]>([]);
+  protected readonly canWriteAudit = computed(() => this.perms.canWrite('stock-audits'));
+  protected readonly canCompleteAudit = computed(() => this.perms.canWrite('stock-audits-complete'));
+  protected readonly canCancelAudit = computed(() => this.perms.canWrite('stock-audits-cancel'));
+  protected readonly canDeleteAudit = computed(() => this.perms.canDelete('stock-audits'));
 
   ngOnInit(): void {
     this.load();

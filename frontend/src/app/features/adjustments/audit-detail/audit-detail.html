@@ -14,10 +14,14 @@
       <h1 class="detail-page__title" i18n="@@audit.detail.title">Аудит: {{ a.number }}</h1>
       <span class="detail-page__spacer"></span>
       @if (isDraft()) {
-        <dx-button i18n="@@stockOp.complete" text="Завершить" icon="check" type="default" stylingMode="contained" (onClick)="complete()" [disabled]="saving()" />
-        <dx-button i18n="@@stockOp.cancel" text="Отменить" icon="trash" type="danger" stylingMode="outlined" (onClick)="cancelOp()" [disabled]="saving()" />
+        @if (canCompleteAudit()) {
+          <dx-button i18n="@@stockOp.complete" text="Завершить" icon="check" type="default" stylingMode="contained" (onClick)="complete()" [disabled]="saving()" />
+        }
+        @if (canCancelAudit()) {
+          <dx-button i18n="@@stockOp.cancel" text="Отменить" icon="trash" type="danger" stylingMode="outlined" (onClick)="cancelOp()" [disabled]="saving()" />
+        }
       }
-      @if (canDelete()) {
+      @if (canDelete() && canDeleteAudit()) {
         <dx-button i18n="@@stockOp.delete" text="Удалить" icon="trash" type="danger" stylingMode="outlined" (onClick)="delete()" [disabled]="saving()" />
       }
     </div>
@@ -31,6 +35,9 @@
         <dt i18n="@@audit.detail.number">Номер</dt><dd>{{ a.number }}</dd>
         <dt i18n="@@audit.detail.warehouse">Склад</dt><dd>{{ a.warehouseName || a.warehouseId }}</dd>
         <dt i18n="@@audit.detail.status">Статус</dt><dd><span class="badge">{{ a.status }}</span></dd>
+        @if (a.employeeName) {
+          <dt i18n="@@audit.detail.employee">Сотрудник</dt><dd>{{ a.employeeName }}</dd>
+        }
         @if (a.reconciledAtUtc) {
           <dt i18n="@@audit.detail.reconciledAt">Дата сверки</dt><dd>{{ a.reconciledAtUtc | date: 'medium' }}</dd>
         }

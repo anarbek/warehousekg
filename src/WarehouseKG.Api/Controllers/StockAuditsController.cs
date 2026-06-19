@@ -51,7 +51,7 @@ public class StockAuditsController : ApiControllerBase
 
     /// <summary>Completes a draft audit, reconciling stock on hand to the counted quantities.</summary>
     [HttpPost("{id:guid}/complete")]
-    [Authorize(Policy = "stock-audits:write")]
+    [Authorize(Policy = "stock-audits-complete:write")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -60,7 +60,7 @@ public class StockAuditsController : ApiControllerBase
 
     /// <summary>Cancels a draft audit.</summary>
     [HttpPost("{id:guid}/cancel")]
-    [Authorize(Policy = "stock-audits:write")]
+    [Authorize(Policy = "stock-audits-cancel:write")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]

@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "06-Deployment.md",
+                "file": "00-Project-Overview.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "06-Deployment"
+              "title": "00-Project-Overview"
             }
           }
         ]
@@ -185,17 +185,17 @@
   },
   "active": "4bfd006c9cdc71db",
   "lastOpenFiles": [
+    "01-Architecture.md",
+    "02-Database-Schema.md",
     "11-Personnel-Management.md",
+    "10-Vehicle-Management.md",
+    "09-Roadmap.md",
+    "06-Deployment.md",
     "03-API-Endpoints.md",
     "04-Auth-Flow.md",
-    "02-Database-Schema.md",
-    "01-Architecture.md",
-    "06-Deployment.md",
     "05-Localization.md",
     "08-Mobile-App.md",
-    "10-Vehicle-Management.md",
     "07-Observability.md",
-    "09-Roadmap.md",
     "00-Project-Overview.md",
     "2026-06-19.md",
     "Untitled 1.canvas",

@@ -22,10 +22,12 @@ public record CreateStockAuditCommand(
 public class CreateStockAuditCommandHandler : IRequestHandler<CreateStockAuditCommand, Guid>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUser;
 
-    public CreateStockAuditCommandHandler(IApplicationDbContext context)
+    public CreateStockAuditCommandHandler(IApplicationDbContext context, ICurrentUserService currentUser)
     {
         _context = context;
+        _currentUser = currentUser;
     }
 
     public async Task<Guid> Handle(CreateStockAuditCommand request, CancellationToken cancellationToken)
@@ -33,6 +35,43 @@ public class CreateStockAuditCommandHandler : IRequestHandler<CreateStockAuditCo
         var itemIds = request.Lines.Select(l => l.InventoryItemId).Distinct().ToList();
         var warehouseId = request.WarehouseId;
         var auditDate = request.ReconciledAtUtc ?? DateTime.UtcNow;
+
+        // Prevent multiple draft audits for the same warehouse on the same calendar day.
+        // Each audit snapshots system quantities at creation; if two are completed
+        // sequentially, variances from the second may double-count against already-
+        // adjusted stock, causing drift.
+        var auditLocalDate = auditDate.Kind == DateTimeKind.Utc
+            ? auditDate.ToLocalTime().Date
+            : auditDate.Date;
+
+        var existingDraft = await _context.StockAudits
+            .Where(a =>
+                a.WarehouseId == warehouseId &&
+                a.Status == StockOperationStatus.Draft &&
+                a.ReconciledAtUtc.HasValue)
+            .ToListAsync(cancellationToken);
+
+        if (existingDraft.Any(a =>
+        {
+            var local = a.ReconciledAtUtc!.Value.Kind == DateTimeKind.Utc
+                ? a.ReconciledAtUtc.Value.ToLocalTime().Date
+                : a.ReconciledAtUtc.Value.Date;
+            return local == auditLocalDate;
+        }))
+        {
+            throw new InvalidOperationException(
+                $"На этом складе уже есть черновой аудит за {auditLocalDate:dd.MM.yyyy}. " +
+                "Завершите или отмените его перед созданием нового.");
+        }
+
+        // Auto-assign employee from the current user if not specified
+        var employeeId = request.EmployeeId;
+        if (employeeId == null && _currentUser.UserId.HasValue)
+        {
+            var emp = await _context.Employees
+                .FirstOrDefaultAsync(e => e.ApplicationUserId == _currentUser.UserId.Value, cancellationToken);
+            employeeId = emp?.Id;
+        }
 
         // ASP.NET Core may deserialize date-only strings as Unspecified kind;
         // PostgreSQL requires UTC for timestamp with time zone.
@@ -74,7 +113,7 @@ public class CreateStockAuditCommandHandler : IRequestHandler<CreateStockAuditCo
             Notes = request.Notes,
             ReconciledAtUtc = storedDate,
             Status = StockOperationStatus.Draft,
-            EmployeeId = request.EmployeeId,
+            EmployeeId = employeeId,
             Lines = request.Lines.Select(l => new StockAuditLine
             {
                 Id = Guid.NewGuid(),

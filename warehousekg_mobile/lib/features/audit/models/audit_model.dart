@@ -6,7 +6,8 @@ class AuditModel {
   final String? notes;
   final String? reconciledAtUtc;
   final String? employeeId;
-  final String status; // Draft, PendingSync, Completed
+  final String status; // Draft, PendingSync, Synced, Completed
+  final String? backendId; // set after sync to backend
   final DateTime createdAt;
   final List<AuditLine> lines;
 
@@ -19,6 +20,7 @@ class AuditModel {
     this.reconciledAtUtc,
     this.employeeId,
     required this.status,
+    this.backendId,
     required this.createdAt,
     this.lines = const [],
   });
@@ -79,6 +81,7 @@ class RemoteAuditSummary {
   final String id;
   final String number;
   final String warehouseId;
+  final String? warehouseName;
   final String status; // Draft, Completed, Cancelled
   final String? employeeName;
   final int lineCount;
@@ -89,6 +92,7 @@ class RemoteAuditSummary {
     required this.id,
     required this.number,
     required this.warehouseId,
+    this.warehouseName,
     required this.status,
     this.employeeName,
     required this.lineCount,

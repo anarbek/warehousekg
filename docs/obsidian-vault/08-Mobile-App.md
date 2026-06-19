@@ -81,7 +81,7 @@ warehousekg_mobile/
 
 ### Audit CRUD
 - **Create**: Dialog with warehouse dropdown (fetched from `GET /api/v1/warehouses`), notes field, shows item count before creating
-- **Read**: Merged list of local (Draft/PendingSync) + remote (backend) audits
+- **Read**: Merged list of local (Draft/PendingSync/Synced) + remote (backend) audits
   - Remote audits fetched from `GET /api/v1/stock-audits`
   - Deduplication by audit `number`
   - Shows: status badge, warehouse, line count, counted items, total variance, employee name
@@ -104,10 +104,10 @@ warehousekg_mobile/
 
 ### Sync
 1. User taps "Завершить" → status changes to `PendingSync`
-2. `syncAudit()`: creates audit on backend via `POST /api/v1/stock-audits` with `systemQuantity` included
-3. Immediately completes via `POST /api/v1/stock-audits/{backendId}/complete`
-4. Status updated to `Completed` locally
-5. Appears in web app audit history
+2. `syncAudit()`: creates audit on backend via `POST /api/v1/stock-audits` with `systemQuantity` included, saves as Draft
+3. Status updated to `Synced` locally — audit appears in web app as Draft, ready for authorized user to complete
+4. Backend prevents duplicate audits for same warehouse+day (guards in `CreateStockAudit` handler and `audit_repository.createLocalAudit`)
+5. Audit counter auto-initializes from existing backend numbers to avoid collisions
 
 ### Connectivity
 - `isOnlineProvider` watches network state via `connectivity_plus`
@@ -126,7 +126,7 @@ warehousekg_mobile/
 | `/api/v1/stock-audits` | GET | List all audits (remote list) |
 | `/api/v1/stock-audits` | POST | Create audit (sync) |
 | `/api/v1/stock-audits/{id}` | GET | Fetch audit detail |
-| `/api/v1/stock-audits/{id}/complete` | POST | Complete audit (sync) |
+| `/api/v1/stock-audits/{id}/complete` | POST | Complete audit (web-only, requires stock-audits-complete:write) |
 
 ---
 

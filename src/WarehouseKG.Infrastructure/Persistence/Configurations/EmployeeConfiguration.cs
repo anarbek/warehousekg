@@ -17,6 +17,7 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
         builder.Property(e => e.Email).HasMaxLength(256);
         builder.Property(e => e.Phone).HasMaxLength(64);
         builder.HasIndex(e => new { e.TenantId, e.Code }).IsUnique();
+        builder.HasIndex(e => e.ApplicationUserId).IsUnique().HasFilter(null); // one user per employee
 
         builder.HasOne(e => e.Position)
             .WithMany()

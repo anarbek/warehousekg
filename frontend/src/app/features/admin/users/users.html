@@ -43,17 +43,30 @@
       <div class="create-card__roles">
         <span i18n="@@admin.users.roles">Роли:</span>
         @for (role of roles(); track role) {
-          <dx-button
+          <dx-check-box
             [text]="role"
-            [stylingMode]="hasRole(role) ? 'contained' : 'outlined'"
-            [type]="hasRole(role) ? 'default' : 'normal'"
-            (onClick)="toggleRoleFor(role)"
+            [value]="hasRole(role)"
+            (onValueChanged)="toggleRoleFor(role)"
           />
         }
       </div>
       <div class="create-card__actions">
         <dx-button i18n="@@common.save" text="Создать" icon="check" type="default" stylingMode="contained" (onClick)="createUser()" [disabled]="saving()" />
-        <dx-button i18n="@@common.cancel" text="Отмена" stylingMode="outlined" (onClick)="showCreate.set(false); newUser.set({ userName: '', email: '', password: '', roles: [] })" />
+        <dx-button i18n="@@common.cancel" text="Отмена" stylingMode="outlined" (onClick)="showCreate.set(false); newUser.set({ userName: '', email: '', password: '', roles: [], employeeId: null })" />
+      </div>
+      <div class="create-card__roles" style="margin-top:12px;">
+        <span i18n="@@admin.users.employee">Сотрудник:</span>
+        <dx-select-box
+          [value]="newUser().employeeId"
+          [dataSource]="employees()"
+          displayExpr="name"
+          valueExpr="id"
+          placeholder="(не назначен)"
+          stylingMode="outlined"
+          [showClearButton]="true"
+          [width]="250"
+          (onValueChanged)="setNewUserEmployeeId($event.value ?? null)"
+        />
       </div>
     </div>
   }
@@ -61,29 +74,65 @@
   <dx-data-grid [dataSource]="users()" [showBorders]="true" [hoverStateEnabled]="true" [showColumnLines]="true" [showRowLines]="true">
     <dxi-column dataField="userName" caption="Пользователь" [width]="180" />
     <dxi-column dataField="email" caption="Email" [width]="220" />
+    <dxi-column caption="Сотрудник" [width]="220" cellTemplate="empCell" />
     <dxi-column caption="Роли" [width]="'auto'" cellTemplate="rolesCell" />
-    <dxi-column caption="" [width]="80" cellTemplate="actCell" />
+    <dxi-column caption="" [width]="120" cellTemplate="actCell" />
+
+    <div *dxTemplate="let c of 'empCell'">
+      <dx-select-box
+        [value]="c.data.employeeId"
+        [dataSource]="employees()"
+        displayExpr="name"
+        valueExpr="id"
+        placeholder="(не назначен)"
+        stylingMode="outlined"
+        [showClearButton]="true"
+        [width]="'100%'"
+        (onValueChanged)="onEmployeeChanged(c.data, $event.value ?? null)"
+      />
+    </div>
 
     <div *dxTemplate="let c of 'rolesCell'">
-      <div style="display:flex;flex-wrap:wrap;gap:2px;">
+      <div style="display:flex;flex-wrap:wrap;gap:4px;">
       @for (role of roles(); track role) {
-        <dx-button
+        <dx-check-box
           [text]="role"
-          [stylingMode]="c.data.roles.includes(role) ? 'contained' : 'outlined'"
-          [type]="c.data.roles.includes(role) ? 'default' : 'normal'"
-          [width]="'auto'"
-          (onClick)="
-            c.data.roles.includes(role)
-              ? c.data.roles.splice(c.data.roles.indexOf(role), 1)
-              : c.data.roles.push(role);
-            onRoleChanged(c.data)
-          "
+          [value]="c.data.roles.includes(role)"
+          (onValueChanged)="toggleUserRole(c.data, role)"
         />
       }
       </div>
     </div>
     <div *dxTemplate="let c of 'actCell'">
+      <dx-button icon="key" stylingMode="text" hint="Сменить пароль" (onClick)="openChangePassword(c.data)" />
       <dx-button icon="trash" type="danger" stylingMode="text" (onClick)="deleteUser(c.data)" />
     </div>
   </dx-data-grid>
+
+  <!-- Change password popup -->
+  <dx-popup
+    [(visible)]="showPasswordPopup"
+    title="Сменить пароль"
+    [width]="400"
+    [height]="'auto'"
+    [hideOnOutsideClick]="true"
+    (onHiding)="closePasswordPopup()"
+    [deferRendering]="false"
+  >
+    <div *dxTemplate="let c of 'content'">
+      <p style="margin:0 0 12px">Пользователь: <strong>{{ pwdTarget()?.userName }}</strong></p>
+      <dx-text-box
+        [value]="newPassword()"
+        placeholder="Новый пароль"
+        stylingMode="outlined"
+        mode="password"
+        [width]="'100%'"
+        (onValueChanged)="newPassword.set($event.value)"
+      />
+      <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end;">
+        <dx-button text="Отмена" stylingMode="outlined" (onClick)="closePasswordPopup()" />
+        <dx-button text="Сохранить" icon="check" type="default" stylingMode="contained" (onClick)="changePassword()" [disabled]="saving() || !newPassword()" />
+      </div>
+    </div>
+  </dx-popup>
 </div>

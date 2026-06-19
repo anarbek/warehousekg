@@ -19,14 +19,29 @@ class _AuditListScreenState extends ConsumerState<AuditListScreen> {
   void initState() {
     super.initState();
     _loadRemote();
+    final repo = ref.read(auditRepositoryProvider);
+    repo.version.addListener(_onAuditsChanged);
+  }
+
+  @override
+  void dispose() {
+    final repo = ref.read(auditRepositoryProvider);
+    repo.version.removeListener(_onAuditsChanged);
+    super.dispose();
+  }
+
+  void _onAuditsChanged() {
+    if (mounted) setState(() {});
   }
 
   Future<void> _loadRemote() async {
     final repo = ref.read(auditRepositoryProvider);
     try {
       await repo.fetchAudits();
+      // Successfully fetched from backend — remove local synced copies
+      repo.removeSyncedLocalAudits();
     } catch (_) {
-      // offline — stay with cached/empty
+      // offline — keep local synced audits so user can still see them
     }
     if (mounted) setState(() => _remoteLoaded = true);
   }
@@ -68,7 +83,7 @@ class _AuditListScreenState extends ConsumerState<AuditListScreen> {
         isLocal: false,
         remoteId: r.id,
         number: r.number,
-        warehouseName: wh?.name ?? r.warehouseId,
+        warehouseName: r.warehouseName ?? wh?.name ?? r.warehouseId,
         status: r.status,
         employeeName: r.employeeName,
         lineCount: r.lineCount,
@@ -170,6 +185,7 @@ class _AuditListScreenState extends ConsumerState<AuditListScreen> {
     final (Color color, String text) = switch (status) {
       'Draft' => (Colors.orange, 'Draft'),
       'PendingSync' => (Colors.blue, 'Sync'),
+      'Synced' => (Colors.green, 'Synced'),
       'Completed' => (Colors.green, 'Done'),
       _ => (Colors.grey, status),
     };

@@ -32,6 +32,8 @@ export interface StockAudit {
   status: StockOperationStatus;
   reconciledAtUtc?: string | null;
   notes?: string | null;
+  employeeId?: string | null;
+  employeeName?: string | null;
   lines: StockAuditLine[];
 }
 

@@ -30,6 +30,7 @@ public class GetStockAuditsQueryHandler
                 Id = a.Id,
                 Number = a.Number,
                 WarehouseId = a.WarehouseId,
+                WarehouseName = a.Warehouse != null ? a.Warehouse.Name : null,
                 Status = a.Status,
                 ReconciledAtUtc = a.ReconciledAtUtc,
                 CreatedAt = a.CreatedAt,

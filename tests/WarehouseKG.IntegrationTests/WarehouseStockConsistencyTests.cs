@@ -235,4 +235,183 @@ public class WarehouseStockConsistencyTests
         Assert.True(consMovs.Count >= minExpected,
             $"Expected at least {minExpected} CONS- movements, got {consMovs.Count}");
     }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // Duplicate audit guard tests
+    // ═══════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Creating a second draft audit for the same warehouse on the same
+    /// day must be rejected to prevent stock drift from sequential completion.
+    /// </summary>
+    [Fact]
+    public async Task CreateAudit_DuplicateSameWarehouseSameDay_IsRejected()
+    {
+        var (whId, itemId, _, _) = await GetSeedIdsAsync();
+        var now = DateTime.UtcNow.AddDays(-1); // use yesterday to avoid collisions
+        string? id1 = null;
+
+        try
+        {
+            id1 = await Client.CreateStockAuditAsync(new
+            {
+                number = $"DUP-1-{Guid.NewGuid():N}"[..16],
+                warehouseId = whId,
+                reconciledAtUtc = now,
+                lines = new[] { new { inventoryItemId = itemId, countedQuantity = 10m } }
+            });
+
+            var ex = await Assert.ThrowsAsync<HttpRequestException>(() =>
+                Client.CreateStockAuditAsync(new
+                {
+                    number = $"DUP-2-{Guid.NewGuid():N}"[..16],
+                    warehouseId = whId,
+                    reconciledAtUtc = now,
+                    lines = new[] { new { inventoryItemId = itemId, countedQuantity = 10m } }
+                }));
+
+            Assert.Contains("черновой аудит", ex.Message);
+        }
+        finally
+        {
+            if (id1 != null)
+            {
+                try { await Client.CancelStockAuditAsync(id1.Trim('"')); } catch { /* best effort */ }
+            }
+        }
+    }
+
+    /// <summary>
+    /// A cancelled draft audit should not block creation of a new audit
+    /// for the same warehouse+day.
+    /// </summary>
+    [Fact]
+    public async Task CreateAudit_AfterCancellingDraft_Succeeds()
+    {
+        var (whId, itemId, _, _) = await GetSeedIdsAsync();
+        var now = DateTime.UtcNow.AddDays(-2);
+        string? id2 = null;
+
+        try
+        {
+            var id1 = await Client.CreateStockAuditAsync(new
+            {
+                number = $"DUP-C-{Guid.NewGuid():N}"[..16],
+                warehouseId = whId,
+                reconciledAtUtc = now,
+                lines = new[] { new { inventoryItemId = itemId, countedQuantity = 10m } }
+            });
+
+            await Client.CancelStockAuditAsync(id1.Trim('"'));
+
+            id2 = await Client.CreateStockAuditAsync(new
+            {
+                number = $"DUP-C2-{Guid.NewGuid():N}"[..16],
+                warehouseId = whId,
+                reconciledAtUtc = now,
+                lines = new[] { new { inventoryItemId = itemId, countedQuantity = 10m } }
+            });
+
+            Assert.NotEmpty(id2);
+        }
+        finally
+        {
+            if (id2 != null)
+            {
+                try { await Client.CancelStockAuditAsync(id2.Trim('"')); } catch { /* best effort */ }
+            }
+        }
+    }
+
+    /// <summary>
+    /// A completed audit should not block creation of a new audit
+    /// for the same warehouse+day.
+    /// </summary>
+    [Fact]
+    public async Task CreateAudit_AfterCompletingDraft_Succeeds()
+    {
+        var (whId, itemId, _, _) = await GetSeedIdsAsync();
+        var now = DateTime.UtcNow.AddDays(-3);
+        string? id2 = null;
+
+        try
+        {
+            var id1 = await Client.CreateStockAuditAsync(new
+            {
+                number = $"DUP-COMP-{Guid.NewGuid():N}"[..16],
+                warehouseId = whId,
+                reconciledAtUtc = now,
+                lines = new[] { new { inventoryItemId = itemId, countedQuantity = 10m } }
+            });
+
+            // Client is already admin from SharedFixture
+            await Client.CompleteStockAuditAsync(id1.Trim('"'));
+
+            id2 = await Client.CreateStockAuditAsync(new
+            {
+                number = $"DUP-COMP2-{Guid.NewGuid():N}"[..16],
+                warehouseId = whId,
+                reconciledAtUtc = now,
+                lines = new[] { new { inventoryItemId = itemId, countedQuantity = 10m } }
+            });
+
+            Assert.NotEmpty(id2);
+        }
+        finally
+        {
+            if (id2 != null)
+            {
+                try { await Client.CancelStockAuditAsync(id2.Trim('"')); } catch { /* best effort */ }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Audits for different warehouses on the same day are independent.
+    /// </summary>
+    [Fact]
+    public async Task CreateAudit_DifferentWarehouses_Succeeds()
+    {
+        var (whId1, itemId, _, _) = await GetSeedIdsAsync();
+
+        var warehouses = await Client.GetWarehousesAsync();
+        string? whId2 = null;
+        foreach (var w in warehouses.EnumerateArray())
+        {
+            var id = w.GetProperty("id").GetString()!;
+            if (id != whId1) { whId2 = id; break; }
+        }
+
+        if (whId2 is null) return;
+
+        var now = DateTime.UtcNow.AddDays(-4);
+        string? id1 = null, id2 = null;
+
+        try
+        {
+            id1 = await Client.CreateStockAuditAsync(new
+            {
+                number = $"DUP-W1-{Guid.NewGuid():N}"[..16],
+                warehouseId = whId1,
+                reconciledAtUtc = now,
+                lines = new[] { new { inventoryItemId = itemId, countedQuantity = 10m } }
+            });
+
+            id2 = await Client.CreateStockAuditAsync(new
+            {
+                number = $"DUP-W2-{Guid.NewGuid():N}"[..16],
+                warehouseId = whId2,
+                reconciledAtUtc = now,
+                lines = new[] { new { inventoryItemId = itemId, countedQuantity = 10m } }
+            });
+
+            Assert.NotEmpty(id1);
+            Assert.NotEmpty(id2);
+        }
+        finally
+        {
+            if (id1 != null) { try { await Client.CancelStockAuditAsync(id1.Trim('"')); } catch { } }
+            if (id2 != null) { try { await Client.CancelStockAuditAsync(id2.Trim('"')); } catch { } }
+        }
+    }
 }

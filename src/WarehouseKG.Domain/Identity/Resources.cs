@@ -12,6 +12,8 @@ public static class Resources
     public const string StockTransfers = "stock-transfers";
     public const string StockAdjustments = "stock-adjustments";
     public const string StockAudits = "stock-audits";
+    public const string StockAuditsCancel = "stock-audits-cancel";
+    public const string StockAuditsComplete = "stock-audits-complete";
     public const string Suppliers = "suppliers";
     public const string PurchaseOrders = "purchase-orders";
     public const string Customers = "customers";
@@ -44,7 +46,7 @@ public static class Resources
     {
         Warehouses, InventoryItems, ItemCategories, UnitsOfMeasure,
         StockReceipts, PickOrders, PackOrders, StockTransfers,
-        StockAdjustments, StockAudits,
+        StockAdjustments, StockAudits, StockAuditsCancel, StockAuditsComplete,
         Suppliers, PurchaseOrders, Customers, SalesOrders,
         Reports, Users, AddItemsBackInTime, ReceivingDelete,
         Employees, Positions, Departments, Shifts, Attendance,

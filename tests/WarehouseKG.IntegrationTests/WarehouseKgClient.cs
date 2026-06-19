@@ -269,6 +269,19 @@ public class WarehouseKgClient
         await EnsureSuccessAsync(response);
     }
 
+    public async Task CancelStockAuditAsync(string id)
+    {
+        var response = await _http.PostAsync($"/api/v1/stock-audits/{id}/cancel", null);
+        await EnsureSuccessAsync(response);
+    }
+
+    public async Task<JsonElement> GetStockAuditsAsync()
+    {
+        var response = await _http.GetAsync("/api/v1/stock-audits");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
     // ─── Reports ─────────────────────────────────────────────────────────
 
     public async Task<JsonElement> GetWarehouseStockAsync(Guid warehouseId, string? dateFrom = null, string? dateTo = null)
