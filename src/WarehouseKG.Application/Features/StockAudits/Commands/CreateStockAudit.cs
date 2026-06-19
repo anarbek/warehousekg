@@ -8,7 +8,8 @@ namespace WarehouseKG.Application.Features.StockAudits.Commands;
 
 public record StockAuditLineInput(
     Guid InventoryItemId,
-    decimal CountedQuantity);
+    decimal CountedQuantity,
+    decimal? SystemQuantity = null);
 
 public record CreateStockAuditCommand(
     string Number,
@@ -78,7 +79,9 @@ public class CreateStockAuditCommandHandler : IRequestHandler<CreateStockAuditCo
             {
                 Id = Guid.NewGuid(),
                 InventoryItemId = l.InventoryItemId,
-                SystemQuantity = onHandByItem.TryGetValue(l.InventoryItemId, out var onHand) ? onHand : 0m,
+                SystemQuantity = l.SystemQuantity.HasValue
+                    ? l.SystemQuantity.Value
+                    : (onHandByItem.TryGetValue(l.InventoryItemId, out var onHand) ? onHand : 0m),
                 CountedQuantity = l.CountedQuantity
             }).ToList()
         };

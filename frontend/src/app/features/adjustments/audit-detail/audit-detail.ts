@@ -124,4 +124,25 @@ export class AuditDetail implements OnInit {
   get netChange(): number {
     return this.totalVariance;
   }
+
+  delete(): void {
+    if (!confirm($localize`:@@stockOp.confirmDelete:Удалить этот аудит безвозвратно?`)) return;
+    this.saving.set(true);
+    this.svc.deleteStockAudit(this.id).subscribe({
+      next: () => {
+        this.saving.set(false);
+        void this.router.navigate(['..'], { relativeTo: this.route });
+      },
+      error: () => {
+        this.error.set($localize`:@@stockOp.deleteError:Не удалось удалить аудит`);
+        this.saving.set(false);
+      },
+    });
+  }
+
+  canDelete(): boolean {
+    const status = this.aud()?.status;
+    // Allow deletion of Draft, Cancelled, or Completed audits
+    return status === 'Draft' || status === 'Cancelled' || status === 'Completed';
+  }
 }

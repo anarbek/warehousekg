@@ -10,6 +10,8 @@ public class StockAuditDto
 
     public Guid WarehouseId { get; set; }
 
+    public string? WarehouseName { get; set; }
+
     public StockOperationStatus Status { get; set; }
 
     public DateTime? ReconciledAtUtc { get; set; }
@@ -28,6 +30,10 @@ public class StockAuditLineDto
     public Guid Id { get; set; }
 
     public Guid InventoryItemId { get; set; }
+
+    public string? InventoryItemName { get; set; }
+
+    public string? InventoryItemSku { get; set; }
 
     public decimal SystemQuantity { get; set; }
 

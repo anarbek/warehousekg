@@ -66,4 +66,15 @@ public class StockAuditsController : ApiControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Cancel(Guid id, CancellationToken cancellationToken)
         => MapWorkflowResult(await _sender.Send(new CancelStockAuditCommand(id), cancellationToken));
+
+    /// <summary>Deletes a stock audit permanently.</summary>
+    [HttpDelete("{id:guid}")]
+    [Authorize(Policy = "stock-audits:delete")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    {
+        var deleted = await _sender.Send(new DeleteStockAuditCommand(id), cancellationToken);
+        return deleted ? NoContent() : NotFound();
+    }
 }

@@ -66,13 +66,18 @@ public class GetStockAuditByIdQueryHandler
                 Id = a.Id,
                 Number = a.Number,
                 WarehouseId = a.WarehouseId,
+                WarehouseName = a.Warehouse != null ? a.Warehouse.Name : null,
                 Status = a.Status,
                 ReconciledAtUtc = a.ReconciledAtUtc,
                 Notes = a.Notes,
+                EmployeeId = a.EmployeeId,
+                EmployeeName = a.Employee != null ? a.Employee.LastName + " " + a.Employee.FirstName : null,
                 Lines = a.Lines.Select(l => new StockAuditLineDto
                 {
                     Id = l.Id,
                     InventoryItemId = l.InventoryItemId,
+                    InventoryItemName = l.InventoryItem != null ? l.InventoryItem.Name : null,
+                    InventoryItemSku = l.InventoryItem != null ? l.InventoryItem.Sku : null,
                     SystemQuantity = l.SystemQuantity,
                     CountedQuantity = l.CountedQuantity,
                     Variance = l.CountedQuantity - l.SystemQuantity

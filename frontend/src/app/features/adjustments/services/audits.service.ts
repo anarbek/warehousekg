@@ -32,4 +32,8 @@ export class AuditsService {
   cancelStockAudit(id: string): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}/${id}/cancel`, {});
   }
+
+  deleteStockAudit(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
 }

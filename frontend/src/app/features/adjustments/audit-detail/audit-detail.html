@@ -17,6 +17,9 @@
         <dx-button i18n="@@stockOp.complete" text="Завершить" icon="check" type="default" stylingMode="contained" (onClick)="complete()" [disabled]="saving()" />
         <dx-button i18n="@@stockOp.cancel" text="Отменить" icon="trash" type="danger" stylingMode="outlined" (onClick)="cancelOp()" [disabled]="saving()" />
       }
+      @if (canDelete()) {
+        <dx-button i18n="@@stockOp.delete" text="Удалить" icon="trash" type="danger" stylingMode="outlined" (onClick)="delete()" [disabled]="saving()" />
+      }
     </div>
 
     @if (saving()) {

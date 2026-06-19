@@ -377,6 +377,7 @@ shape as the stock operations above:
 - `POST /...` — create a **Draft**; returns the new `Guid` (`201 Created`)
 - `POST /.../{id}/complete` — transition Draft → Completed; `204`, `404`, or `409 Conflict` (not in Draft)
 - `POST /.../{id}/cancel` — transition Draft → Cancelled; `204`, `404`, or `409 Conflict`
+- `DELETE /.../{id}` — permanent removal; `204` or `404`; requires `{resource}:delete` policy
 
 | Operation   | Base route                   | Complete stock effect                            |
 | ----------- | ---------------------------- | ------------------------------------------------ |
@@ -518,13 +519,21 @@ shape as the stock operations above:
 On creation each line snapshots the item's current on-hand figure as `systemQuantity`. The read model
 exposes a per-line `variance` (`countedQuantity − systemQuantity`) and the summary a `totalVariance`.
 
+When `systemQuantity` is provided in the request body, it is used directly. Otherwise the backend
+recalculates it from completed operations. The mobile app sends `systemQuantity` to ensure the
+audit reflects what the warehouse worker saw on screen.
+
+| Method | Route | Policy |
+|---|---|---|
+| `DELETE` | `/api/v1/stock-audits/{id:guid}` | `stock-audits:delete` |
+
 ```json
 {
   "number": "AUD-0001",
   "warehouseId": "00000000-0000-0000-0000-000000000000",
   "notes": "Monthly cycle count",
   "lines": [
-    { "inventoryItemId": "00000000-0000-0000-0000-000000000000", "countedQuantity": 96 }
+    { "inventoryItemId": "00000000-0000-0000-0000-000000000000", "systemQuantity": 100, "countedQuantity": 96 }
   ]
 }
 ```
@@ -544,6 +553,16 @@ adds **no new tables** (see [[02-Database-Schema]]). All endpoints are `GET`, te
 | GET    | `/api/v1/reports/sales-summary`     | Sales order counts + value, broken down by status        |
 | GET    | `/api/v1/reports/purchase-summary`  | Purchase order counts + value, broken down by status     |
 | GET    | `/api/v1/reports/stock-movements`   | Counts of each stock operation by Draft/Completed/Cancelled |
+| GET    | `/api/v1/reports/warehouse-stock?warehouseId=` | Per-item stock at a warehouse by replaying completed operations |
+| GET    | `/api/v1/reports/item-movements?itemId=&warehouseId=` | Chronological movement history for a single item with running balance |
+
+**`warehouse-stock`** — parameter `warehouseId` (required), optional `dateFrom`/`dateTo`. Used by the mobile app to show correct per-warehouse quantities when creating audits.
+
+```json
+[
+  { "inventoryItemId": "...", "sku": "AYR", "name": "Ayran", "quantityOnHand": 58.0, "netChange": 4.0 }
+]
+```
 
 **`inventory-summary`** response
 
