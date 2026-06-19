@@ -282,6 +282,12 @@ public class WarehouseKgClient
         return await response.Content.ReadFromJsonAsync<JsonElement>();
     }
 
+    public async Task DeleteStockAuditAsync(string id)
+    {
+        var response = await _http.DeleteAsync($"/api/v1/stock-audits/{id}");
+        await EnsureSuccessAsync(response);
+    }
+
     // ─── Reports ─────────────────────────────────────────────────────────
 
     public async Task<JsonElement> GetWarehouseStockAsync(Guid warehouseId, string? dateFrom = null, string? dateTo = null)

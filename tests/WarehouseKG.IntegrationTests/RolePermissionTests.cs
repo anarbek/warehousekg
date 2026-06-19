@@ -84,7 +84,7 @@ public class RolePermissionTests
         {
             number = $"AUD-{Guid.NewGuid():N}"[..12],
             warehouseId = await GetFirstWarehouseId(Admin),
-            auditDateUtc = DateTime.UtcNow,
+            reconciledAtUtc = DateTime.UtcNow.AddDays(-10),
             lines = new[] { new { inventoryItemId = itemId, countedQuantity = 100 } }
         });
 

@@ -20,6 +20,25 @@ public class WarehouseStockConsistencyTests
 
     private WarehouseKgClient Client => _fixture.Client;
 
+    /// <summary>
+    /// Deletes all draft stock audits for the current tenant to avoid
+    /// leftover-data collisions between test runs.
+    /// </summary>
+    private async Task ClearDraftAuditsAsync(string warehouseId)
+    {
+        var audits = await Client.GetStockAuditsAsync();
+        foreach (var a in audits.EnumerateArray())
+        {
+            var status = a.GetProperty("status").GetString()!;
+            var whId = a.GetProperty("warehouseId").GetString()!;
+            if (status == "Draft" && whId == warehouseId)
+            {
+                var id = a.GetProperty("id").GetString()!;
+                try { await Client.DeleteStockAuditAsync(id); } catch { /* best effort */ }
+            }
+        }
+    }
+
     private async Task<(string warehouseId, string itemId, string supplierId, string customerId)> GetSeedIdsAsync()
     {
         var warehouses = await Client.GetWarehousesAsync();
@@ -46,7 +65,7 @@ public class WarehouseStockConsistencyTests
         var uomId = uoms[0].GetProperty("id").GetString()!;
         var itemId = (await Client.CreateInventoryItemAsync(new
         {
-            sku = $"CONS-ITEM-{Guid.NewGuid():N}"[..12],
+            sku = $"CONS-ITEM-{Guid.NewGuid():N}",
             name = "Consistency Test Item",
             categoryId,
             unitOfMeasureId = uomId,
@@ -71,6 +90,7 @@ public class WarehouseStockConsistencyTests
     public async Task FullWorkflow_MovementHistoryMatchesWarehouseStock()
     {
         var (whId, itemId, supplierId, customerId) = await GetSeedIdsAsync();
+        await ClearDraftAuditsAsync(whId);
         var warehouseId = ToGuid(whId);
         var invItemId = ToGuid(itemId);
 
@@ -248,6 +268,7 @@ public class WarehouseStockConsistencyTests
     public async Task CreateAudit_DuplicateSameWarehouseSameDay_IsRejected()
     {
         var (whId, itemId, _, _) = await GetSeedIdsAsync();
+        await ClearDraftAuditsAsync(whId);
         var now = DateTime.UtcNow.AddDays(-1); // use yesterday to avoid collisions
         string? id1 = null;
 
@@ -289,6 +310,7 @@ public class WarehouseStockConsistencyTests
     public async Task CreateAudit_AfterCancellingDraft_Succeeds()
     {
         var (whId, itemId, _, _) = await GetSeedIdsAsync();
+        await ClearDraftAuditsAsync(whId);
         var now = DateTime.UtcNow.AddDays(-2);
         string? id2 = null;
 
@@ -331,6 +353,7 @@ public class WarehouseStockConsistencyTests
     public async Task CreateAudit_AfterCompletingDraft_Succeeds()
     {
         var (whId, itemId, _, _) = await GetSeedIdsAsync();
+        await ClearDraftAuditsAsync(whId);
         var now = DateTime.UtcNow.AddDays(-3);
         string? id2 = null;
 
@@ -373,6 +396,7 @@ public class WarehouseStockConsistencyTests
     public async Task CreateAudit_DifferentWarehouses_Succeeds()
     {
         var (whId1, itemId, _, _) = await GetSeedIdsAsync();
+        await ClearDraftAuditsAsync(whId1);
 
         var warehouses = await Client.GetWarehousesAsync();
         string? whId2 = null;
@@ -383,6 +407,8 @@ public class WarehouseStockConsistencyTests
         }
 
         if (whId2 is null) return;
+
+        await ClearDraftAuditsAsync(whId2);
 
         var now = DateTime.UtcNow.AddDays(-4);
         string? id1 = null, id2 = null;
