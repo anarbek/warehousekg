@@ -12,6 +12,7 @@ namespace WarehouseKG.Infrastructure.Identity;
 public class JwtTokenGenerator : IJwtTokenGenerator
 {
     public const string TenantIdClaimType = "tenant_id";
+    public const string EmployeeIdClaimType = "employee_id";
 
     private readonly JwtOptions _options;
 
@@ -40,6 +41,11 @@ public class JwtTokenGenerator : IJwtTokenGenerator
         foreach (var role in user.Roles)
         {
             claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
+        if (user.EmployeeId.HasValue)
+        {
+            claims.Add(new Claim(EmployeeIdClaimType, user.EmployeeId.Value.ToString()));
         }
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SigningKey));

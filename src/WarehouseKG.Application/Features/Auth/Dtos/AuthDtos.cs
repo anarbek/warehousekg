@@ -8,7 +8,8 @@ public sealed record AuthResponse(
     IReadOnlyList<string> Roles,
     string AccessToken,
     DateTime AccessTokenExpiresAtUtc,
-    string RefreshToken);
+    string RefreshToken,
+    Guid? EmployeeId = null);
 
 /// <summary>
 /// Outcome of an auth command. <see cref="Succeeded"/> false carries one or more <see cref="Errors"/>;

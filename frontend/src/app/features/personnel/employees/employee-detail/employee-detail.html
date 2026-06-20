@@ -1,43 +1,58 @@
 @if(loading()){ <dx-progress-bar [visible]="true"/> }
 @if(error()){ <div class="detail-page detail-page--error"><p>{{error()}}</p><dx-button text="Назад" icon="arrowleft" stylingMode="outlined" [routerLink]="['../..']"/></div> }
 @if(item(); as emp){
-  <div class="detail-page">
-    <div class="detail-page__toolbar">
-      <dx-button icon="arrowleft" stylingMode="text" [routerLink]="['../..']"/>
-      <h1 class="detail-page__title">{{emp.lastName}} {{emp.firstName}} {{emp.middleName||''}}</h1>
-      <span class="detail-page__spacer"></span>
+<div class="employee-detail">
+  <dx-toolbar>
+    <dxi-item location="before">
+      <h1 class="employee-detail__title">{{ emp.lastName }} {{ emp.firstName }} {{ emp.middleName || '' }}</h1>
+    </dxi-item>
+    <dxi-item location="after">
       <dx-button text="Редактировать" icon="edit" stylingMode="outlined" [routerLink]="['edit']"/>
-      @if(canDelete()){ <dx-button text="Удалить" icon="trash" stylingMode="outlined" type="danger" (onClick)="delete()"/> }
-    </div>
-    <div class="dx-card">
-      <dl class="detail-list">
-        <dt>Код</dt><dd>{{emp.code}}</dd>
-        <dt>Фамилия</dt><dd>{{emp.lastName}}</dd>
-        <dt>Имя</dt><dd>{{emp.firstName}}</dd>
-        <dt>Отчество</dt><dd>{{emp.middleName||'—'}}</dd>
-        <dt>Email</dt><dd>{{emp.email||'—'}}</dd>
-        <dt>Телефон</dt><dd>{{emp.phone||'—'}}</dd>
-        <dt>Должность</dt><dd>{{emp.positionName||'—'}}</dd>
-        <dt>Отдел</dt><dd>{{emp.departmentName||'—'}}</dd>
-        <dt>Дата найма</dt><dd>{{emp.hireDate||'—'}}</dd>
-        <dt>Статус</dt><dd>{{emp.isActive?'Активен':'Неактивен'}}</dd>
-      </dl>
-    </div>
-    @if(emp.shiftAssignments.length > 0){
-      <div class="dx-card" style="margin-top:16px">
-        <h3>Смены</h3>
-        @for(s of emp.shiftAssignments; track s.id){
-          <div style="margin-bottom:4px">{{s.shiftName}} — с {{s.effectiveFromUtc}}</div>
-        }
-      </div>
-    }
-    @if(emp.warehouseAssignments.length > 0){
-      <div class="dx-card" style="margin-top:16px">
-        <h3>Склады</h3>
-        @for(w of emp.warehouseAssignments; track w.id){
-          <div style="margin-bottom:4px">{{w.warehouseName}} {{w.isPrimary?'(основной)':''}}</div>
-        }
-      </div>
-    }
+    </dxi-item>
+    @if(canDelete()){ <dxi-item location="after"><dx-button text="Удалить" icon="trash" stylingMode="outlined" type="danger" (onClick)="delete()"/></dxi-item> }
+    <dxi-item location="after">
+      <dx-button text="Назад" icon="arrowleft" stylingMode="text" [routerLink]="['../..']"/>
+    </dxi-item>
+  </dx-toolbar>
+
+  <div class="employee-detail__status-row">
+    <span class="status-badge" [class]="emp.isActive ? 'status-badge--active' : 'status-badge--decommissioned'">{{ emp.isActive ? 'Активен' : 'Неактивен' }}</span>
+    <span class="employee-detail__code">{{ emp.code }}</span>
+    <span class="employee-detail__position">{{ emp.positionName || '—' }} · {{ emp.departmentName || '—' }}</span>
   </div>
+
+  <div class="employee-detail__cards">
+    <div class="dx-card employee-detail__card">
+      <h3 class="dx-card__title">Личная информация</h3>
+      <dx-form [formData]="emp" [colCount]="2" [readOnly]="true" [showColonAfterLabel]="false" labelLocation="top">
+        <dxi-item dataField="lastName" [label]="{text:'Фамилия'}" />
+        <dxi-item dataField="firstName" [label]="{text:'Имя'}" />
+        <dxi-item dataField="middleName" [label]="{text:'Отчество'}" />
+        <dxi-item dataField="code" [label]="{text:'Код'}" />
+        <dxi-item dataField="email" [label]="{text:'Email'}" />
+        <dxi-item dataField="phone" [label]="{text:'Телефон'}" />
+        <dxi-item dataField="positionName" [label]="{text:'Должность'}" />
+        <dxi-item dataField="departmentName" [label]="{text:'Отдел'}" />
+        <dxi-item dataField="hireDate" [label]="{text:'Дата найма'}" />
+      </dx-form>
+    </div>
+  </div>
+
+  @if(emp.shiftAssignments.length > 0){
+    <div class="dx-card employee-detail__extra">
+      <h3 class="dx-card__title">Смены</h3>
+      @for(s of emp.shiftAssignments; track s.id){
+        <div class="employee-detail__assignment">{{ s.shiftName }} — с {{ s.effectiveFromUtc }}</div>
+      }
+    </div>
+  }
+  @if(emp.warehouseAssignments.length > 0){
+    <div class="dx-card employee-detail__extra">
+      <h3 class="dx-card__title">Склады</h3>
+      @for(w of emp.warehouseAssignments; track w.id){
+        <div class="employee-detail__assignment">{{ w.warehouseName }} {{ w.isPrimary ? '(основной)' : '' }}</div>
+      }
+    </div>
+  }
+</div>
 }

@@ -1,82 +1,79 @@
 @if (loading()) { <dx-progress-bar [visible]="true" /> }
 @if (error()) { <div class="detail-page detail-page--error"><p>{{ error() }}</p><dx-button text="Назад" icon="arrowleft" stylingMode="outlined" [routerLink]="['../..']" /></div> }
 @if (item(); as it) {
-  <div class="detail-page">
-    <div class="detail-page__toolbar">
-      <dx-button icon="arrowleft" stylingMode="text" [routerLink]="['../..']" />
-      <h1 class="detail-page__title" i18n="@@item.detail.title">Детали товара</h1>
-      <span class="detail-page__spacer"></span>
+<div class="item-detail">
+  <dx-toolbar>
+    <dxi-item location="before">
+      <h1 class="item-detail__title">{{ it.name }}</h1>
+    </dxi-item>
+    <dxi-item location="after">
       <dx-button text="Редактировать" icon="edit" stylingMode="outlined" [routerLink]="['edit']" />
-      @if (canDeleteItem()) {
+    </dxi-item>
+    @if (canDeleteItem()) {
+      <dxi-item location="after">
         <dx-button text="Удалить" icon="trash" stylingMode="outlined" type="danger" (onClick)="delete()" />
-      }
-    </div>
+      </dxi-item>
+    }
+    <dxi-item location="after">
+      <dx-button text="Назад" icon="arrowleft" stylingMode="text" [routerLink]="['../..']" />
+    </dxi-item>
+  </dx-toolbar>
 
-    <div class="dx-card">
-      <dl class="detail-list">
-        <dt i18n="@@item.detail.sku">Артикул</dt><dd>{{ it.sku }}</dd>
-        <dt i18n="@@item.detail.name">Название</dt><dd>{{ it.name }}</dd>
-        <dt i18n="@@item.detail.description">Описание</dt><dd>{{ it.description || '—' }}</dd>
-        <dt i18n="@@item.detail.barcode">Штрихкод</dt><dd>{{ it.barcode || '—' }}</dd>
-        <dt i18n="@@item.detail.categoryId">Категория</dt><dd>{{ it.categoryName || '—' }}</dd>
-        <dt i18n="@@item.detail.unitOfMeasureId">Ед. изм.</dt><dd>{{ it.unitOfMeasureName || '—' }}</dd>
-        <dt i18n="@@item.detail.quantityOnHand">На складе</dt><dd>{{ selWarehouseId() ? runningBalance : it.quantityOnHand }}</dd>
-        <dt i18n="@@item.detail.reorderLevel">Мин. остаток</dt><dd>{{ it.reorderLevel }}</dd>
-        <dt i18n="@@item.detail.isActive">Статус</dt><dd>{{ it.isActive ? 'Активен' : 'Неактивен' }}</dd>
-      </dl>
-    </div>
+  <div class="item-detail__status-row">
+    <span class="status-badge" [class]="it.isActive ? 'status-badge--active' : 'status-badge--decommissioned'">{{ it.isActive ? 'Активен' : 'Неактивен' }}</span>
+    <span class="item-detail__sku">{{ it.sku }}</span>
+    <span class="item-detail__qty">На складе: {{ selWarehouseId() ? runningBalance : it.quantityOnHand }}</span>
+  </div>
 
-    <div class="dx-card">
-      <div class="movement-header">
-        <h3 i18n="@@item.detail.movements">История движений</h3>
-        <dx-select-box
-          [items]="warehouses()"
-          [value]="selWarehouseId()"
-          displayExpr="name"
-          valueExpr="id"
-          i18n-placeholder="@@item.detail.selectWarehouse"
-          placeholder="Выберите склад"
-          stylingMode="outlined"
-          [width]="220"
-          [showClearButton]="true"
-          (onValueChanged)="selWarehouseId.set($event.value || ''); onWarehouseChange()"
-        />
-      </div>
-
-      @if (selWarehouseId()) {
-        <dx-data-grid [dataSource]="movements()" [showBorders]="true" [hoverStateEnabled]="true" [showColumnLines]="true" [showRowLines]="true">
-          <dxi-column dataField="timestampUtc" caption="Дата" [width]="160" cellTemplate="dateCell" />
-          <dxi-column dataField="operationType" caption="Операция" [width]="180" />
-          <dxi-column dataField="documentNumber" caption="Документ" [width]="130" cellTemplate="docCell" />
-          <dxi-column dataField="quantityChange" caption="Изменение" [width]="100" cellTemplate="qtyCell" />
-          <dxi-column dataField="runningBalance" caption="Остаток" [width]="100" format="#,##0.###" />
-          <dxi-column dataField="notes" caption="Примечание" />
-          <dxi-column dataField="createdAt" caption="Создан" [width]="160" cellTemplate="createdCell" />
-          <div *dxTemplate="let c of 'docCell'">
-            @if (getDocumentRoute(c.data); as route) {
-              <a [routerLink]="route">{{ c.value }}</a>
-            } @else {
-              {{ c.value }}
-            }
-          </div>
-          <div *dxTemplate="let c of 'dateCell'">{{ c.value | date:'dd.MM.yyyy' }}</div>
-          <div *dxTemplate="let c of 'qtyCell'">
-            <span [class.qty-positive]="c.value > 0" [class.qty-negative]="c.value < 0">
-              {{ c.value > 0 ? '+' : '' }}{{ c.value }}
-            </span>
-          </div>
-          <div *dxTemplate="let c of 'createdCell'">{{ c.value | date:'dd.MM.yyyy, HH:mm' }}</div>
-        </dx-data-grid>
-
-        @if (movements().length > 0) {
-          <div class="movement-summary">
-            <span i18n="@@item.detail.currentBalance">Текущий остаток на складе:</span>
-            <strong>{{ runningBalance }}</strong>
-          </div>
-        }
-      } @else {
-        <p class="movement-hint" i18n="@@item.detail.selectWarehouseHint">Выберите склад, чтобы увидеть историю движений</p>
+  <div class="item-detail__cards">
+    <div class="dx-card item-detail__card">
+      <h3 class="dx-card__title">Основная информация</h3>
+      <dx-form [formData]="it" [colCount]="2" [readOnly]="true" [showColonAfterLabel]="false" labelLocation="top">
+        <dxi-item dataField="sku" [label]="{text:'Артикул'}" />
+        <dxi-item dataField="name" [label]="{text:'Название'}" />
+        <dxi-item dataField="barcode" [label]="{text:'Штрихкод'}" />
+        <dxi-item dataField="categoryName" [label]="{text:'Категория'}" />
+        <dxi-item dataField="unitOfMeasureName" [label]="{text:'Ед. измерения'}" />
+        <dxi-item dataField="reorderLevel" [label]="{text:'Мин. остаток'}" [editorType]="'dxNumberBox'" />
+      </dx-form>
+      @if (it.description) {
+        <div class="item-detail__desc">
+          <label>Описание</label>
+          <p>{{ it.description }}</p>
+        </div>
       }
     </div>
   </div>
+
+  <div class="dx-card item-detail__movements">
+    <dx-toolbar>
+      <dxi-item location="before"><h3 class="dx-toolbar__title">История движений</h3></dxi-item>
+      <dxi-item location="after">
+        <dx-select-box [items]="warehouses()" [value]="selWarehouseId()" displayExpr="name" valueExpr="id" placeholder="Выберите склад" stylingMode="outlined" [width]="220" [showClearButton]="true" (onValueChanged)="selWarehouseId.set($event.value || ''); onWarehouseChange()" />
+      </dxi-item>
+    </dx-toolbar>
+    @if (selWarehouseId()) {
+      <dx-data-grid [dataSource]="movements()" [showBorders]="true" [hoverStateEnabled]="true" [columnAutoWidth]="true">
+        <dxi-column dataField="timestampUtc" caption="Дата" cellTemplate="dateCell" />
+        <dxi-column dataField="operationType" caption="Операция" />
+        <dxi-column dataField="documentNumber" caption="Документ" cellTemplate="docCell" />
+        <dxi-column dataField="quantityChange" caption="Изменение" cellTemplate="qtyCell" />
+        <dxi-column dataField="runningBalance" caption="Остаток" format="#,##0.###" />
+        <dxi-column dataField="notes" caption="Примечание" />
+        <dxi-column dataField="createdAt" caption="Создан" cellTemplate="createdCell" />
+        <div *dxTemplate="let c of 'dateCell'">{{ c.value | date:'dd.MM.yyyy HH:mm' }}</div>
+        <div *dxTemplate="let c of 'docCell'">
+          @if (getDocumentRoute(c.data); as route) { <a [routerLink]="route">{{ c.value }}</a> }
+          @else { {{ c.value }} }
+        </div>
+        <div *dxTemplate="let c of 'qtyCell'">
+          <span [class.qty-positive]="c.value > 0" [class.qty-negative]="c.value < 0">{{ c.value > 0 ? '+' : '' }}{{ c.value }}</span>
+        </div>
+        <div *dxTemplate="let c of 'createdCell'">{{ c.value | date:'dd.MM.yyyy HH:mm' }}</div>
+      </dx-data-grid>
+    } @else {
+      <p class="item-detail__empty">Выберите склад для просмотра истории движений</p>
+    }
+  </div>
+</div>
 }

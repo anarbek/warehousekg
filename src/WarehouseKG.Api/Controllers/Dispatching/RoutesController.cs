@@ -95,6 +95,26 @@ public class RoutesController : ApiControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Cancel(Guid id, CancellationToken ct)
         => MapWorkflowResult(await _sender.Send(new CancelDeliveryRouteCommand(id), ct));
+
+    // ─── Driver mobile endpoints ───────────────────
+
+    /// <summary>Returns routes assigned to the currently authenticated driver (Planned/InProgress only).</summary>
+    [HttpGet("my")]
+    [Authorize]
+    [ProducesResponseType(typeof(IReadOnlyList<RouteDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<RouteDto>>> GetMyRoutes(CancellationToken ct)
+        => Ok(await _sender.Send(new GetMyRoutesQuery(), ct));
+
+    /// <summary>Returns full route detail with stops and shipments for the driver's route.</summary>
+    [HttpGet("my/{id:guid}/detail")]
+    [Authorize]
+    [ProducesResponseType(typeof(RouteDetailDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<RouteDetailDto>> GetMyRouteDetail(Guid id, CancellationToken ct)
+    {
+        var r = await _sender.Send(new GetMyRouteDetailQuery(id), ct);
+        return r is null ? NotFound() : Ok(r);
+    }
 }
 
 public record UpdateDeliveryRouteRequest(

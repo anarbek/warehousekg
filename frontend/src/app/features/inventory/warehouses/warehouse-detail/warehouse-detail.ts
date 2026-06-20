@@ -1,5 +1,5 @@
 import { Component, inject, signal, computed } from '@angular/core';
-import { DxButtonModule, DxDataGridModule, DxDateBoxModule, DxProgressBarModule } from 'devextreme-angular';
+import { DxButtonModule, DxDataGridModule, DxDateBoxModule, DxProgressBarModule, DxToolbarModule, DxFormModule } from 'devextreme-angular';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Warehouse } from '../../models/warehouse.model';
 import { WarehouseStockItem } from '../../../reports/models/report.model';
@@ -9,7 +9,7 @@ import { PermissionsService } from '../../../../core/services/permissions.servic
 
 @Component({
   selector: 'app-warehouse-detail',
-  imports: [ DxButtonModule, DxDataGridModule, DxDateBoxModule, DxProgressBarModule, RouterLink ],
+  imports: [ DxButtonModule, DxDataGridModule, DxDateBoxModule, DxProgressBarModule, DxToolbarModule, DxFormModule, RouterLink ],
   templateUrl: './warehouse-detail.html',
   styleUrl: './warehouse-detail.scss',
 })

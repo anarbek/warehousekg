@@ -131,6 +131,6 @@ public class IdentityService : IIdentityService
     private async Task<AuthUser> ToAuthUserAsync(ApplicationUser user)
     {
         var roles = await _userManager.GetRolesAsync(user);
-        return new AuthUser(user.Id, user.UserName ?? string.Empty, user.Email, user.TenantId, roles.ToList());
+        return new AuthUser(user.Id, user.UserName ?? string.Empty, user.Email, user.TenantId, roles.ToList(), user.EmployeeId);
     }
 }

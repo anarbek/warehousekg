@@ -52,5 +52,6 @@ public class WarehouseKgDbContextFactory : IDesignTimeDbContextFactory<Warehouse
     {
         public string? UserName => "migrations";
         public Guid? UserId => null;
+        public Guid? EmployeeId => null;
     }
 }

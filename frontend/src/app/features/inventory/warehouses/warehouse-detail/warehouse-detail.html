@@ -1,72 +1,69 @@
 @if (loading()) { <dx-progress-bar [visible]="true" /> }
 @if (error()) { <div class="detail-page detail-page--error"><p>{{ error() }}</p><dx-button text="Назад" icon="arrowleft" stylingMode="outlined" [routerLink]="['../..']" /></div> }
 @if (warehouse(); as wh) {
-  <div class="detail-page">
-    <div class="detail-page__toolbar">
-      <dx-button icon="arrowleft" stylingMode="text" [routerLink]="['../..']" />
-      <h1 class="detail-page__title" i18n="@@warehouse.detail.title">Детали склада</h1>
-      <span class="detail-page__spacer"></span>
+<div class="warehouse-detail">
+  <!-- Header -->
+  <dx-toolbar>
+    <dxi-item location="before">
+      <h1 class="warehouse-detail__title" i18n="@@warehouse.detail.title">Склад: {{ wh.name }}</h1>
+    </dxi-item>
+    <dxi-item location="after">
       <dx-button text="Редактировать" icon="edit" stylingMode="outlined" [routerLink]="['edit']" />
-      @if (canDeleteWarehouse()) {
+    </dxi-item>
+    @if (canDeleteWarehouse()) {
+      <dxi-item location="after">
         <dx-button text="Удалить" icon="trash" stylingMode="outlined" type="danger" (onClick)="delete()" />
-      }
-    </div>
-    <div class="dx-card">
-      <dl class="detail-list">
-        <dt i18n="@@warehouse.column.code">Код</dt><dd>{{ wh.code }}</dd>
-        <dt i18n="@@warehouse.column.name">Название</dt><dd>{{ wh.name }}</dd>
-        <dt i18n="@@warehouse.column.address">Адрес</dt><dd>{{ wh.address || '—' }}</dd>
-        <dt i18n="@@warehouse.column.status">Статус</dt><dd>{{ wh.isActive ? 'Активен' : 'Неактивен' }}</dd>
-      </dl>
-    </div>
+      </dxi-item>
+    }
+    <dxi-item location="after">
+      <dx-button text="Назад" icon="arrowleft" stylingMode="text" [routerLink]="['../..']" />
+    </dxi-item>
+  </dx-toolbar>
 
-    <div class="dx-card">
-      <div class="stock-filters">
-        <h3 i18n="@@warehouse.detail.items">Товары на складе</h3>
-        <div class="stock-filters__inputs">
-          <dx-date-box
-            [value]="dateFrom()"
-            i18n-placeholder="@@warehouse.detail.dateFrom"
-            placeholder="Дата с"
-            type="date"
-            displayFormat="dd.MM.yyyy"
-            stylingMode="outlined"
-            [width]="160"
-            [showClearButton]="true"
-            (onValueChanged)="dateFrom.set($event.value); onDateChange()"
-          />
-          <dx-date-box
-            [value]="dateTo()"
-            i18n-placeholder="@@warehouse.detail.dateTo"
-            placeholder="Дата по"
-            type="date"
-            displayFormat="dd.MM.yyyy"
-            stylingMode="outlined"
-            [width]="160"
-            [showClearButton]="true"
-            (onValueChanged)="dateTo.set($event.value); onDateChange()"
-          />
-        </div>
-      </div>
-      <dx-data-grid [dataSource]="stockItems()" [showBorders]="true" [hoverStateEnabled]="true" [showColumnLines]="true" [showRowLines]="true">
-        <dxi-column dataField="sku" i18n-caption="@@item.column.sku" caption="Артикул" [width]="120" />
-        <dxi-column dataField="name" i18n-caption="@@item.column.name" caption="Название" cellTemplate="nameCell" />
-        <dxi-column dataField="categoryName" i18n-caption="@@item.column.category" caption="Категория" [width]="140" />
-        <dxi-column dataField="barcode" i18n-caption="@@item.column.barcode" caption="Штрихкод" [width]="140" />
-        <dxi-column dataField="netChange" caption="Оборот" [width]="100" cellTemplate="netCell" />
-        <dxi-column dataField="quantityOnHand" i18n-caption="@@item.column.qty" caption="Всего" [width]="80" format="#,##0.###" />
-        <dxi-column dataField="reorderLevel" i18n-caption="@@item.column.reorder" caption="Мин. запас" [width]="100" format="#,##0.###" />
-        <dxi-column dataField="isActive" i18n-caption="@@item.column.status" caption="Статус" [width]="100" cellTemplate="activeCell" />
-        <div *dxTemplate="let c of 'nameCell'">
-          <a [routerLink]="['/inventory/items', c.data.inventoryItemId]" [queryParams]="{ warehouseId: wh.id }">{{ c.value }}</a>
-        </div>
-        <div *dxTemplate="let c of 'netCell'">
-          <span [class.qty-positive]="c.value > 0" [class.qty-negative]="c.value < 0">
-            {{ c.value > 0 ? '+' : '' }}{{ c.value }}
-          </span>
-        </div>
-        <div *dxTemplate="let c of 'activeCell'">{{ c.value ? 'Активен' : 'Неактивен' }}</div>
-      </dx-data-grid>
-    </div>
+  <!-- Status -->
+  <div class="warehouse-detail__status-row">
+    <span class="status-badge" [class]="wh.isActive ? 'status-badge--active' : 'status-badge--decommissioned'">{{ wh.isActive ? 'Активен' : 'Неактивен' }}</span>
+    <span class="warehouse-detail__code">{{ wh.code }}</span>
   </div>
+
+  <!-- Info card -->
+  <div class="dx-card warehouse-detail__card">
+    <h3 class="dx-card__title">Информация</h3>
+    <dx-form [formData]="wh" [colCount]="1" [readOnly]="true" [showColonAfterLabel]="false" labelLocation="top">
+      <dxi-item dataField="code" [label]="{text:'Код'}" />
+      <dxi-item dataField="name" [label]="{text:'Название'}" />
+      <dxi-item dataField="address" [label]="{text:'Адрес'}" />
+    </dx-form>
+  </div>
+
+  <!-- Stock items -->
+  <div class="dx-card warehouse-detail__stock">
+    <dx-toolbar>
+      <dxi-item location="before"><h3 class="dx-toolbar__title">Товары на складе</h3></dxi-item>
+      <dxi-item location="after">
+        <dx-date-box [value]="dateFrom()" placeholder="Дата с" type="date" displayFormat="dd.MM.yyyy" stylingMode="outlined" [width]="150" [showClearButton]="true" (onValueChanged)="dateFrom.set($event.value); onDateChange()" />
+      </dxi-item>
+      <dxi-item location="after">
+        <dx-date-box [value]="dateTo()" placeholder="Дата по" type="date" displayFormat="dd.MM.yyyy" stylingMode="outlined" [width]="150" [showClearButton]="true" (onValueChanged)="dateTo.set($event.value); onDateChange()" />
+      </dxi-item>
+    </dx-toolbar>
+    <dx-data-grid [dataSource]="stockItems()" [showBorders]="true" [hoverStateEnabled]="true" [columnAutoWidth]="true">
+      <dxi-column dataField="sku" caption="Артикул" />
+      <dxi-column dataField="name" caption="Название" cellTemplate="nameCell" />
+      <dxi-column dataField="categoryName" caption="Категория" />
+      <dxi-column dataField="barcode" caption="Штрихкод" />
+      <dxi-column dataField="netChange" caption="Оборот" cellTemplate="netCell" />
+      <dxi-column dataField="quantityOnHand" caption="Всего" format="#,##0.###" />
+      <dxi-column dataField="reorderLevel" caption="Мин. запас" format="#,##0.###" />
+      <dxi-column dataField="isActive" caption="Статус" cellTemplate="activeCell" />
+      <div *dxTemplate="let c of 'nameCell'">
+        <a [routerLink]="['/inventory/items', c.data.inventoryItemId]" [queryParams]="{ warehouseId: wh.id }">{{ c.value }}</a>
+      </div>
+      <div *dxTemplate="let c of 'netCell'">
+        <span [class.qty-positive]="c.value > 0" [class.qty-negative]="c.value < 0">{{ c.value > 0 ? '+' : '' }}{{ c.value }}</span>
+      </div>
+      <div *dxTemplate="let c of 'activeCell'">{{ c.value ? 'Активен' : 'Неактивен' }}</div>
+    </dx-data-grid>
+  </div>
+</div>
 }

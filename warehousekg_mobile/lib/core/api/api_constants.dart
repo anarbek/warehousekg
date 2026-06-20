@@ -11,4 +11,13 @@ class ApiConstants {
 
   static String auditComplete(String id) => '$stockAudits/$id/complete';
   static String auditCancel(String id) => '$stockAudits/$id/cancel';
+
+  // ─── Dispatching / Driver ──────────────────────────
+  static const String myRoutes = '$apiPrefix/routes/my';
+  static String myRouteDetail(String id) => '$apiPrefix/routes/my/$id/detail';
+  static String routeStart(String id) => '$apiPrefix/routes/$id/start';
+  static String routeComplete(String id) => '$apiPrefix/routes/$id/complete';
+  static String stopArrive(String routeId, String stopId) => '$apiPrefix/routes/$routeId/stops/$stopId/arrive';
+  static String stopComplete(String routeId, String stopId) => '$apiPrefix/routes/$routeId/stops/$stopId/complete';
+  static String stopSkip(String routeId, String stopId) => '$apiPrefix/routes/$routeId/stops/$stopId/skip';
 }

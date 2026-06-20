@@ -71,6 +71,11 @@ public static class IdentitySeeder
         // HR: read all, write personnel resources, delete personnel resources
         var personnelResources = new[] { "employees", "positions", "departments", "shifts", "attendance" };
         await SeedPermissionRows(db, tenantId, Roles.HR, personnelResources, personnelResources, ct);
+
+        // Driver: read delivery resources, write delivery-routes and delivery-stops, no delete
+        var driverWrite = new[] { "delivery-routes", "delivery-stops" };
+        var driverReadOnly = new[] { "delivery-shipments", "geofences", "sales-orders", "customers" };
+        await SeedPermissionRows(db, tenantId, Roles.Driver, driverWrite.Concat(driverReadOnly).ToArray(), Array.Empty<string>(), ct);
     }
 
     private static async Task SeedPermissionRows(

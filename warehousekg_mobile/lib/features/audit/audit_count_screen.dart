@@ -65,7 +65,9 @@ class _AuditCountScreenState extends ConsumerState<AuditCountScreen> {
         final q = _search.toLowerCase();
         if (!l.inventoryItemName.toLowerCase().contains(q) &&
             !l.inventoryItemSku.toLowerCase().contains(q) &&
-            !(l.barcode?.toLowerCase().contains(q) ?? false)) return false;
+            !(l.barcode?.toLowerCase().contains(q) ?? false)) {
+          return false;
+        }
       }
       return true;
     }).toList();

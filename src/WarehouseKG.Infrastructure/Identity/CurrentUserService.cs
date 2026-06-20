@@ -26,4 +26,13 @@ public class CurrentUserService : ICurrentUserService
             return raw != null && Guid.TryParse(raw, out var id) ? id : null;
         }
     }
+
+    public Guid? EmployeeId
+    {
+        get
+        {
+            var raw = _httpContextAccessor.HttpContext?.User?.FindFirst(JwtTokenGenerator.EmployeeIdClaimType)?.Value;
+            return raw != null && Guid.TryParse(raw, out var id) ? id : null;
+        }
+    }
 }

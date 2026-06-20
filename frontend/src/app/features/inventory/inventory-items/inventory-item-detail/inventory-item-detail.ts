@@ -1,7 +1,7 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { forkJoin, of } from 'rxjs';
-import { DxButtonModule, DxDataGridModule, DxSelectBoxModule, DxProgressBarModule } from 'devextreme-angular';
+import { DxButtonModule, DxDataGridModule, DxSelectBoxModule, DxProgressBarModule, DxToolbarModule, DxFormModule } from 'devextreme-angular';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { InventoryItem } from '../../models/inventory-item.model';
 import { Warehouse } from '../../models/warehouse.model';
@@ -13,7 +13,7 @@ import { PermissionsService } from '../../../../core/services/permissions.servic
 @Component({
   selector: 'app-inventory-item-detail',
   standalone: true,
-  imports: [DatePipe, DxButtonModule, DxDataGridModule, DxSelectBoxModule, DxProgressBarModule, RouterLink],
+  imports: [DatePipe, DxButtonModule, DxDataGridModule, DxSelectBoxModule, DxProgressBarModule, DxToolbarModule, DxFormModule, RouterLink],
   templateUrl: './inventory-item-detail.html',
   styleUrl: './inventory-item-detail.scss',
 })

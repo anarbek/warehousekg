@@ -1,93 +1,32 @@
-.detail-page {
+.warehouse-detail {
   padding: 1.5rem;
 
-  &__toolbar {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
+  &__title { margin: 0; font-size: 1.4rem; font-weight: 600; }
+
+  &__status-row {
+    display: flex; align-items: center; gap: 1rem;
+    margin-bottom: 1.25rem; font-size: 0.9rem;
   }
 
-  &__title {
-    margin: 0;
-    font-size: 1.5rem;
-  }
+  &__code { color: rgba(0,0,0,0.5); font-family: monospace; }
 
-  &__spacer {
-    flex: 1;
-  }
+  &__card { padding: 1.25rem; }
 
-  &--error {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
+  &__stock { margin-top: 1.25rem; padding: 1.25rem; }
 }
 
-.dx-card {
-  margin-bottom: 1rem;
-  padding: 1rem;
+.status-badge {
+  padding: 0.15rem 0.6rem; border-radius: 4px;
+  font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
 
-  .detail-list {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 0.5rem 1rem;
-    margin: 0;
-
-    dt { font-weight: 600; color: var(--dx-color-text-label); }
-    dd { margin: 0; }
-  }
+  &--active { background: #e8f5e9; color: #2e7d32; }
+  &--decommissioned { background: #eceff1; color: #546e7a; }
 }
 
-.stock-filters {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.75rem;
-  gap: 1rem;
-  flex-wrap: wrap;
+.dx-card__title { margin: 0 0 0.75rem; font-size: 0.95rem; font-weight: 600; color: var(--dx-color-primary, #1976d2); }
+.dx-toolbar__title { margin: 0; font-size: 1rem; font-weight: 600; }
 
-  h3 { margin: 0; }
+.qty-positive { color: #2e7d32; }
+.qty-negative { color: #c62828; }
 
-  &__inputs {
-    display: flex;
-    gap: 0.75rem;
-  }
-}
-
-.qty-positive { color: #2e7d32; font-weight: 600; }
-.qty-negative { color: #c62828; font-weight: 600; }
-
-.detail-list {
-  display: grid;
-  grid-template-columns: 180px 1fr;
-  row-gap: 12px;
-  column-gap: 16px;
-  margin: 0;
-
-  dt {
-    font-weight: 500;
-    color: rgba(0, 0, 0, 0.6);
-  }
-
-  dd {
-    margin: 0;
-  }
-}
-
-.badge {
-  display: inline-block;
-  padding: 2px 10px;
-  border-radius: 12px;
-  font-size: 0.85rem;
-
-  &--active {
-    background: #e8f5e9;
-    color: #2e7d32;
-  }
-
-  &--inactive {
-    background: #ffebee;
-    color: #c62828;
-  }
-}
+.detail-page--error { padding: 1.5rem; text-align: center; }

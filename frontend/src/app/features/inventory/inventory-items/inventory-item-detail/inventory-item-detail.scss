@@ -1,65 +1,41 @@
-.detail-page {
+.item-detail {
   padding: 1.5rem;
 
-  &__toolbar {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
+  &__title { margin: 0; font-size: 1.4rem; font-weight: 600; }
+
+  &__status-row {
+    display: flex; align-items: center; gap: 1rem;
+    margin-bottom: 1.25rem; font-size: 0.9rem;
   }
 
-  &__title { margin: 0; font-size: 1.5rem; }
-  &__spacer { flex: 1; }
+  &__sku { color: rgba(0,0,0,0.5); font-family: monospace; }
+  &__qty { margin-left: auto; font-weight: 500; color: #1565c0; }
 
-  &--error {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  &__cards { margin-bottom: 1.25rem; }
+
+  &__card { padding: 1.25rem; }
+
+  &__desc {
+    margin-top: 0.75rem;
+    label { font-size: 0.82rem; color: rgba(0,0,0,0.5); }
+    p { margin: 0.25rem 0 0; line-height: 1.5; }
   }
+
+  &__movements { padding: 1.25rem; }
+
+  &__empty { color: rgba(0,0,0,0.4); margin: 1rem 0; font-style: italic; }
 }
 
-.dx-card {
-  margin-bottom: 1rem;
-  padding: 1rem;
+.status-badge {
+  padding: 0.15rem 0.6rem; border-radius: 4px;
+  font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
+  &--active { background: #e8f5e9; color: #2e7d32; }
+  &--decommissioned { background: #eceff1; color: #546e7a; }
 }
 
-.detail-list {
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  row-gap: 0.75rem;
-  column-gap: 1rem;
-  margin: 0;
+.dx-card__title { margin: 0 0 0.75rem; font-size: 0.95rem; font-weight: 600; color: var(--dx-color-primary, #1976d2); }
+.dx-toolbar__title { margin: 0; font-size: 1rem; font-weight: 600; }
 
-  dt { font-weight: 500; color: rgba(0, 0, 0, 0.6); }
-  dd { margin: 0; word-break: break-all; }
-}
-
-.movement-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.75rem;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-
-  h3 { margin: 0; }
-}
-
-.movement-summary {
-  margin-top: 0.75rem;
-  padding: 0.75rem;
-  background: #f5f5f5;
-  border-radius: 4px;
-  font-size: 1rem;
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.movement-hint {
-  color: rgba(0, 0, 0, 0.38);
-  font-style: italic;
-}
-
-.qty-positive { color: #2e7d32; font-weight: 600; }
-.qty-negative { color: #c62828; font-weight: 600; }
+.qty-positive { color: #2e7d32; }
+.qty-negative { color: #c62828; }
+.detail-page--error { padding: 1.5rem; text-align: center; }

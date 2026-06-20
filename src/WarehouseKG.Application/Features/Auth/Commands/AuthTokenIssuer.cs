@@ -33,6 +33,7 @@ internal static class AuthTokenIssuer
             user.Roles,
             accessToken.Token,
             accessToken.ExpiresAtUtc,
-            refreshToken);
+            refreshToken,
+            user.EmployeeId);
     }
 }

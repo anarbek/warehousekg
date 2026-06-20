@@ -11,6 +11,7 @@ class DashboardScreen extends ConsumerWidget {
     (_Menu.warehouse, 'Склад', Icons.warehouse),
     (_Menu.items, 'Товары', Icons.inventory_2),
     (_Menu.receipts, 'Поступления', Icons.receipt_long),
+    (_Menu.dispatching, 'Доставка', Icons.local_shipping),
     (_Menu.transfers, 'Перемещения', Icons.swap_horiz),
     (_Menu.audit, 'Аудиты', Icons.checklist),
     (_Menu.reports, 'Отчёты', Icons.bar_chart),
@@ -54,12 +55,17 @@ class DashboardScreen extends ConsumerWidget {
           itemCount: _menuItems.length,
           itemBuilder: (context, index) {
             final (menu, title, icon) = _menuItems[index];
-            final enabled = menu == _Menu.audit;
+            final enabled = menu == _Menu.audit || menu == _Menu.dispatching;
             return Card(
               color: enabled ? null : Colors.grey.shade200,
               child: InkWell(
                 borderRadius: BorderRadius.circular(12),
-                onTap: enabled ? () => context.push('/audits') : null,
+                onTap: enabled
+                    ? () {
+                        if (menu == _Menu.audit) context.push('/audits');
+                        if (menu == _Menu.dispatching) context.push('/dispatching');
+                      }
+                    : null,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -81,4 +87,4 @@ class DashboardScreen extends ConsumerWidget {
   }
 }
 
-enum _Menu { warehouse, items, receipts, transfers, audit, reports }
+enum _Menu { warehouse, items, receipts, transfers, audit, dispatching, reports }

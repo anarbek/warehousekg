@@ -9,4 +9,5 @@ public sealed record AuthUser(
     string UserName,
     string? Email,
     Guid TenantId,
-    IReadOnlyList<string> Roles);
+    IReadOnlyList<string> Roles,
+    Guid? EmployeeId = null);

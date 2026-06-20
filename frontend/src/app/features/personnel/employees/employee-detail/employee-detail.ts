@@ -1,5 +1,5 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
-import { DxButtonModule, DxProgressBarModule } from 'devextreme-angular';
+import { DxButtonModule, DxProgressBarModule, DxToolbarModule, DxFormModule } from 'devextreme-angular';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PersonnelService } from '../../services/personnel.service';
 import { PermissionsService } from '../../../../core/services/permissions.service';
@@ -7,7 +7,7 @@ import { EmployeeDetailModel } from '../../models/personnel.model';
 
 @Component({
   selector: 'app-employee-detail',
-  imports: [DxButtonModule, DxProgressBarModule, RouterLink],
+  imports: [DxButtonModule, DxProgressBarModule, DxToolbarModule, DxFormModule, RouterLink],
   templateUrl: './employee-detail.html',
   styleUrl: './employee-detail.scss'
 })

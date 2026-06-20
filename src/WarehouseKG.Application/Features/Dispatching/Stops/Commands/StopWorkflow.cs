@@ -99,13 +99,32 @@ public class CompleteDeliveryStopCommandHandler : IRequestHandler<CompleteDelive
             if (allCompletedIds.Count > 0)
             {
                 var orders = await _context.SalesOrders
+                    .Include(so => so.Lines)
                     .Where(so => allCompletedIds.Contains(so.Id) && so.Status == SalesOrderStatus.Confirmed)
                     .ToListAsync(ct);
 
-                foreach (var order in orders)
+                if (orders.Count > 0)
                 {
-                    order.Status = SalesOrderStatus.Shipped;
-                    order.ShippedAtUtc = DateTime.UtcNow;
+                    // Deduct inventory for all shipped orders
+                    var itemIds = orders.SelectMany(o => o.Lines).Select(l => l.InventoryItemId).Distinct().ToList();
+                    var items = await _context.InventoryItems
+                        .Where(i => itemIds.Contains(i.Id))
+                        .ToListAsync(ct);
+
+                    foreach (var order in orders)
+                    {
+                        order.Status = SalesOrderStatus.Shipped;
+                        order.ShippedAtUtc = DateTime.UtcNow;
+
+                        foreach (var line in order.Lines)
+                        {
+                            var item = items.FirstOrDefault(i => i.Id == line.InventoryItemId);
+                            if (item is not null)
+                            {
+                                item.QuantityOnHand -= line.Quantity;
+                            }
+                        }
+                    }
                 }
 
                 await _context.SaveChangesAsync(ct);

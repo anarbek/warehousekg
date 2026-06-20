@@ -1,8 +1,27 @@
-.detail-page { padding: 16px; }
-.detail-page__toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
-.detail-page__title { margin: 0; flex: 1; }
-.detail-page__spacer { flex: 1; }
-.dx-card { padding: 20px; margin-bottom: 16px; }
-.detail-list { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; }
-.detail-list dt { font-weight: 600; color: #666; }
-.detail-list dd { margin: 0; }
+.employee-detail {
+  padding: 1.5rem;
+
+  &__title { margin: 0; font-size: 1.4rem; font-weight: 600; }
+
+  &__status-row {
+    display: flex; align-items: center; gap: 1rem;
+    margin-bottom: 1.25rem; font-size: 0.9rem;
+  }
+  &__code { color: rgba(0,0,0,0.5); font-family: monospace; }
+  &__position { margin-left: auto; color: rgba(0,0,0,0.55); }
+
+  &__cards { margin-bottom: 1.25rem; }
+  &__card { padding: 1.25rem; }
+  &__extra { padding: 1.25rem; margin-top: 1rem; }
+  &__assignment { margin-bottom: 0.35rem; font-size: 0.9rem; color: rgba(0,0,0,0.7); }
+}
+
+.status-badge {
+  padding: 0.15rem 0.6rem; border-radius: 4px;
+  font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
+  &--active { background: #e8f5e9; color: #2e7d32; }
+  &--decommissioned { background: #eceff1; color: #546e7a; }
+}
+
+.dx-card__title { margin: 0 0 0.75rem; font-size: 0.95rem; font-weight: 600; color: var(--dx-color-primary, #1976d2); }
+.detail-page--error { padding: 1.5rem; text-align: center; }
