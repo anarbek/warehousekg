@@ -11,6 +11,10 @@ WarehouseKG is a multi-tenant warehouse management system with:
 
 ```
 warehousekg/
+├── .github/                        # Copilot customizations (instructions, prompts, agents)
+│   ├── copilot-instructions.md
+│   ├── prompts/
+│   └── agents/
 ├── src/
 │   ├── WarehouseKG.Api/            # ASP.NET Core controllers, auth, middleware
 │   ├── WarehouseKG.Application/    # CQRS commands, queries, DTOs, validators
@@ -59,3 +63,4 @@ warehousekg/
 - [[04-Auth-Flow]] — JWT, tenant multi-tenancy, RBAC permissions
 - [[08-Mobile-App]] — Flutter app architecture and features
 - [[09-Roadmap]] — Completed and planned features
+- [[13-Copilot-Customizations]] — VS Code Copilot instructions, prompts, and agents
