@@ -187,3 +187,51 @@ private void ApplyTenantId()
 - Inputs: `markers`, `geofenceOverlays`, `editable`, `height`
 - **Markers must be redrawn after map init**: the `initMap` 200ms timeout must call `drawMarkers()` if markers arrived before map ready
 - Same for `drawGeofenceOverlays()`
+
+---
+
+## Browser-Based Verification (Live Testing)
+
+When verifying UI changes or debugging data issues, use the integrated browser tools instead of manual clicking.
+
+### Session management
+- Backend restart **invalidates the JWT session** — the browser page will show 401 errors.
+- Fix: re-login via browser tools (see [[#Auto-login flow]] below).
+- Detection: `read_page` shows no sidebar/toolbar, only the DevExtreme watermark — session expired.
+
+### Reading page state
+- `read_page` returns an accessibility snapshot with element refs and visible text.
+- The first `read_page` after `navigate_page` may return `<unchanged>` — call `read_page` again.
+- Use `run_playwright_code` with `page.evaluate()` to extract specific DOM text when the snapshot is too large.
+
+### Interacting with DevExtreme widgets via browser tools
+
+**Combobox (warehouse filter, language selector):**
+```
+click_element on combobox ref → listbox appears → click_element on option ref
+```
+
+**Data grid verification:**
+- Grid shows as `group "Data grid with N rows and M columns"`
+- Each `row` has `gridcell` children with text values
+- Links in grid cells have `/url:` property for verifying navigation targets
+
+**Movement history warehouse filter workflow:**
+1. Page initially shows "Выберите склад для просмотра истории движений"
+2. Click warehouse combobox → options appear ("depo 1", "depo 2", etc.)
+3. Click option → grid populates with movement rows showing running balance
+4. "На складе" header updates to show the calculated balance for the selected warehouse
+
+### Verifying data integrity via browser
+- **Inventory detail page**: Shows `QuantityOnHand` in the header. When a warehouse is selected, compares the running balance from movement history to the warehouse stock report.
+- **Sales order detail**: Check `status` field to verify workflow transitions (Draft → Confirmed → Shipped).
+- **Grid + DB cross-check**: Use `docker exec -i wkg-postgres psql` to verify DB values match what the UI shows.
+
+### Auto-login flow
+```
+1. navigate_page → http://localhost:4200/login
+2. type_in_page on username (ref=e32) → "admin"
+3. type_in_page on password (ref=e36) → "Admin1234!"
+4. click_element on login button (ref=e37)
+5. navigate_page → target URL
+```

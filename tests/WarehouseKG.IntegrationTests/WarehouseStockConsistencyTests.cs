@@ -440,4 +440,233 @@ public class WarehouseStockConsistencyTests
             if (id2 != null) { try { await Client.CancelStockAuditAsync(id2.Trim('"')); } catch { } }
         }
     }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // Dispatching — auto-ship inventory deduction tests
+    // ═══════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// When a delivery stop is completed via the dispatching workflow,
+    /// the auto-ship logic must deduct inventory and the movement history
+    /// must show a "Продажа" row for the sales order.
+    /// </summary>
+    [Fact]
+    public async Task DispatchingAutoShip_DeductsInventory_AndShowsInMovementHistory()
+    {
+        var (whId, itemId, _, customerId) = await GetSeedIdsAsync();
+        var warehouseId = ToGuid(whId);
+        var invItemId = ToGuid(itemId);
+        var now = DateTime.UtcNow;
+
+        // 1. Seed stock via receipt (+20)
+        var recId = await Client.CreateReceiptAsync(new
+        {
+            number = $"DISP-REC-{Guid.NewGuid():N}"[..16],
+            warehouseId = whId,
+            receivedAtUtc = now,
+            lines = new[] { new { inventoryItemId = itemId, quantity = 20m } }
+        });
+        await Client.CompleteReceiptAsync(recId.Trim('"'));
+
+        // 2. Create a confirmed sales order
+        var soId = await Client.CreateSalesOrderAsync(new
+        {
+            number = $"DISP-SO-{Guid.NewGuid():N}"[..16],
+            customerId,
+            warehouseId = whId,
+            expectedDateUtc = now,
+            lines = new[] { new { inventoryItemId = itemId, quantity = 7m, unitPrice = 100m } }
+        });
+        await Client.ConfirmSalesOrderAsync(soId.Trim('"'));
+
+        // 3. Create a delivery route (Planned)
+        var routeId = (await Client.CreateRouteAsync(new
+        {
+            code = $"DISP-R-{Guid.NewGuid():N}"[..8],
+            date = now
+        })).Trim('"');
+
+        // 4. Create a stop on the route
+        var stopId = (await Client.CreateStopAsync(routeId, new
+        {
+            routeId,
+            sequenceNumber = 1,
+            customerId,
+            address = "Test Address 1",
+            latitude = 42.87,
+            longitude = 74.59
+        })).Trim('"');
+
+        // 5. Assign the sales order to the stop as a shipment
+        await Client.AssignShipmentAsync(stopId, ToGuid(soId));
+
+        // 6. Start the route (Planned → InProgress)
+        await Client.StartRouteAsync(routeId);
+
+        // 7. Arrive at the stop (Pending → InProgress)
+        await Client.ArriveAtStopAsync(routeId, stopId);
+
+        // 8. Complete the stop (InProgress → Completed) — triggers auto-ship
+        await Client.CompleteStopAsync(routeId, stopId);
+
+        // 9. Complete the route
+        await Client.CompleteRouteAsync(routeId);
+
+        // ═══════════════════════════════════════════════════════════════
+        // VERIFY inventory deducted
+        // ═══════════════════════════════════════════════════════════════
+        var item = await Client.GetInventoryItemAsync(invItemId);
+        var qtyOnHand = GetDecimal(item, "quantityOnHand");
+        Assert.Equal(13m, qtyOnHand); // 20 - 7 = 13
+
+        // ═══════════════════════════════════════════════════════════════
+        // VERIFY sales order is Shipped
+        // ═══════════════════════════════════════════════════════════════
+        var soDetail = await Client.GetSalesOrderAsync(ToGuid(soId));
+        var soStatus = soDetail.GetProperty("status").GetString()!;
+        Assert.Equal("Shipped", soStatus);
+
+        // ═══════════════════════════════════════════════════════════════
+        // VERIFY movement history shows "Продажа" row
+        // ═══════════════════════════════════════════════════════════════
+        var movements = await Client.GetItemMovementsAsync(invItemId, warehouseId);
+        var movArray = movements.EnumerateArray().ToList();
+
+        var saleRows = movArray
+            .Where(m => m.GetProperty("operationType").GetString() == "Продажа")
+            .ToList();
+        Assert.NotEmpty(saleRows);
+        Assert.Contains(saleRows, m =>
+            m.GetProperty("documentNumber").GetString()!.StartsWith("DISP-SO-")
+            && GetDecimal(m, "quantityChange") == -7m);
+
+        // ═══════════════════════════════════════════════════════════════
+        // VERIFY warehouse stock report consistency
+        // ═══════════════════════════════════════════════════════════════
+        var finalBalance = GetDecimal(movArray[^1], "runningBalance");
+
+        var nonAuditSum = 0m;
+        foreach (var m in movArray)
+        {
+            var opType = m.GetProperty("operationType").GetString()!;
+            if (!opType.StartsWith("Аудит"))
+                nonAuditSum += GetDecimal(m, "quantityChange");
+        }
+
+        var stockAll = await Client.GetWarehouseStockAsync(warehouseId);
+        var ourItem = stockAll.EnumerateArray()
+            .FirstOrDefault(i => i.GetProperty("inventoryItemId").GetString()!
+                .Equals(invItemId.ToString(), StringComparison.OrdinalIgnoreCase));
+        Assert.NotEqual(default(JsonElement), ourItem);
+
+        var netChange = GetDecimal(ourItem, "netChange");
+        Assert.Equal(nonAuditSum, netChange);
+        Assert.Equal(finalBalance, GetDecimal(ourItem, "quantityOnHand"));
+    }
+
+    /// <summary>
+    /// Sales orders without a WarehouseId should NOT appear in movement history.
+    /// This guards against the bug where auto-shipped orders with NULL WarehouseId
+    /// were invisible in inventory movement tracking.
+    /// </summary>
+    [Fact]
+    public async Task DispatchingAutoShip_MissingWarehouseId_NotInMovementHistory()
+    {
+        var (whId, itemId, _, customerId) = await GetSeedIdsAsync();
+        var warehouseId = ToGuid(whId);
+        var invItemId = ToGuid(itemId);
+        var now = DateTime.UtcNow;
+
+        // Seed stock
+        var recId = await Client.CreateReceiptAsync(new
+        {
+            number = $"DISP2-REC-{Guid.NewGuid():N}"[..16],
+            warehouseId = whId,
+            receivedAtUtc = now,
+            lines = new[] { new { inventoryItemId = itemId, quantity = 10m } }
+        });
+        await Client.CompleteReceiptAsync(recId.Trim('"'));
+
+        // Create a sales order WITHOUT WarehouseId (simulating the bug)
+        var soId = await Client.CreateSalesOrderAsync(new
+        {
+            number = $"DISP2-SO-{Guid.NewGuid():N}"[..16],
+            customerId,
+            // warehouseId intentionally omitted
+            expectedDateUtc = now,
+            lines = new[] { new { inventoryItemId = itemId, quantity = 3m, unitPrice = 50m } }
+        });
+        await Client.ConfirmSalesOrderAsync(soId.Trim('"'));
+
+        // Ship via direct API (bypassing dispatching)
+        await Client.ShipSalesOrderAsync(soId.Trim('"'));
+
+        // Verify the sales order IS Shipped
+        var soDetail = await Client.GetSalesOrderAsync(ToGuid(soId));
+        Assert.Equal("Shipped", soDetail.GetProperty("status").GetString());
+
+        // But movement history for the specific warehouse should NOT show it
+        var movements = await Client.GetItemMovementsAsync(invItemId, warehouseId);
+        var movArray = movements.EnumerateArray().ToList();
+
+        var disp2Rows = movArray
+            .Where(m => m.GetProperty("documentNumber").GetString()!.StartsWith("DISP2-SO-"))
+            .ToList();
+        Assert.Empty(disp2Rows); // NULL WarehouseId → invisible in any warehouse filter
+    }
+
+    /// <summary>
+    /// After the WarehouseId fix, a sales order WITH WarehouseId shipped via
+    /// the manual Ship endpoint must appear in movement history for that warehouse.
+    /// </summary>
+    [Fact]
+    public async Task ManualShip_WithWarehouseId_ShowsInMovementHistory()
+    {
+        var (whId, itemId, _, customerId) = await GetSeedIdsAsync();
+        var warehouseId = ToGuid(whId);
+        var invItemId = ToGuid(itemId);
+        var now = DateTime.UtcNow;
+
+        // Seed stock
+        var recId = await Client.CreateReceiptAsync(new
+        {
+            number = $"DISP3-REC-{Guid.NewGuid():N}"[..16],
+            warehouseId = whId,
+            receivedAtUtc = now,
+            lines = new[] { new { inventoryItemId = itemId, quantity = 15m } }
+        });
+        await Client.CompleteReceiptAsync(recId.Trim('"'));
+
+        // Create a sales order WITH WarehouseId
+        var soId = await Client.CreateSalesOrderAsync(new
+        {
+            number = $"DISP3-SO-{Guid.NewGuid():N}"[..16],
+            customerId,
+            warehouseId = whId,
+            expectedDateUtc = now,
+            lines = new[] { new { inventoryItemId = itemId, quantity = 4m, unitPrice = 75m } }
+        });
+        await Client.ConfirmSalesOrderAsync(soId.Trim('"'));
+
+        // Ship via direct API
+        await Client.ShipSalesOrderAsync(soId.Trim('"'));
+
+        // Verify the sales order IS Shipped
+        var soDetail = await Client.GetSalesOrderAsync(ToGuid(soId));
+        Assert.Equal("Shipped", soDetail.GetProperty("status").GetString());
+
+        // Movement history MUST show the "Продажа" row
+        var movements = await Client.GetItemMovementsAsync(invItemId, warehouseId);
+        var movArray = movements.EnumerateArray().ToList();
+
+        var disp3Rows = movArray
+            .Where(m => m.GetProperty("documentNumber").GetString()!.StartsWith("DISP3-SO-")
+                        && m.GetProperty("operationType").GetString() == "Продажа")
+            .ToList();
+        Assert.Single(disp3Rows);
+        Assert.Equal(-4m, GetDecimal(disp3Rows[0], "quantityChange"));
+
+        // Verify running balance is correct: 15 - 4 = 11
+        Assert.Equal(11m, GetDecimal(movArray[^1], "runningBalance"));
+    }
 }

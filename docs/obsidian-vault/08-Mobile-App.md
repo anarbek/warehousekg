@@ -169,20 +169,56 @@ warehousekg_mobile/
 
 ---
 
-## Development
+## Development & Testing
 
+### Prerequisites
+- Android emulator running: `emulator -avd Medium_Phone_API_36.1`
+- Backend running on `http://localhost:5134` (must bind to `0.0.0.0`, not just `localhost`)
+- `adb devices` shows `emulator-5554   device`
+
+### Launch
 ```bash
-# Navigate to mobile project
 cd warehousekg_mobile
 
 # Run on Android emulator
 flutter run -d emulator-5554
 
-# Hot reload (preserves state)
+# Hot reload (preserves state — UI changes only)
 r
 
-# Hot restart (clears state)
-Shift+R  or  R  (uppercase)
+# Hot restart (clears state — use for provider/state changes)
+R
 ```
 
-**Backend connection**: Android emulator accesses host machine at `10.0.2.2`. Backend must be running on `http://localhost:5134`.
+### Backend connectivity
+- Android emulator reaches host machine at `http://10.0.2.2:5134` (NOT `localhost`)
+- Defined in `lib/core/api/api_constants.dart` as `baseUrl`
+- If backend restarts, JWT tokens are invalidated — logout and re-login on device
+
+### JWT & Auth for driver features
+- Driver features (`GET /api/v1/routes/my`) require `employee_id` claim in JWT
+- The claim is set at login when `ApplicationUser.EmployeeId` is linked to an Employee record
+- **If a user was created before EmployeeId was linked**, the stored JWT won't have `employee_id` → logout → re-login to get fresh token
+- `AuthNotifier` (Riverpod) manages auth state; `checkAuth()` validates stored token on app start
+- JWT stored in `flutter_secure_storage` via Dio interceptor
+
+### Common testing issues
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Empty route list in Доставка | JWT missing `employee_id` claim | Logout → re-login as driver |
+| Connection refused | Backend not running or not on `0.0.0.0` | Check `appsettings.json` Kestrel URLs, restart backend |
+| Emulator not found | Emulator crashed or not started | `adb devices`, restart emulator if empty |
+| 401 after backend restart | Stale JWT | Logout → re-login on device |
+| Hot reload not reflecting changes | State/provider changes need restart | Use `R` (hot restart) instead of `r` (hot reload) |
+| Stale data after DB fix | Cached in app state | Hot restart (`R`) to clear Riverpod state |
+
+### Live testing workflow (full stack)
+1. Start backend: `dotnet run --project src/WarehouseKG.Api --launch-profile http`
+2. Start emulator: `emulator -avd Medium_Phone_API_36.1`
+3. Launch Flutter: `cd warehousekg_mobile && flutter run -d emulator-5554`
+4. In app: logout → login as `driver` / `Driver1234!`
+5. Tap **Доставка** tile → verify routes appear
+6. Tap a route → verify stops with status badges
+7. Tap a stop → verify shipments and workflow buttons
+8. After backend changes: hot restart Flutter (`R`) + re-login if JWT expired

@@ -140,6 +140,13 @@ public class WarehouseKgClient
         return await response.Content.ReadFromJsonAsync<JsonElement>();
     }
 
+    public async Task<JsonElement> GetInventoryItemAsync(Guid id)
+    {
+        var response = await _http.GetAsync($"/api/v1/inventory-items/{id}");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
     // ─── Stock Transfers ─────────────────────────────────────────────────
 
     public async Task<string> CreateStockTransferAsync(object body)
@@ -239,6 +246,13 @@ public class WarehouseKgClient
         await EnsureSuccessAsync(response);
     }
 
+    public async Task<JsonElement> GetSalesOrderAsync(Guid id)
+    {
+        var response = await _http.GetAsync($"/api/v1/sales-orders/{id}");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
     // ─── Stock Adjustments ───────────────────────────────────────────────
 
     public async Task<string> CreateStockAdjustmentAsync(object body)
@@ -327,6 +341,13 @@ public class WarehouseKgClient
     public async Task<JsonElement> GetRouteDetailAsync(string id)
     {
         var response = await _http.GetAsync($"/api/v1/routes/{id}/detail");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
+    public async Task<JsonElement> GetMyRoutesAsync()
+    {
+        var response = await _http.GetAsync("/api/v1/routes/my");
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<JsonElement>();
     }

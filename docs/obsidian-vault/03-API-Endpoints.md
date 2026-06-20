@@ -706,3 +706,43 @@ The route detail page shows a Leaflet map with:
 - Stop markers (from `stopMarkers` computed signal)
 - Geofence zone overlays (loaded in `load()` method, drawn on main map and stop popup)
 - Markers and overlays must be redrawn in `initMap` timeout (200ms) to handle race with Leaflet init
+
+---
+
+## Integration Tests
+
+All dispatching and stock consistency behaviors are covered by integration tests in `tests/WarehouseKG.IntegrationTests/`.
+
+### Test database
+- PostgreSQL on `localhost:15432`, database `WAREHOUSEKG_TEST`
+- Migrations applied automatically by `TestWebApplicationFactory` on first run
+- Seed user: `admin` / `Admin1234!`
+- Create test DB: `docker exec wkg-postgres psql -U postgres -c "CREATE DATABASE \"WAREHOUSEKG_TEST\""`
+- Run tests: `dotnet test tests/WarehouseKG.IntegrationTests`
+
+### Key test files
+
+| File | Purpose |
+|---|---|
+| `WarehouseStockConsistencyTests` | Stock quantity invariants: movement history running balance = warehouse stock report, Оборот = sum of non-audit deltas. Includes dispatching auto-ship deduction, WarehouseId guard, and manual ship verification. |
+| `DispatcherWorkflowTests` | Route/stop/shipment CRUD, geofence checks, GeoUtils math, Dispatcher role access |
+| `PickPackWorkflowTests` | Pick order → pack order full flow with stock verification |
+| `ReceiptWorkflowTests` | Stock receipt creation + completion |
+| `RolePermissionTests` | Tenant permission enforcement |
+
+### Dispatching test coverage (WarehouseStockConsistencyTests)
+
+| Test | What it verifies |
+|---|---|
+| `DispatchingAutoShip_DeductsInventory_AndShowsInMovementHistory` | Full route→stop→shipment→auto-ship workflow: inventory deducted, sales order Shipped, movement history has "Продажа" row, warehouse stock report consistent |
+| `DispatchingAutoShip_MissingWarehouseId_NotInMovementHistory` | Sales orders without WarehouseId are invisible in movement history (guards against the NULL WarehouseId bug) |
+| `ManualShip_WithWarehouseId_ShowsInMovementHistory` | Sales orders WITH WarehouseId correctly appear in movement history after manual ship via `/ship` endpoint |
+| `FullWorkflow_MovementHistoryMatchesWarehouseStock` | Comprehensive: receipts, pick, purchase order, transfer, sales order, adjustment, audit — verifies all invariants |
+
+### Test client helper (`WarehouseKgClient`)
+- Authenticated HTTP client wrapping the API
+- Methods: `CreateRouteAsync`, `CreateStopAsync`, `AssignShipmentAsync`, `StartRouteAsync`, `ArriveAtStopAsync`, `CompleteStopAsync`, `CompleteRouteAsync`
+- `GetItemMovementsAsync(itemId, warehouseId)` — fetches movement history for consistency checks
+- `GetWarehouseStockAsync(warehouseId)` — fetches warehouse stock report
+- `GetMyRoutesAsync()` — driver's own routes
+- `SharedFixture.CreateClientAsync(userName, password)` — creates a client authenticated as a specific user

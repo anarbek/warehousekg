@@ -449,6 +449,9 @@ public class DispatcherWorkflowTests
         });
         var salesOrderId = Clean(soId);
 
+        // Confirm the sales order (required before assigning to stop)
+        await Client.ConfirmSalesOrderAsync(salesOrderId);
+
         // Create route + stop
         var routeId = await Client.CreateRouteAsync(new
         {
