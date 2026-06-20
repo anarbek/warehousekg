@@ -623,3 +623,75 @@ for purchases). Amounts are `Σ(quantity × unitPrice)` over lines.
   ]
 }
 ```
+
+
+## Dispatching Module — `/api/v1/routes`
+
+Full delivery route management with stops, shipments, geofencing, and workflow.
+
+### Angular Routes
+| Route | Component |
+|---|---|
+| `/dispatching/routes` | `RouteList` |
+| `/dispatching/routes/new` | `RouteForm` |
+| `/dispatching/routes/:id` | `RouteDetail` |
+| `/dispatching/routes/:id/edit` | `RouteForm` |
+| `/dispatching/geofences` | `GeofenceList` |
+
+### Status Lifecycle
+- **Route**: `Planned` → `InProgress` (start) → `Completed` (complete) or `Cancelled`
+- **Stop**: `Pending` → `InProgress` (arrive) → `Completed` (complete delivery) or `Skipped`
+- **Completed/Cancelled routes** are read-only — stops, shipments, and route fields cannot be modified
+
+### Routes — `/api/v1/routes`
+
+| Method | Route | Description | Auth |
+|---|---|---|---|
+| `GET` | `/api/v1/routes` | List all routes (summary) | `delivery-routes:read` |
+| `GET` | `/api/v1/routes/{id}` | Get route detail with stops + shipments | `delivery-routes:read` |
+| `POST` | `/api/v1/routes` | Create route (Planned) | `delivery-routes:write` |
+| `PUT` | `/api/v1/routes/{id}` | Update route (Planned/InProgress only) | `delivery-routes:write` |
+| `DELETE` | `/api/v1/routes/{id}` | Delete route (permission-based) | `delivery-routes:delete` |
+| `POST` | `/api/v1/routes/{id}/start` | Planned → InProgress | `delivery-routes:write` |
+| `POST` | `/api/v1/routes/{id}/complete` | InProgress → Completed (auto-ships orders) | `delivery-routes:write` |
+| `POST` | `/api/v1/routes/{id}/cancel` | Planned/InProgress → Cancelled | `delivery-routes:write` |
+
+### Stops — `/api/v1/routes/{routeId}/stops`
+
+| Method | Route | Description | Auth |
+|---|---|---|---|
+| `GET` | `/api/v1/routes/{routeId}/stops` | List stops for route | `delivery-stops:read` |
+| `POST` | `/api/v1/routes/{routeId}/stops` | Create stop (Planned/InProgress route only) | `delivery-stops:write` |
+| `PUT` | `/api/v1/routes/{routeId}/stops/{stopId}` | Update stop | `delivery-stops:write` |
+| `DELETE` | `/api/v1/routes/{routeId}/stops/{stopId}` | Delete stop (not after route completion) | `delivery-stops:delete` |
+| `POST` | `/api/v1/routes/{routeId}/stops/{stopId}/arrive` | Pending → InProgress | `delivery-stops:write` |
+| `POST` | `/api/v1/routes/{routeId}/stops/{stopId}/complete` | InProgress → Completed (auto-ships orders) | `delivery-stops:write` |
+| `POST` | `/api/v1/routes/{routeId}/stops/{stopId}/skip` | Pending/InProgress → Skipped | `delivery-stops:write` |
+
+### Shipments — `/api/v1/routes/{routeId}/stops/{stopId}/shipments`
+
+| Method | Route | Description | Auth |
+|---|---|---|---|
+| `GET` | `/api/v1/routes/{routeId}/stops/{stopId}/shipments` | List shipments for stop | `delivery-stops:read` |
+| `POST` | `/api/v1/routes/{routeId}/stops/{stopId}/shipments` | Assign sales order to stop | `delivery-stops:write` |
+| `DELETE` | `/api/v1/routes/{routeId}/stops/{stopId}/shipments/{shipmentId}` | Remove from stop | `delivery-stops:write` |
+
+### Geofences — `/api/v1/geofences`
+
+| Method | Route | Description | Auth |
+|---|---|---|---|
+| `GET` | `/api/v1/geofences` | List geofences | `geofences:read` |
+| `GET` | `/api/v1/geofences/{id}` | Get geofence detail | `geofences:read` |
+| `POST` | `/api/v1/geofences` | Create geofence | `geofences:write` |
+| `PUT` | `/api/v1/geofences/{id}` | Update geofence | `geofences:write` |
+| `DELETE` | `/api/v1/geofences/{id}` | Delete geofence | `geofences:delete` |
+| `POST` | `/api/v1/geofences/{stopId}/check` | Check stop against all active geofences | `geofences:read` |
+
+### Auto-ship behavior
+When a delivery stop is completed (`/complete`), the backend checks all shipments for that stop. If ALL shipments for a given sales order are completed across all stops, the sales order is automatically transitioned to `Shipped`. This uses `SaveChangesAsync` BEFORE checking — ensuring DB state is fresh.
+
+### Route map
+The route detail page shows a Leaflet map with:
+- Stop markers (from `stopMarkers` computed signal)
+- Geofence zone overlays (loaded in `load()` method, drawn on main map and stop popup)
+- Markers and overlays must be redrawn in `initMap` timeout (200ms) to handle race with Leaflet init

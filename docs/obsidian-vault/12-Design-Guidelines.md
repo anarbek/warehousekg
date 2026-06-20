@@ -27,6 +27,16 @@ All action icons use DevExtreme's built-in icon set. Never use raw Unicode symbo
 - **Complete**: `icon="check"`, `type="default"`, `text="Завершить"`
 - **Ship**: `icon="export"`, `type="default"`, `text="Отгрузить"`
 
+### Sidebar Navigation Icons
+
+Use DevExtreme TreeView with `icon` property on each item. **`dx-tree-view` renders icons automatically** — no extra attribute needed.
+
+**Verified DevExtreme icon names** (from `dx-icon-{name}` font):
+`home`, `product`, `hierarchy`, `import`, `export`, `edit`, `fields`, `preferences`, `info`, `user`, `group`, `chart`, `car`, `map`, `globe`, `cart`, `event`, `clock`, `filter`, `key`, `close`, `trash`, `check`, `add`, `save`, `search`, `menu`, `refresh`, `runner`, `tel`, `tip`, `plus`, `minus`, `more`, `overflow`, `columnfield`, `rowfield`, `fieldset`
+
+**Invalid icon names** (not in DevExtreme font — will render blank):
+`ruler`, `todolist`, `box`, `movetofolder`, `checklist`, `detailslayout`, `task`, `card`
+
 ### Common Patterns
 
 ```html
@@ -53,3 +63,127 @@ All action icons use DevExtreme's built-in icon set. Never use raw Unicode symbo
 - ❌ Raw Unicode: `✕`, `✎`, `✕ Отменить`
 - ❌ `icon="trash"` for cancel actions (trash = delete only)
 - ❌ Plain `<button>` with CSS classes for icon actions — use `<dx-button>` with DevExtreme icons
+- ❌ Invalid DevExtreme icon names like `ruler`, `task`, `checklist`, `box`, `todolist`, `detailslayout`, `movetofolder`
+
+---
+
+## Detail Page Layout
+
+Follow DevExtreme best practices for all detail/read-only pages. Reference implementation: `vehicle-detail`.
+
+### Header
+```html
+<dx-toolbar>
+  <dxi-item location="before">
+    <h1 class="page__title">{{ entity.name }}</h1>
+  </dxi-item>
+  <dxi-item location="after">
+    <dx-button text="Изменить" icon="edit" stylingMode="outlined" [routerLink]="['edit']"/>
+  </dxi-item>
+  <dxi-item location="after">
+    <dx-button text="Назад" icon="arrowleft" stylingMode="text" routerLink="/list"/>
+  </dxi-item>
+</dx-toolbar>
+```
+
+### Status row
+```html
+<div class="status-row">
+  <span class="status-badge status-badge--active">Активен</span>
+  <span class="type">Type · Category</span>
+</div>
+```
+
+### Tabs
+```html
+<dx-tabs [dataSource]="tabs" [selectedIndex]="activeTabIndex()" (onSelectionChanged)="onTabChange($event)"/>
+```
+```typescript
+protected readonly tabs = [
+  { id: 'info', text: 'Информация', icon: 'info' },
+  { id: 'history', text: 'История', icon: 'event' }
+];
+protected readonly activeTab = signal<'info' | 'history'>('info');
+```
+
+### Read-only forms (info tab)
+```html
+<div class="cards">
+  <div class="dx-card card">
+    <h3 class="dx-card__title">Section Title</h3>
+    <dx-form [formData]="entity" [colCount]="1" [readOnly]="true" [showColonAfterLabel]="false" labelLocation="top">
+      <dxi-item dataField="field1" [label]="{text:'Label'}" />
+      <dxi-item dataField="date" [label]="{text:'Date'}" [editorType]="'dxDateBox'" [editorOptions]="{displayFormat:'dd.MM.yyyy'}" />
+    </dx-form>
+  </div>
+</div>
+```
+- Use `colCount="1"` with `labelLocation="top"` for readable single-column layout.
+- Cards use CSS grid: `grid-template-columns: repeat(auto-fit, minmax(380px, 1fr))`
+
+### Data grids
+```html
+<dx-data-grid [dataSource]="..." [showBorders]="true" [hoverStateEnabled]="true" [columnAutoWidth]="true">
+  <!-- columns -->
+</dx-data-grid>
+```
+
+### Popups
+```html
+<dx-popup [(visible)]="popup" title="Title" [width]="520" [height]="'auto'">
+  <div *dxTemplate="let data of 'content'">
+    <dx-form [formData]="form" [colCount]="2">
+      <!-- form items -->
+    </dx-form>
+    <!-- MUST be INSIDE the content template -->
+    <div class="popup-actions">
+      <dx-button text="Сохранить" type="default" stylingMode="contained" (onClick)="save()"/>
+      <dx-button text="Отмена" stylingMode="text" (onClick)="close()"/>
+    </div>
+  </div>
+</dx-popup>
+```
+**⚠️ Critical**: Popup footer buttons must be inside `*dxTemplate="let data of 'content'"`. Placing `<dx-toolbar>` directly inside `<dx-popup>` (outside the template) will NOT render.
+
+### SCSS for popup-actions
+```scss
+.popup-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--dx-color-border, #ddd);
+}
+```
+
+---
+
+## TenantId / Multi-Tenancy
+
+### DbContext safety net
+`ApplyTenantId()` in `WarehouseKgDbContext` stamps `TenantId` on Added entities. **Always guard against `Guid.Empty`**:
+```csharp
+private void ApplyTenantId()
+{
+    var tenantId = CurrentTenantId;
+    if (tenantId == Guid.Empty) return; // silent no-op = invisible entities
+    // ... set TenantId on Added entities
+}
+```
+
+### Entity creation rule
+- All command handlers create entities **without** explicitly setting `TenantId`.
+- `ApplyTenantId()` stamps it automatically from `CurrentTenantId` at `SaveChangesAsync` time.
+- If `CurrentTenantId` is `Guid.Empty`, entities become invisible under the global query filter.
+- Fix: the guard above prevents the silent no-op.
+
+---
+
+## Map / Leaflet
+
+### Map-picker component (`shared/map-picker`)
+- Supports `mode="point"` and `mode="polygon"`
+- Inputs: `markers`, `geofenceOverlays`, `editable`, `height`
+- **Markers must be redrawn after map init**: the `initMap` 200ms timeout must call `drawMarkers()` if markers arrived before map ready
+- Same for `drawGeofenceOverlays()`
