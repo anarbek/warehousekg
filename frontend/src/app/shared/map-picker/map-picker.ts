@@ -136,6 +136,11 @@ export class MapPicker implements AfterViewInit, OnDestroy {
       if (overlays.length > 0) {
         this.drawGeofenceOverlays(overlays);
       }
+      // Draw any markers that were set while map was initializing
+      const m = this.markers();
+      if (m.length > 0) {
+        this.drawMarkers(m);
+      }
     }, 200);
   }
 

@@ -125,3 +125,32 @@ public class CancelSalesOrderCommandHandler : IRequestHandler<CancelSalesOrderCo
         return OperationResult.Success;
     }
 }
+
+public record DeleteSalesOrderCommand(Guid Id) : IRequest<OperationResult>;
+
+public class DeleteSalesOrderCommandHandler : IRequestHandler<DeleteSalesOrderCommand, OperationResult>
+{
+    private readonly IApplicationDbContext _context;
+
+    public DeleteSalesOrderCommandHandler(IApplicationDbContext context) => _context = context;
+
+    public async Task<OperationResult> Handle(DeleteSalesOrderCommand request, CancellationToken ct)
+    {
+        var order = await _context.SalesOrders
+            .Include(s => s.Lines)
+            .FirstOrDefaultAsync(s => s.Id == request.Id, ct);
+
+        if (order is null) return OperationResult.NotFound;
+
+        // Cannot delete if assigned to a delivery shipment
+        var isAssigned = await _context.DeliveryShipments
+            .AnyAsync(sh => sh.SalesOrderId == request.Id, ct);
+        if (isAssigned) return OperationResult.InvalidState;
+
+        _context.SalesOrderLines.RemoveRange(order.Lines);
+        _context.SalesOrders.Remove(order);
+        await _context.SaveChangesAsync(ct);
+
+        return OperationResult.Success;
+    }
+}

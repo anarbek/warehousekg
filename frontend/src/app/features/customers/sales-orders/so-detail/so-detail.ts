@@ -2,13 +2,13 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe, LowerCasePipe, DecimalPipe } from '@angular/common';
 import { forkJoin, Observable } from 'rxjs';
 import { DxDataGridModule, DxButtonModule, DxProgressBarModule } from 'devextreme-angular';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SalesOrder, SalesOrderStatus } from '../../models/customer-so.model';
 import { InventoryItem } from '../../../inventory/models/inventory-item.model';
 import { InventoryService } from '../../../inventory/services/inventory.service';
 import { CustomerSoService } from '../../services/customer-so.service';
 
-@Component({selector:'app-so-detail',imports:[DatePipe,LowerCasePipe,DecimalPipe,DxDataGridModule,DxButtonModule,DxProgressBarModule],templateUrl:'./so-detail.html',styleUrl:'./so-detail.scss'})
+@Component({selector:'app-so-detail',imports:[DatePipe,LowerCasePipe,DecimalPipe,DxDataGridModule,DxButtonModule,DxProgressBarModule,RouterLink],templateUrl:'./so-detail.html',styleUrl:'./so-detail.scss'})
 export class SoDetail implements OnInit {
   private readonly svc=inject(CustomerSoService);private readonly inv=inject(InventoryService);private readonly route=inject(ActivatedRoute);private readonly router=inject(Router);
   protected readonly id=this.route.snapshot.paramMap.get('id')!;protected readonly so=signal<SalesOrder|null>(null);

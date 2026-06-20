@@ -47,10 +47,10 @@
       <button class="btn btn--link btn--primary" (click)="completeRoute(cell.data.id)">✓ Завершить</button>
     }
     @if (canWrite() && canCancel(cell.data.status)) {
-      <button class="btn btn--link btn--warn" (click)="cancelRoute(cell.data.id)">✕ Отменить</button>
+      <dx-button icon="close" text="Отменить" stylingMode="text" (onClick)="cancelRoute(cell.data.id)"/>
     }
     @if (canDelete()) {
-      <button class="btn btn--link btn--danger" (click)="deleteRoute(cell.data.id)" i18n="@@common.delete">Удалить</button>
+      <dx-button icon="trash" hint="Delete" stylingMode="text" (onClick)="deleteRoute(cell.data.id)"/>
     }
   </div>
 </dx-data-grid>

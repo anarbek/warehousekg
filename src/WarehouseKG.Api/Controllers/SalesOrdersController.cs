@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WarehouseKG.Api.Authorization;
+using WarehouseKG.Application.Common;
 using WarehouseKG.Application.Features.SalesOrders.Commands;
 using WarehouseKG.Application.Features.SalesOrders.Dtos;
 using WarehouseKG.Application.Features.SalesOrders.Queries;
@@ -54,6 +55,41 @@ public class SalesOrdersController : ApiControllerBase
     {
         var id = await _sender.Send(command, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id }, id);
+    }
+
+    /// <summary>Updates a draft sales order.</summary>
+    [HttpPut("{id:guid}")]
+    [Authorize(Policy = "sales-orders:write")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateSalesOrderCommand command, CancellationToken cancellationToken)
+    {
+        if (id != command.Id) return BadRequest();
+        var result = await _sender.Send(command, cancellationToken);
+        return result switch
+        {
+            Application.Common.OperationResult.Success => NoContent(),
+            Application.Common.OperationResult.NotFound => NotFound(),
+            _ => Conflict()
+        };
+    }
+
+    /// <summary>Deletes a sales order that is not assigned to any delivery.</summary>
+    [HttpDelete("{id:guid}")]
+    [Authorize(Policy = "sales-orders:delete")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new DeleteSalesOrderCommand(id), cancellationToken);
+        return result switch
+        {
+            Application.Common.OperationResult.Success => NoContent(),
+            Application.Common.OperationResult.NotFound => NotFound(),
+            _ => Conflict()
+        };
     }
 
     /// <summary>Confirms a draft sales order.</summary>

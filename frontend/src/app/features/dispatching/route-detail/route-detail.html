@@ -26,7 +26,7 @@
           <button class="btn btn--primary" (click)="completeRoute()">✓ Завершить</button>
         }
         @if (canCancel()) {
-          <button class="btn btn--warn" (click)="cancelRoute()">✕ Отменить</button>
+          <dx-button icon="close" text="Отменить" stylingMode="outlined" type="danger" (onClick)="cancelRoute()"/>
         }
       </div>
     </div>
@@ -108,7 +108,7 @@
             </td>
             <td class="actions-cell">
               @if (canWriteStops()) {
-                <button class="btn btn--link" (click)="openStopPopup(stop)">✎</button>
+                <dx-button icon="edit" hint="Edit" stylingMode="text" (onClick)="openStopPopup(stop)"/>
                 @if (isEditable()) {
                   @if (canArrive(stop.status)) {
                     <button class="btn btn--link btn--success" (click)="arriveStop(stop.id)">▶</button>
@@ -119,7 +119,7 @@
                   @if (canSkip(stop.status)) {
                     <button class="btn btn--link btn--warn" (click)="skipStop(stop.id)">⏭</button>
                   }
-                  <button class="btn btn--link btn--danger" (click)="deleteStop(stop.id)">✕</button>
+                  <dx-button icon="trash" hint="Delete" stylingMode="text" (onClick)="deleteStop(stop.id)"/>
                 }
               }
               <button class="btn btn--link" (click)="openShipments(stop.id)">📦</button>
@@ -260,7 +260,7 @@
             <td>{{ sh.customerName }}</td>
             <td>{{ statusLabel(sh.status) }}</td>
             @if (isEditable()) {
-              <td><button class="btn btn--link btn--danger" (click)="removeShipment(sh.id)">✕</button></td>
+              <td><dx-button icon="trash" hint="Delete" stylingMode="text" (onClick)="removeShipment(sh.id)"/></td>
             }
           </tr>
         }

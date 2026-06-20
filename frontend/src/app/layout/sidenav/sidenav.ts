@@ -126,6 +126,14 @@ export class Sidenav implements OnInit {
     const item = e.itemData as NavItem;
     if (item?.path) {
       void this.router.navigate([item.path]);
+    } else if (item?.items && item.items.length > 0) {
+      // Toggle expand/collapse for parent items when clicking anywhere on the item
+      const isExpanded = e.node?.expanded;
+      if (isExpanded) {
+        e.component.collapseItem(e.itemData.id);
+      } else {
+        e.component.expandItem(e.itemData.id);
+      }
     }
   }
 }

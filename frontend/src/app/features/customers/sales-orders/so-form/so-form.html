@@ -1,6 +1,5 @@
 @if(ready()){
-@if(ready()){
-<div class="form-page"><div class="dx-card">@if(saving()){<dx-progress-bar [visible]="true"/>}<div class="form-page__header"><h2>Новый заказ клиента</h2></div><div class="form-page__content">@if(err()){<p class="form-page__error">{{err()}}</p>}
+<div class="form-page"><div class="dx-card">@if(saving()){<dx-progress-bar [visible]="true"/>}<div class="form-page__header"><h2>{{editId()?'Редактировать заказ клиента':'Новый заказ клиента'}}</h2></div><div class="form-page__content">@if(err()){<p class="form-page__error">{{err()}}</p>}
 <dx-form [formData]="formData" [colCount]="2" [items]="headerItems()"/>
 <form [formGroup]="form">
 <h3>Позиции</h3><div formArrayName="lines" class="form-lines">
@@ -10,5 +9,4 @@
 <dx-button text="+ Добавить позицию" icon="add" stylingMode="outlined" (onClick)="addLine()"/></div>
 <div class="form-actions"><dx-button text="Сохранить" type="default" stylingMode="contained" (onClick)="submit()"/><dx-button text="Отмена" stylingMode="outlined" (onClick)="cancel()"/></div>
 </form></div></div></div>
-}
 }

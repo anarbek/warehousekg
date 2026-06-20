@@ -18,7 +18,7 @@
           <dx-button i18n="@@stockOp.complete" text="Завершить" icon="check" type="default" stylingMode="contained" (onClick)="complete()" [disabled]="saving()" />
         }
         @if (canCancelAudit()) {
-          <dx-button i18n="@@stockOp.cancel" text="Отменить" icon="trash" type="danger" stylingMode="outlined" (onClick)="cancelOp()" [disabled]="saving()" />
+          <dx-button i18n="@@stockOp.cancel" text="Отменить" icon="close" type="danger" stylingMode="outlined" (onClick)="cancelOp()" [disabled]="saving()" />
         }
       }
       @if (canDelete() && canDeleteAudit()) {

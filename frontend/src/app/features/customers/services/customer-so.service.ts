@@ -17,7 +17,9 @@ export class CustomerSoService {
   getSalesOrders(): Observable<SalesOrderSummary[]> { return this.http.get<SalesOrderSummary[]>(this.soUrl); }
   getSalesOrderById(id: string): Observable<SalesOrder> { return this.http.get<SalesOrder>(`${this.soUrl}/${id}`); }
   createSalesOrder(r: CreateSalesOrderRequest): Observable<string> { return this.http.post<string>(this.soUrl, r); }
+  updateSalesOrder(id: string, r: CreateSalesOrderRequest): Observable<void> { return this.http.put<void>(`${this.soUrl}/${id}`, { ...r, id }); }
   confirmSO(id: string): Observable<void> { return this.http.post<void>(`${this.soUrl}/${id}/confirm`, {}); }
   shipSO(id: string): Observable<void> { return this.http.post<void>(`${this.soUrl}/${id}/ship`, {}); }
   cancelSO(id: string): Observable<void> { return this.http.post<void>(`${this.soUrl}/${id}/cancel`, {}); }
+  deleteSalesOrder(id: string): Observable<void> { return this.http.delete<void>(`${this.soUrl}/${id}`); }
 }

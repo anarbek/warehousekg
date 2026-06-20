@@ -7,7 +7,8 @@
     <h1 class="detail-page__title">Заказ клиента: {{s.number}}</h1><span class="detail-page__spacer"></span>
     @if(canTransition('Confirmed')){<dx-button text="Подтвердить" icon="check" type="default" stylingMode="contained" (onClick)="transition('confirm')" [disabled]="saving()"/>}
     @if(canTransition('Shipped')){<dx-button text="Отгрузить" icon="export" type="default" stylingMode="contained" (onClick)="transition('ship')" [disabled]="saving()"/>}
-    @if(canTransition('Cancelled')){<dx-button text="Отменить" icon="trash" type="danger" stylingMode="outlined" (onClick)="transition('cancel')" [disabled]="saving()"/>}
+    @if(canTransition('Cancelled')){<dx-button text="Отменить" icon="close" type="danger" stylingMode="outlined" (onClick)="transition('cancel')" [disabled]="saving()"/>}
+    @if(so()?.status === 'Draft'){<dx-button text="Редактировать" icon="edit" stylingMode="outlined" [routerLink]="['/customers/sales-orders', id, 'edit']"/>}
   </div>
   @if(saving()){<dx-progress-bar [visible]="true"/>}
   <div class="dx-card"><dl class="detail-list">

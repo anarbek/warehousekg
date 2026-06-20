@@ -26,10 +26,10 @@
   <div *dxTemplate="let cell of 'activeCell'">{{ cell.data.isActive ? 'Да' : 'Нет' }}</div>
   <div *dxTemplate="let cell of 'actionsCell'">
     @if (canWrite()) {
-      <button class="btn btn--link" (click)="openPopup(cell.data)">✎</button>
+      <dx-button icon="edit" hint="Edit" stylingMode="text" (onClick)="openPopup(cell.data)"/>
     }
     @if (canDelete()) {
-      <button class="btn btn--link btn--danger" (click)="delete(cell.data.id)">✕</button>
+      <dx-button icon="trash" hint="Delete" stylingMode="text" (onClick)="delete(cell.data.id)"/>
     }
   </div>
 </dx-data-grid>

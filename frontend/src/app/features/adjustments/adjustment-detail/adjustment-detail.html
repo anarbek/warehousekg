@@ -5,7 +5,7 @@
   <div class="detail-page__toolbar">
     <dx-button icon="arrowleft" stylingMode="text" (onClick)="goBack()"/>
     <h1 class="detail-page__title">Корректировка: {{a.number}}</h1><span class="detail-page__spacer"></span>
-    @if(isDraft()){<dx-button text="Завершить" icon="check" type="default" stylingMode="contained" (onClick)="complete()" [disabled]="saving()"/><dx-button text="Отменить" icon="trash" type="danger" stylingMode="outlined" (onClick)="cancel()" [disabled]="saving()"/>}
+    @if(isDraft()){<dx-button text="Завершить" icon="check" type="default" stylingMode="contained" (onClick)="complete()" [disabled]="saving()"/><dx-button text="Отменить" icon="close" type="danger" stylingMode="outlined" (onClick)="cancel()" [disabled]="saving()"/>}
   </div>
   @if(saving()){<dx-progress-bar [visible]="true"/>}
   <div class="dx-card"><dl class="detail-list">

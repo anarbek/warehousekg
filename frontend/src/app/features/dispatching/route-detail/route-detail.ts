@@ -96,6 +96,19 @@ export class RouteDetail implements OnInit {
       next: o => { this.unassignedOrders = o; },
       error: () => {}
     });
+    // Preload geofence overlays for the route map
+    this.svc.getGeofences().pipe(timeout(5000)).subscribe({
+      next: fences => {
+        this.geofenceOverlays.set(
+          fences.filter(f => f.isActive && f.vertices?.length >= 3).map(f => ({
+            name: f.name,
+            type: f.type,
+            vertices: f.vertices.map((v: any) => ({ lat: v.latitude ?? v.lat, lon: v.longitude ?? v.lon }))
+          }))
+        );
+      },
+      error: () => {}
+    });
   }
 
   protected statusLabel(s: string) {
