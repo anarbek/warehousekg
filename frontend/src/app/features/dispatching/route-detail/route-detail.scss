@@ -1,0 +1,92 @@
+:host { display: block; padding: 1rem; }
+.detail-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 1.5rem;
+}
+.info-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+.info-item {
+  label { display: block; font-size: 0.75rem; color: #666; text-transform: uppercase; }
+  span { font-size: 1rem; }
+  &.full-width { grid-column: 1 / -1; }
+}
+.stops-table {
+  width: 100%; border-collapse: collapse; margin-top: 0.5rem;
+  th, td { padding: 0.5rem; text-align: left; border-bottom: 1px solid #e0e0e0; }
+  th { background: #f5f5f5; font-weight: 600; }
+  tr.stop--completed { opacity: 0.6; }
+  tr.stop--skipped { opacity: 0.5; text-decoration: line-through; }
+}
+.actions-cell { white-space: nowrap; }
+.coords { font-size: 0.75rem; color: #999; margin-left: 0.25rem; }
+.regulated-warn { color: #e65100; font-size: 0.8rem; font-weight: 600; margin-right: 0.5rem; }
+
+.geofence-results { margin-top: 1rem; padding: 0.75rem; background: #fafafa; border-radius: 6px; }
+.geofence-result {
+  display: flex; justify-content: space-between; padding: 0.25rem 0;
+  &.ok { color: #2e7d32; }
+  &.warning { color: #e65100; }
+  &.danger { color: #c62828; font-weight: 600; }
+  &.outside { color: #999; }
+}
+.geofence-legend {
+  display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: #666;
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 0.25rem; vertical-align: middle; }
+}
+
+.shipments-table {
+  width: 100%; border-collapse: collapse;
+  th, td { padding: 0.4rem; border-bottom: 1px solid #e0e0e0; }
+}
+
+.status-badge {
+  padding: 2px 8px; border-radius: 10px; font-size: 0.8rem; font-weight: 600;
+  &.status--planned { background: #e3f2fd; color: #1565c0; }
+  &.status--active { background: #e8f5e9; color: #2e7d32; }
+  &.status--completed { background: #f3e5f5; color: #6a1b9a; }
+  &.status--cancelled { background: #fce4ec; color: #c62828; }
+}
+
+// ─── Print manifest ────────────────────────────────
+.print-title, .print-manifest { display: none; }
+@media print {
+  .print-manifest, .print-title { display: block; }
+}
+
+.btn--link { background: none; border: none; cursor: pointer; font-size: 0.85rem; margin-right: 0.25rem; }
+.btn--primary { background: #1976d2; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; cursor: pointer; margin-right: 0.5rem; }
+.btn--warn { background: #e65100; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; cursor: pointer; margin-right: 0.5rem; }
+.btn--danger { color: #c62828; }
+.btn--success { color: #2e7d32; }
+
+.form-field { margin-bottom: 0.75rem; label { display: block; font-size: 0.8rem; color: #555; margin-bottom: 0.25rem; } }
+.map-wrapper { margin: 0.25rem 0; border-radius: 8px; overflow: hidden; }
+.coords-display { font-size: 0.75rem; color: #888; text-align: center; }
+.form-actions { margin-top: 1rem; display: flex; justify-content: flex-end; gap: 0.5rem; }
+.btn--cancel { background: #e0e0e0; color: #333; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
+.btn--print { background: #fff; color: #333; border: 1px solid #ccc; padding: 0.4rem 0.8rem; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
+
+// ─── Print styles ──────────────────────────────
+@media print {
+  :host {
+    padding: 0 !important;
+  }
+  app-header, app-sidenav, .header-actions, .detail-header .status-badge,
+  .btn, .dx-button, button, a.btn, .btn--link, .btn--primary, .btn--warn, .btn--danger, .btn--print, .btn--cancel,
+  dx-popup, .geofence-legend, .actions-cell .btn--link,
+  dx-progress-bar, .form-actions {
+    display: none !important;
+  }
+  .stops-table {
+    border: 1px solid #000;
+    th, td { border: 1px solid #ccc; font-size: 11px; }
+  }
+  .info-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem;
+    margin-bottom: 1rem;
+  }
+  h2 { font-size: 16px; margin-bottom: 0.25rem; }
+  h3 { font-size: 14px; }
+}

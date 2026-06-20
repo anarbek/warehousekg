@@ -30,7 +30,8 @@ public class GetItemCategoriesQueryHandler
                 Code = c.Code,
                 Name = c.Name,
                 Description = c.Description,
-                IsActive = c.IsActive
+                IsActive = c.IsActive,
+                RequiresAgeVerification = c.RequiresAgeVerification
             })
             .ToListAsync(cancellationToken);
     }
@@ -61,7 +62,8 @@ public class GetItemCategoryByIdQueryHandler
                 Code = c.Code,
                 Name = c.Name,
                 Description = c.Description,
-                IsActive = c.IsActive
+                IsActive = c.IsActive,
+                RequiresAgeVerification = c.RequiresAgeVerification
             })
             .FirstOrDefaultAsync(cancellationToken);
     }

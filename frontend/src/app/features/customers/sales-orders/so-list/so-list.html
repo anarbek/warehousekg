@@ -1,11 +1,12 @@
 <div class="list-page"><div class="list-page__toolbar"><h1>Заказы клиентов</h1><dx-button text="Добавить" icon="add" type="default" stylingMode="contained" [routerLink]="['new']"/></div>
 @if(loading()){<dx-progress-bar [visible]="true"/>} @if(error()){<p class="list-page__error">{{error()}}</p>}
 <dx-data-grid [dataSource]="items()" [showBorders]="true" [hoverStateEnabled]="true" [showColumnLines]="true" [showRowLines]="true">
-    <dxi-column dataField="number" caption="Номер" [sortOrder]="'asc'"/><dxi-column dataField="customerName" caption="Клиент"/>
+    <dxi-column dataField="number" caption="Номер"/>
+    <dxi-column dataField="customerName" caption="Клиент"/>
     <dxi-column dataField="status" caption="Статус" [width]="120"/>
     <dxi-column dataField="currency" caption="Валюта" [width]="80"/>
     <dxi-column caption="Сотрудник" [width]="120" cellTemplate="empCell"/>
-    <dxi-column dataField="createdAt" caption="Дата" [width]="160" cellTemplate="dateCell"/>
+    <dxi-column dataField="createdAt" caption="Создан" [width]="160" cellTemplate="dateCell" [sortOrder]="'desc'" [sortIndex]="0"/>
     <dxi-column dataField="expectedDateUtc" caption="Ожидаемая дата" [width]="120" cellTemplate="dateCell2"/>
     <dxi-column dataField="totalAmount" caption="Сумма" [width]="120"/>
     <dxi-column caption="" [width]="100" cellTemplate="act"/>

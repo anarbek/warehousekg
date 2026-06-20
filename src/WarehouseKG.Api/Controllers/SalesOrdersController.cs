@@ -28,6 +28,13 @@ public class SalesOrdersController : ApiControllerBase
     public async Task<ActionResult<IReadOnlyList<SalesOrderSummaryDto>>> GetAll(CancellationToken cancellationToken)
         => Ok(await _sender.Send(new GetSalesOrdersQuery(), cancellationToken));
 
+    /// <summary>Returns confirmed sales orders not yet assigned to any delivery.</summary>
+    [HttpGet("unassigned")]
+    [Authorize(Policy = "sales-orders:read")]
+    [ProducesResponseType(typeof(IReadOnlyList<UnassignedSalesOrderDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<UnassignedSalesOrderDto>>> GetUnassigned(CancellationToken cancellationToken)
+        => Ok(await _sender.Send(new GetConfirmedUnassignedSalesOrdersQuery(), cancellationToken));
+
     /// <summary>Returns a single sales order by id.</summary>
     [HttpGet("{id:guid}")]
     [Authorize(Policy = "sales-orders:read")]

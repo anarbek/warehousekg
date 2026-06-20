@@ -1,0 +1,66 @@
+<h2 i18n="@@nav.dispatchingRoutes">Маршруты доставки</h2>
+
+@if (error()) {
+  <div class="error-banner">{{ error() }}</div>
+}
+
+<dx-data-grid
+  [dataSource]="items()"
+  [showBorders]="true"
+  [remoteOperations]="false"
+  [hoverStateEnabled]="true"
+  [rowAlternationEnabled]="true"
+  [columnAutoWidth]="true"
+  [allowColumnReordering]="true"
+  height="calc(100vh - 180px)"
+>
+  <dxo-search-panel [visible]="true" [placeholder]="'Поиск...'" [width]="300"></dxo-search-panel>
+  <dxo-paging [pageSize]="25"></dxo-paging>
+  <dxo-filter-row [visible]="true"></dxo-filter-row>
+  <dxo-selection mode="single"></dxo-selection>
+
+  <dxi-column dataField="code" [caption]="'Код'" [width]="100"></dxi-column>
+  <dxi-column dataField="date" dataType="date" [caption]="'Дата'" [width]="120"></dxi-column>
+  <dxi-column dataField="vehicleCode" [caption]="'Транспорт'" [width]="120"></dxi-column>
+  <dxi-column dataField="driverName" [caption]="'Водитель'" [width]="180"></dxi-column>
+  <dxi-column
+    dataField="status"
+    [caption]="'Статус'"
+    [width]="140"
+    cellTemplate="statusCell"
+  ></dxi-column>
+  <dxi-column dataField="stopCount" [caption]="'Остановок'" [width]="100" alignment="center"></dxi-column>
+  <dxi-column [caption]="'Действия'" [width]="280" cellTemplate="actionsCell" [allowFiltering]="false" [allowSorting]="false"></dxi-column>
+
+  <div *dxTemplate="let cell of 'statusCell'">
+    <span class="status-badge" [class]="'status-badge ' + statusClass(cell.data.status)">
+      {{ statusLabel(cell.data.status) }}
+    </span>
+  </div>
+
+  <div *dxTemplate="let cell of 'actionsCell'">
+    <a class="btn btn--link" [routerLink]="['/dispatching/routes', cell.data.id]" i18n="@@common.view">Просмотр</a>
+    @if (canWrite() && canStart(cell.data.status)) {
+      <button class="btn btn--link btn--success" (click)="startRoute(cell.data.id)">▶ Старт</button>
+    }
+    @if (canWrite() && canComplete(cell.data.status)) {
+      <button class="btn btn--link btn--primary" (click)="completeRoute(cell.data.id)">✓ Завершить</button>
+    }
+    @if (canWrite() && canCancel(cell.data.status)) {
+      <button class="btn btn--link btn--warn" (click)="cancelRoute(cell.data.id)">✕ Отменить</button>
+    }
+    @if (canDelete()) {
+      <button class="btn btn--link btn--danger" (click)="deleteRoute(cell.data.id)" i18n="@@common.delete">Удалить</button>
+    }
+  </div>
+</dx-data-grid>
+
+@if (canWrite()) {
+  <div class="toolbar">
+    <a class="btn btn--primary" [routerLink]="['/dispatching/routes/new']" i18n="@@route.createRoute">+ Новый маршрут</a>
+  </div>
+}
+
+@if (loading()) {
+  <dx-progress-bar [visible]="true"></dx-progress-bar>
+}

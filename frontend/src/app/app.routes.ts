@@ -68,6 +68,11 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/admin/admin.routes').then((m) => m.adminRoutes),
       },
+      {
+        path: 'dispatching',
+        loadChildren: () =>
+          import('./features/dispatching/dispatching.routes').then((m) => m.dispatchingRoutes),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

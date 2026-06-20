@@ -12,5 +12,11 @@ public class ItemCategory : BaseEntity
 
     public bool IsActive { get; set; } = true;
 
+    /// <summary>
+    /// Indicates that items in this category require age verification upon delivery
+    /// (e.g. alcohol, tobacco products).
+    /// </summary>
+    public bool RequiresAgeVerification { get; set; }
+
     public ICollection<InventoryItem> Items { get; set; } = new List<InventoryItem>();
 }

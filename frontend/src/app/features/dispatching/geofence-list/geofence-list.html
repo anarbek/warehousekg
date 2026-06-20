@@ -1,0 +1,98 @@
+<h2 i18n="@@nav.geofences">Геозоны</h2>
+
+@if (error()) {
+  <div class="error-banner">{{ error() }}</div>
+}
+
+<dx-data-grid
+  [dataSource]="items()"
+  [showBorders]="true"
+  [hoverStateEnabled]="true"
+  [rowAlternationEnabled]="true"
+  [columnAutoWidth]="true"
+>
+  <dxo-search-panel [visible]="true" [placeholder]="'Поиск...'" [width]="300"></dxo-search-panel>
+  <dxo-paging [pageSize]="25"></dxo-paging>
+
+  <dxi-column dataField="code" [caption]="'Код'" [width]="100"></dxi-column>
+  <dxi-column dataField="name" [caption]="'Название'"></dxi-column>
+  <dxi-column dataField="type" [caption]="'Тип'" [width]="140" cellTemplate="typeCell"></dxi-column>
+  <dxi-column [caption]="'Вершин'" [width]="100" alignment="center" cellTemplate="vertexCell"></dxi-column>
+  <dxi-column dataField="isActive" [caption]="'Активна'" [width]="100" cellTemplate="activeCell"></dxi-column>
+  <dxi-column [caption]="'Действия'" [width]="160" cellTemplate="actionsCell" [allowFiltering]="false"></dxi-column>
+
+  <div *dxTemplate="let cell of 'typeCell'">{{ typeLabel(cell.data.type) }}</div>
+  <div *dxTemplate="let cell of 'vertexCell'">{{ vertexCount(cell.data) }}</div>
+  <div *dxTemplate="let cell of 'activeCell'">{{ cell.data.isActive ? 'Да' : 'Нет' }}</div>
+  <div *dxTemplate="let cell of 'actionsCell'">
+    @if (canWrite()) {
+      <button class="btn btn--link" (click)="openPopup(cell.data)">✎</button>
+    }
+    @if (canDelete()) {
+      <button class="btn btn--link btn--danger" (click)="delete(cell.data.id)">✕</button>
+    }
+  </div>
+</dx-data-grid>
+
+@if (canWrite()) {
+  <div class="toolbar">
+    <button class="btn btn--primary" (click)="openPopup()">+ Новая геозона</button>
+  </div>
+}
+
+@if (loading()) {
+  <dx-progress-bar [visible]="true" [showStatus]="false"></dx-progress-bar>
+}
+
+<!-- Edit popup -->
+<dx-popup
+  [visible]="popup()"
+  [title]="editingId() ? 'Редактировать геозону' : 'Новая геозона'"
+  (onHiding)="closePopup()"
+  [width]="650"
+  [height]="'auto'"
+>
+  <div *dxTemplate="let data of 'content'">
+    <div class="form-field">
+      <label>Код *</label>
+      <dx-text-box [(value)]="form.code" [class.field--error]="errors().code"></dx-text-box>
+      @if (errors().code) { <span class="field-error">{{ errors().code }}</span> }
+    </div>
+    <div class="form-field">
+      <label>Название *</label>
+      <dx-text-box [(value)]="form.name" [class.field--error]="errors().name"></dx-text-box>
+      @if (errors().name) { <span class="field-error">{{ errors().name }}</span> }
+    </div>
+    <div class="form-field"><label>Тип</label><dx-select-box [items]="typeOptions" [(value)]="form.type" displayExpr="name" valueExpr="id"></dx-select-box></div>
+
+    <label style="display:block; margin:0.75rem 0 0.25rem; font-size:0.85rem; color:#555;">
+      Границы зоны (кликните 3+ точки на карте) *
+    </label>
+    <div class="map-wrapper" [class.map--error]="errors().vertices">
+      <app-map-picker
+        mode="polygon"
+        [centerLat]="42.8746"
+        [centerLon]="74.5698"
+        [editable]="true"
+        [vertices]="form.vertices"
+        (verticesChanged)="onVerticesChanged($event)"
+      ></app-map-picker>
+    </div>
+    @if (errors().vertices) { <span class="field-error">{{ errors().vertices }}</span> }
+
+    <div class="form-field">
+      <label style="display:flex; align-items:center; gap:0.5rem;">
+        <input type="checkbox" [(ngModel)]="form.isActive" /> Активна
+      </label>
+    </div>
+    <div class="coords-display">
+      {{ form.vertices.length }} вершин(ы)
+    </div>
+    <div class="form-actions">
+      <button class="btn btn--primary" (click)="save()" [disabled]="saving()">
+        {{ saving() ? 'Сохранение...' : 'Сохранить' }}
+      </button>
+      <button class="btn btn--cancel" (click)="closePopup()">Отмена</button>
+    </div>
+  </div>
+</dx-popup>

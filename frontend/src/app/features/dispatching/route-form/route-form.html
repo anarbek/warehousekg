@@ -1,0 +1,65 @@
+<h2>{{ editId ? (isEditable() ? 'Редактировать маршрут' : 'Просмотр маршрута') : 'Новый маршрут' }}</h2>
+
+@if (loading()) {
+  <dx-progress-bar [visible]="true"></dx-progress-bar>
+}
+
+<div class="form-grid">
+  <div class="form-field">
+    <label>Код</label>
+    <dx-text-box [(value)]="form().code" placeholder="R-2026-001" [readOnly]="!isEditable()"></dx-text-box>
+  </div>
+  <div class="form-field">
+    <label>Дата</label>
+    <dx-date-box [(value)]="form().date" [type]="'datetime'" [readOnly]="!isEditable()"></dx-date-box>
+  </div>
+  <div class="form-field">
+    <label>Транспорт</label>
+    <dx-select-box
+      [items]="vehicles()"
+      [(value)]="form().vehicleId"
+      valueExpr="id"
+      displayExpr="code"
+      placeholder="Выберите транспорт"
+      [searchEnabled]="true"
+      [readOnly]="!isEditable()"
+      (valueChange)="onVehicleChanged($event)"
+    >
+      <div *dxTemplate="let v of 'item'">
+        {{ v.code }} — {{ v.brand }} {{ v.model }} ({{ v.licensePlate }})
+      </div>
+    </dx-select-box>
+  </div>
+  <div class="form-field">
+    <label>Водитель</label>
+    @if (loadingDrivers()) {
+      <dx-progress-bar [visible]="true"></dx-progress-bar>
+    }
+    <dx-select-box
+      [items]="drivers()"
+      [(value)]="form().driverEmployeeId"
+      valueExpr="id"
+      displayExpr="lastName"
+      placeholder="{{ drivers().length ? 'Выберите водителя' : 'Нет назначенных водителей на эту дату' }}"
+      [searchEnabled]="true"
+      [readOnly]="!isEditable()"
+    >
+      <div *dxTemplate="let e of 'item'">
+        {{ e.lastName }} {{ e.firstName }} {{ e.middleName || '' }}
+      </div>
+    </dx-select-box>
+  </div>
+  <div class="form-field full-width">
+    <label>Примечания</label>
+    <dx-text-area [(value)]="form().notes" [height]="80" [readOnly]="!isEditable()"></dx-text-area>
+  </div>
+</div>
+
+<div class="form-actions">
+  @if (isEditable()) {
+    <button class="btn btn--primary" (click)="save()" [disabled]="saving()">
+      {{ saving() ? 'Сохранение...' : 'Сохранить' }}
+    </button>
+  }
+  <a class="btn btn--link" routerLink="/dispatching/routes">{{ isEditable() ? 'Отмена' : 'Назад' }}</a>
+</div>

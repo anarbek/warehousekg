@@ -96,6 +96,11 @@ public class WarehouseKgDbContext
     public DbSet<VehicleInspectionRecord> VehicleInspectionRecords => Set<VehicleInspectionRecord>();
     public DbSet<VehicleFuelRecord> VehicleFuelRecords => Set<VehicleFuelRecord>();
 
+    public DbSet<DeliveryRoute> DeliveryRoutes => Set<DeliveryRoute>();
+    public DbSet<DeliveryStop> DeliveryStops => Set<DeliveryStop>();
+    public DbSet<DeliveryShipment> DeliveryShipments => Set<DeliveryShipment>();
+    public DbSet<Geofence> Geofences => Set<Geofence>();
+
     public Guid CurrentTenantId => _tenantProvider.GetTenantId();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

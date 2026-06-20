@@ -11,4 +11,6 @@ public class ItemCategoryDto
     public string? Description { get; set; }
 
     public bool IsActive { get; set; }
+
+    public bool RequiresAgeVerification { get; set; }
 }

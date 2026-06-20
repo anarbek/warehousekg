@@ -2,6 +2,9 @@
 // DevExtreme theme
 @use 'devextreme/dist/css/dx.light.css';
 
+// Leaflet map styles (free OpenStreetMap)
+@use 'leaflet/dist/leaflet.css';
+
 html, body {
   height: 100%;
   margin: 0;
@@ -22,5 +25,146 @@ a:hover { text-decoration: underline; }
 // Override some DevExtreme defaults
 .dx-drawer-panel-content {
   padding: 0;
+}
+
+// ─── Print styles (optimized for A4) ────────────────
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm 12mm 12mm 12mm;
+  }
+
+  // Hide all chrome
+  app-toolbar, app-sidenav, .dx-drawer-panel,
+  .dx-license, .dx-toolbar, app-layout > aside,
+  button, .btn, a[routerlink], .header-actions,
+  .leaflet-container, .dx-popup-wrapper,
+  .dx-overlay, .dx-dropdownlist-popup,
+  .coords, .geofence-results, .geofence-legend {
+    display: none !important;
+  }
+
+  body, html {
+    background: white !important;
+    font-size: 9pt;
+    color: #000;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  // ── Manifest container ──────────────────────────
+  .route-detail {
+    padding: 0 !important;
+    margin: 0 !important;
+    position: static;
+    max-width: 186mm; // A4 width minus margins
+  }
+
+  // ── Print title banner ────────────────────────
+  .print-title {
+    display: block;
+    text-align: center;
+    border-bottom: 2pt solid #000;
+    padding-bottom: 4mm;
+    margin-bottom: 5mm;
+  }
+  .print-title__company { font-size: 12pt; font-weight: 700; letter-spacing: 2pt; text-transform: uppercase; }
+  .print-title__doc { font-size: 10pt; font-weight: 600; margin: 2mm 0; }
+  .print-title__date { font-size: 8pt; color: #555; }
+
+  // ── Header ─────────────────────────────────────
+  .detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1.5pt solid #000;
+    padding-bottom: 3mm;
+    margin-bottom: 4mm;
+    h2 { display: none; }
+    .status-badge {
+      border: 1px solid #555;
+      padding: 1px 6px;
+      font-size: 8pt;
+    }
+  }
+
+  // ── Info grid ──────────────────────────────────
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5mm;
+    margin-bottom: 4mm;
+    padding: 2.5mm;
+    border: 0.5pt solid #aaa;
+  }
+  .info-item {
+    label { font-weight: bold; font-size: 7.5pt; color: #555; text-transform: uppercase; }
+    span { font-size: 9pt; }
+  }
+
+  // ── Stops table ────────────────────────────────
+  .stops-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 5mm;
+    font-size: 8pt;
+    th, td {
+      border: 0.5pt solid #888;
+      padding: 1.5mm 2mm;
+      text-align: left;
+    }
+    th { background: #e8e8e8; font-weight: 600; font-size: 7.5pt; }
+    tr:nth-child(even) td { background: #fafafa; }
+    th:last-child, td:last-child { display: none; }
+    .status-badge {
+      border: 0.5pt solid #888;
+      padding: 0 4px;
+      font-size: 7.5pt;
+    }
+  }
+
+  // ── Print manifest (order detail) ──────────────
+  .print-manifest {
+    display: block;
+    page-break-before: always;
+
+    h3 {
+      font-size: 11pt;
+      border-bottom: 1pt solid #000;
+      padding-bottom: 1.5mm;
+      margin: 0 0 3mm;
+    }
+  }
+  .print-stop {
+    page-break-inside: avoid;
+    margin-bottom: 3mm;
+    h4 { font-size: 9pt; margin: 2mm 0 1mm; }
+  }
+  .print-shipments-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 3mm;
+    font-size: 8pt;
+    th, td {
+      border: 0.5pt solid #999;
+      padding: 1.2mm 2mm;
+      text-align: left;
+    }
+    th { background: #eee; font-size: 7.5pt; }
+  }
+
+  // ── Signature block ────────────────────────────
+  .print-signatures {
+    margin-top: 10mm;
+    border-top: 1pt solid #999;
+    padding-top: 4mm;
+  }
+  .sig-line {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6mm;
+    font-size: 9pt;
+    .sig-blank { flex: 1; }
+  }
 }
 

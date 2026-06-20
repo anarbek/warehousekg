@@ -42,6 +42,12 @@ public static class Resources
     public const string Inspections = "inspections";
     public const string FuelLogs = "fuel-logs";
 
+    // Dispatch resources
+    public const string DeliveryRoutes = "delivery-routes";
+    public const string DeliveryStops = "delivery-stops";
+    public const string DeliveryShipments = "delivery-shipments";
+    public const string Geofences = "geofences";
+
     public static readonly IReadOnlyList<string> All = new[]
     {
         Warehouses, InventoryItems, ItemCategories, UnitsOfMeasure,
@@ -50,6 +56,7 @@ public static class Resources
         Suppliers, PurchaseOrders, Customers, SalesOrders,
         Reports, Users, AddItemsBackInTime, ReceivingDelete,
         Employees, Positions, Departments, Shifts, Attendance,
-        Vehicles, VehicleTypes, Maintenance, Insurance, Inspections, FuelLogs
+        Vehicles, VehicleTypes, Maintenance, Insurance, Inspections, FuelLogs,
+        DeliveryRoutes, DeliveryStops, DeliveryShipments, Geofences
     };
 }

@@ -1,0 +1,288 @@
+<div class="route-detail">
+  @if (loading()) {
+    <dx-progress-bar [visible]="true"></dx-progress-bar>
+  }
+
+  @if (route(); as r) {
+    <!-- Print-only title -->
+    <div class="print-title">
+      <div class="print-title__company">WarehouseKG</div>
+      <div class="print-title__doc">МАРШРУТНЫЙ ЛИСТ № {{ r.code }}</div>
+      <div class="print-title__date">от {{ r.date | date:'dd.MM.yyyy' }}</div>
+    </div>
+
+    <div class="detail-header">
+      <div>
+        <h2>Маршрут {{ r.code }}</h2>
+        <span class="status-badge" [class]="'status-badge ' + statusClass(r.status)">{{ statusLabel(r.status) }}</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn--print" (click)="printManifest()">🖨 Печать</button>
+        <a class="btn btn--link" [routerLink]="['/dispatching/routes', r.id, 'edit']">{{ isEditable() ? 'Редактировать' : 'Просмотр' }}</a>
+        @if (canStart()) {
+          <button class="btn btn--primary" (click)="startRoute()">▶ Старт</button>
+        }
+        @if (canComplete()) {
+          <button class="btn btn--primary" (click)="completeRoute()">✓ Завершить</button>
+        }
+        @if (canCancel()) {
+          <button class="btn btn--warn" (click)="cancelRoute()">✕ Отменить</button>
+        }
+      </div>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-item">
+        <label i18n="@@route.date">Дата</label>
+        <span>{{ r.date | date:'mediumDate' }}</span>
+      </div>
+      <div class="info-item">
+        <label i18n="@@route.vehicle">Транспорт</label>
+        <span>{{ r.vehicleCode || '—' }}</span>
+      </div>
+      <div class="info-item">
+        <label i18n="@@route.driver">Водитель</label>
+        <span>{{ r.driverName || '—' }}</span>
+      </div>
+      <div class="info-item">
+        <label i18n="@@route.stops">Остановок</label>
+        <span>{{ r.stopCount }}</span>
+      </div>
+      @if (r.notes) {
+        <div class="info-item full-width">
+          <label i18n="@@common.notes">Примечания</label>
+          <span>{{ r.notes }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- Route map with all stops -->
+    @if (stopMarkers().length > 0) {
+      <app-map-picker
+        [centerLat]="stopMarkers()[0].lat"
+        [centerLon]="stopMarkers()[0].lon"
+        mode="point"
+        [editable]="false"
+        [geofenceOverlays]="geofenceOverlays()"
+        [markers]="stopMarkers()"
+        [height]="350"
+      ></app-map-picker>
+    }
+
+    <!-- Stops -->
+    <h3 i18n="@@route.stops">Остановки</h3>
+    @if (canWriteStops() && isEditable()) {
+      <button class="btn btn--primary" (click)="openStopPopup()">+ Добавить остановку</button>
+    }
+
+    <table class="stops-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Клиент</th>
+          <th>Адрес</th>
+          <th>План</th>
+          <th>Факт</th>
+          <th>Статус</th>
+          <th>Товары</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (stop of r.stops; track stop.id) {
+          <tr [class.stop--completed]="stop.status === 'Completed'" [class.stop--skipped]="stop.status === 'Skipped'">
+            <td>{{ stop.sequenceNumber }}</td>
+            <td>{{ stop.customerName || '—' }}</td>
+            <td>
+              {{ stop.address }}
+              @if (stop.latitude && stop.longitude) {
+                <span class="coords">({{ stop.latitude.toFixed(4) }}, {{ stop.longitude.toFixed(4) }})</span>
+              }
+            </td>
+            <td>{{ (stop.plannedArrivalUtc | date:'shortTime') || '—' }}</td>
+            <td>{{ (stop.actualArrivalUtc | date:'shortTime') || '—' }}</td>
+            <td><span class="status-badge" [class]="'status-badge ' + statusClass(stop.status)">{{ statusLabel(stop.status) }}</span></td>
+            <td>
+              @if (stop.hasRegulatedGoods) { <span class="regulated-warn">⚠ Проверка возраста</span> }
+              <span>{{ stop.shipmentCount }} заказов</span>
+            </td>
+            <td class="actions-cell">
+              @if (canWriteStops()) {
+                <button class="btn btn--link" (click)="openStopPopup(stop)">✎</button>
+                @if (isEditable()) {
+                  @if (canArrive(stop.status)) {
+                    <button class="btn btn--link btn--success" (click)="arriveStop(stop.id)">▶</button>
+                  }
+                  @if (canCompleteStop(stop.status)) {
+                    <button class="btn btn--link btn--primary" (click)="completeStop(stop.id)">✓</button>
+                  }
+                  @if (canSkip(stop.status)) {
+                    <button class="btn btn--link btn--warn" (click)="skipStop(stop.id)">⏭</button>
+                  }
+                  <button class="btn btn--link btn--danger" (click)="deleteStop(stop.id)">✕</button>
+                }
+              }
+              <button class="btn btn--link" (click)="openShipments(stop.id)">📦</button>
+              @if (stop.latitude && stop.longitude) {
+                <button class="btn btn--link" (click)="checkGeofence(stop.id)">📍</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <!-- Geofence check results -->
+    @if (geofenceResults().length > 0) {
+      <div class="geofence-results">
+        <h4>Результаты проверки геозон</h4>
+        @for (r of geofenceResults(); track r.geofenceId) {
+          <div class="geofence-result" [class]="geofenceResultClass(r)">
+            <span class="geofence-type">{{ typeLabel(r.type) }}: {{ r.name }}</span>
+            <span>{{ geofenceResultText(r) }}</span>
+          </div>
+        }
+      </div>
+    }
+    @if (geofenceOverlays().length > 0) {
+      <div class="geofence-legend">
+        <span class="legend-item"><span class="dot" style="background:#4caf50"></span> Склад</span>
+        <span class="legend-item"><span class="dot" style="background:#2196f3"></span> Зона доставки</span>
+        <span class="legend-item"><span class="dot" style="background:#ff9800;border:1px dashed #ff9800"></span> Ограниченная</span>
+        <span class="legend-item"><span class="dot" style="background:#f44336;border:1px dashed #f44336"></span> Запрещённая</span>
+      </div>
+    }
+    <!-- Print-only manifest with shipment details -->
+    <div class="print-manifest">
+      <h3>Детализация заказов</h3>
+      @for (stop of r.stops; track stop.id) {
+        @if (stop.shipments && stop.shipments.length > 0) {
+          <div class="print-stop">
+            <h4>Остановка {{ stop.sequenceNumber }} — {{ stop.customerName || stop.address }}</h4>
+            <table class="print-shipments-table">
+              <thead><tr><th>Заказ</th><th>Клиент</th><th>Статус</th></tr></thead>
+              <tbody>
+                @for (sh of stop.shipments; track sh.id) {
+                  <tr>
+                    <td>{{ sh.salesOrderNumber }}</td>
+                    <td>{{ sh.customerName }}</td>
+                    <td>{{ statusLabel(sh.status) }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      }
+      <!-- Signature block -->
+      <div class="print-signatures">
+        <div class="sig-line"><span>Водитель:</span><span class="sig-blank"></span><span>_________________</span></div>
+        <div class="sig-line"><span>Диспетчер:</span><span class="sig-blank"></span><span>_________________</span></div>
+        <div class="sig-line"><span>Дата:</span><span class="sig-blank"></span><span>___/___/_______</span></div>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Stop edit popup -->
+<dx-popup
+  [visible]="stopPopup()"
+  [title]="editingStopId() ? 'Редактировать остановку' : 'Новая остановка'"
+  (onHiding)="closeStopPopup()"
+  [width]="650"
+  [height]="'auto'"
+>
+  <div *dxTemplate="let data of 'content'">
+    <div class="form-field"><label>Номер</label><dx-number-box [(value)]="stopForm.sequenceNumber" [min]="1" [readOnly]="!isEditable()"></dx-number-box></div>
+    <div class="form-field">
+      <label>Клиент</label>
+      <dx-select-box
+        [items]="customers()"
+        [(value)]="stopForm.customerId"
+        valueExpr="id"
+        displayExpr="name"
+        placeholder="Выберите клиента"
+        [searchEnabled]="true"
+        [readOnly]="!isEditable()"
+      ></dx-select-box>
+    </div>
+    <div class="form-field"><label>Адрес</label><dx-text-box [(value)]="stopForm.address" [readOnly]="!isEditable()"></dx-text-box></div>
+
+    <label style="display:block; margin:0.75rem 0 0.25rem; font-size:0.85rem; color:#555;">Место на карте</label>
+    <div class="map-wrapper">
+      <app-map-picker
+        [centerLat]="stopForm.latitude ?? 42.8746"
+        [centerLon]="stopForm.longitude ?? 74.5698"
+        mode="point"
+        [editable]="isEditable()"
+        [geofenceOverlays]="geofenceOverlays()"
+        (centerChanged)="onStopMapChanged($event)"
+      ></app-map-picker>
+    </div>
+    <div class="coords-display" style="margin-bottom:0.5rem;">
+      {{ (stopForm.latitude ?? 42.8746).toFixed(5) }}, {{ (stopForm.longitude ?? 74.5698).toFixed(5) }}
+    </div>
+
+    <div class="form-field"><label>План. прибытие</label><dx-date-box [(value)]="stopForm.plannedArrivalUtc" [type]="'datetime'" [readOnly]="!isEditable()"></dx-date-box></div>
+    <div class="form-field"><label>План. отправление</label><dx-date-box [(value)]="stopForm.plannedDepartureUtc" [type]="'datetime'" [readOnly]="!isEditable()"></dx-date-box></div>
+    <div class="form-field"><label>Примечания</label><dx-text-area [(value)]="stopForm.notes" [readOnly]="!isEditable()"></dx-text-area></div>
+    @if (isEditable()) {
+      <div class="form-actions">
+        <button class="btn btn--primary" (click)="saveStop()">Сохранить</button>
+        <button class="btn btn--cancel" (click)="closeStopPopup()">Отмена</button>
+      </div>
+    } @else {
+      <div class="form-actions">
+        <button class="btn btn--cancel" (click)="closeStopPopup()">Закрыть</button>
+      </div>
+    }
+  </div>
+</dx-popup>
+
+<!-- Shipment popup -->
+<dx-popup
+  [visible]="shipmentPopup()"
+  title="Заказы на остановке"
+  (onHiding)="closeShipments()"
+  [width]="600"
+  [height]="'auto'"
+>
+  <div *dxTemplate="let data of 'content'">
+    @if (loadingShipments()) {
+      <dx-progress-bar [visible]="true"></dx-progress-bar>
+    }
+    <table class="shipments-table">
+      <thead><tr><th>Номер заказа</th><th>Клиент</th><th>Статус</th>@if (isEditable()) {<th></th>}</tr></thead>
+      <tbody>
+        @for (sh of currentShipments(); track sh.id) {
+          <tr>
+            <td>{{ sh.salesOrderNumber }}</td>
+            <td>{{ sh.customerName }}</td>
+            <td>{{ statusLabel(sh.status) }}</td>
+            @if (isEditable()) {
+              <td><button class="btn btn--link btn--danger" (click)="removeShipment(sh.id)">✕</button></td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+    @if (isEditable()) {
+      <div class="form-field" style="margin-top: 1rem;">
+        <label>Добавить заказ</label>
+        <dx-select-box
+          [items]="unassignedOrders"
+          [(value)]="shipmentForm.salesOrderId"
+          valueExpr="id"
+          displayExpr="number"
+          placeholder="Выберите подтверждённый заказ"
+          [searchEnabled]="true"
+        >
+          <div *dxTemplate="let so of 'item'">
+            {{ so.number }} — {{ so.customerName }} ({{ so.lineCount }} поз., {{ so.totalAmount | number:'1.0-0' }})
+          </div>
+        </dx-select-box>
+        <button class="btn btn--primary" [disabled]="!shipmentForm.salesOrderId" (click)="assignShipment()" style="margin-top: 0.5rem;">Назначить</button>
+      </div>
+    }
+  </div>
+</dx-popup>

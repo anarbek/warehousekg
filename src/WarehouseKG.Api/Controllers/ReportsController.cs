@@ -96,4 +96,15 @@ public class ReportsController : ApiControllerBase
         var result = await _sender.Send(new BackfillInitialStockCommand(warehouseId), cancellationToken);
         return Ok(new { itemsBackfilled = result });
     }
+
+    /// <summary>Returns a printable delivery manifest for a route with stops, shipments and items.</summary>
+    [HttpGet("delivery-manifest/{routeId:guid}")]
+    [Authorize(Policy = "reports:read")]
+    [ProducesResponseType(typeof(DeliveryManifestDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<DeliveryManifestDto>> GetDeliveryManifest(Guid routeId, CancellationToken ct)
+    {
+        var r = await _sender.Send(new GetDeliveryManifestQuery(routeId), ct);
+        return r is null ? NotFound() : Ok(r);
+    }
 }

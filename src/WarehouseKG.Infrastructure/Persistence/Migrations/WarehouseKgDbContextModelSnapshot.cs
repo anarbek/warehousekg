@@ -241,6 +241,181 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.ToTable("customers", (string)null);
                 });
 
+            modelBuilder.Entity("WarehouseKG.Domain.Entities.DeliveryRoute", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("DriverEmployeeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("VehicleId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DriverEmployeeId");
+
+                    b.HasIndex("VehicleId");
+
+                    b.HasIndex("TenantId", "Code")
+                        .IsUnique();
+
+                    b.HasIndex("TenantId", "Date");
+
+                    b.ToTable("delivery_routes", (string)null);
+                });
+
+            modelBuilder.Entity("WarehouseKG.Domain.Entities.DeliveryShipment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("DeliveryStopId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SalesOrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeliveryStopId");
+
+                    b.HasIndex("SalesOrderId")
+                        .IsUnique();
+
+                    b.ToTable("delivery_shipments", (string)null);
+                });
+
+            modelBuilder.Entity("WarehouseKG.Domain.Entities.DeliveryStop", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ActualArrivalUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ActualDepartureUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("CustomerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("HasRegulatedGoods")
+                        .HasColumnType("boolean");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)");
+
+                    b.Property<DateTime?>("PlannedArrivalUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("PlannedDepartureUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("RouteId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("SequenceNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("RouteId", "SequenceNumber")
+                        .IsUnique();
+
+                    b.ToTable("delivery_stops", (string)null);
+                });
+
             modelBuilder.Entity("WarehouseKG.Domain.Entities.Department", b =>
                 {
                     b.Property<Guid>("Id")
@@ -455,6 +630,53 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.ToTable("employee_warehouse_assignments", (string)null);
                 });
 
+            modelBuilder.Entity("WarehouseKG.Domain.Entities.Geofence", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "Code")
+                        .IsUnique();
+
+                    b.ToTable("geofences", (string)null);
+                });
+
             modelBuilder.Entity("WarehouseKG.Domain.Entities.InventoryItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -551,6 +773,9 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
+
+                    b.Property<bool>("RequiresAgeVerification")
+                        .HasColumnType("boolean");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
@@ -2419,6 +2644,60 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Navigation("Shift");
                 });
 
+            modelBuilder.Entity("WarehouseKG.Domain.Entities.DeliveryRoute", b =>
+                {
+                    b.HasOne("WarehouseKG.Domain.Entities.Employee", "DriverEmployee")
+                        .WithMany()
+                        .HasForeignKey("DriverEmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("WarehouseKG.Domain.Entities.Vehicle", "Vehicle")
+                        .WithMany()
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("DriverEmployee");
+
+                    b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("WarehouseKG.Domain.Entities.DeliveryShipment", b =>
+                {
+                    b.HasOne("WarehouseKG.Domain.Entities.DeliveryStop", "DeliveryStop")
+                        .WithMany("Shipments")
+                        .HasForeignKey("DeliveryStopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WarehouseKG.Domain.Entities.SalesOrder", "SalesOrder")
+                        .WithMany()
+                        .HasForeignKey("SalesOrderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("DeliveryStop");
+
+                    b.Navigation("SalesOrder");
+                });
+
+            modelBuilder.Entity("WarehouseKG.Domain.Entities.DeliveryStop", b =>
+                {
+                    b.HasOne("WarehouseKG.Domain.Entities.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("WarehouseKG.Domain.Entities.DeliveryRoute", "Route")
+                        .WithMany("Stops")
+                        .HasForeignKey("RouteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Route");
+                });
+
             modelBuilder.Entity("WarehouseKG.Domain.Entities.Employee", b =>
                 {
                     b.HasOne("WarehouseKG.Domain.Entities.Department", "Department")
@@ -2472,6 +2751,32 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Navigation("Employee");
 
                     b.Navigation("Warehouse");
+                });
+
+            modelBuilder.Entity("WarehouseKG.Domain.Entities.Geofence", b =>
+                {
+                    b.OwnsMany("WarehouseKG.Domain.Common.GeoPoint", "Vertices", b1 =>
+                        {
+                            b1.Property<Guid>("GeofenceId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAdd();
+
+                            b1.Property<double>("Latitude");
+
+                            b1.Property<double>("Longitude");
+
+                            b1.HasKey("GeofenceId", "__synthesizedOrdinal");
+
+                            b1.ToTable("geofences");
+
+                            b1.ToJson("Vertices");
+
+                            b1.WithOwner()
+                                .HasForeignKey("GeofenceId");
+                        });
+
+                    b.Navigation("Vertices");
                 });
 
             modelBuilder.Entity("WarehouseKG.Domain.Entities.InventoryItem", b =>
@@ -2919,6 +3224,16 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("WarehouseKG.Domain.Entities.Customer", b =>
                 {
                     b.Navigation("SalesOrders");
+                });
+
+            modelBuilder.Entity("WarehouseKG.Domain.Entities.DeliveryRoute", b =>
+                {
+                    b.Navigation("Stops");
+                });
+
+            modelBuilder.Entity("WarehouseKG.Domain.Entities.DeliveryStop", b =>
+                {
+                    b.Navigation("Shipments");
                 });
 
             modelBuilder.Entity("WarehouseKG.Domain.Entities.Department", b =>

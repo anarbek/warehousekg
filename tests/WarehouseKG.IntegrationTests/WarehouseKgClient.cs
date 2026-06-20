@@ -308,6 +308,153 @@ public class WarehouseKgClient
         return await response.Content.ReadFromJsonAsync<JsonElement>();
     }
 
+    // ─── Dispatcher: Routes ────────────────────────────────────────────
+
+    public async Task<string> CreateRouteAsync(object body)
+    {
+        var response = await _http.PostAsJsonAsync("/api/v1/routes", body);
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    public async Task<JsonElement> GetRoutesAsync()
+    {
+        var response = await _http.GetAsync("/api/v1/routes");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
+    public async Task<JsonElement> GetRouteDetailAsync(string id)
+    {
+        var response = await _http.GetAsync($"/api/v1/routes/{id}/detail");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
+    public async Task StartRouteAsync(string id)
+    {
+        var response = await _http.PostAsync($"/api/v1/routes/{id}/start", null);
+        await EnsureSuccessAsync(response);
+    }
+
+    public async Task CompleteRouteAsync(string id)
+    {
+        var response = await _http.PostAsync($"/api/v1/routes/{id}/complete", null);
+        await EnsureSuccessAsync(response);
+    }
+
+    public async Task CancelRouteAsync(string id)
+    {
+        var response = await _http.PostAsync($"/api/v1/routes/{id}/cancel", null);
+        await EnsureSuccessAsync(response);
+    }
+
+    public async Task DeleteRouteAsync(string id)
+    {
+        var response = await _http.DeleteAsync($"/api/v1/routes/{id}");
+        await EnsureSuccessAsync(response);
+    }
+
+    // ─── Dispatcher: Stops ─────────────────────────────────────────────
+
+    public async Task<string> CreateStopAsync(string routeId, object body)
+    {
+        var response = await _http.PostAsJsonAsync($"/api/v1/routes/{routeId}/stops", body);
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    public async Task ArriveAtStopAsync(string routeId, string stopId)
+    {
+        var response = await _http.PostAsync($"/api/v1/routes/{routeId}/stops/{stopId}/arrive", null);
+        await EnsureSuccessAsync(response);
+    }
+
+    public async Task CompleteStopAsync(string routeId, string stopId)
+    {
+        var response = await _http.PostAsync($"/api/v1/routes/{routeId}/stops/{stopId}/complete", null);
+        await EnsureSuccessAsync(response);
+    }
+
+    public async Task SkipStopAsync(string routeId, string stopId)
+    {
+        var response = await _http.PostAsync($"/api/v1/routes/{routeId}/stops/{stopId}/skip", null);
+        await EnsureSuccessAsync(response);
+    }
+
+    // ─── Dispatcher: Shipments ─────────────────────────────────────────
+
+    public async Task AssignShipmentAsync(string stopId, Guid salesOrderId)
+    {
+        var response = await _http.PostAsJsonAsync($"/api/v1/routes/_/stops/{stopId}/shipments",
+            new { salesOrderId });
+        await EnsureSuccessAsync(response);
+    }
+
+    public async Task RemoveShipmentAsync(string shipmentId)
+    {
+        var response = await _http.DeleteAsync($"/api/v1/routes/_/stops/_/shipments/{shipmentId}");
+        await EnsureSuccessAsync(response);
+    }
+
+    // ─── Dispatcher: Geofences ─────────────────────────────────────────
+
+    public async Task<string> CreateGeofenceAsync(object body)
+    {
+        var response = await _http.PostAsJsonAsync("/api/v1/geofences", body);
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    public async Task<JsonElement> GetGeofencesAsync()
+    {
+        var response = await _http.GetAsync("/api/v1/geofences");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
+    public async Task<JsonElement> CheckStopGeofencesAsync(string stopId)
+    {
+        var response = await _http.GetAsync($"/api/v1/geofences/check/{stopId}");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
+    public async Task DeleteGeofenceAsync(string id)
+    {
+        var response = await _http.DeleteAsync($"/api/v1/geofences/{id}");
+        await EnsureSuccessAsync(response);
+    }
+
+    // ─── Helpers (continuation) ─────────────────────────────────────────
+
+    // ─── Vehicles ─────────────────────────────────────────────────────
+
+    public async Task<string> CreateVehicleTypeAsync(object body)
+    {
+        var response = await _http.PostAsJsonAsync("/api/v1/vehicle-types", body);
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    public async Task<string> CreateVehicleAsync(object body)
+    {
+        var response = await _http.PostAsJsonAsync("/api/v1/vehicles", body);
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    // ─── Employees ────────────────────────────────────────────────────
+
+    public async Task<string> CreateEmployeeAsync(object body)
+    {
+        var response = await _http.PostAsJsonAsync("/api/v1/employees", body);
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    // ─── Internal helpers ─────────────────────────────────────────────
+
     private static async Task EnsureSuccessAsync(HttpResponseMessage response)
     {
         if (!response.IsSuccessStatusCode)

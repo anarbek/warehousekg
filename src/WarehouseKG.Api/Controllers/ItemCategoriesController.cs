@@ -58,7 +58,7 @@ public class ItemCategoriesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(Guid id, UpdateItemCategoryRequest request, CancellationToken cancellationToken)
     {
-        var command = new UpdateItemCategoryCommand(id, request.Code, request.Name, request.Description, request.IsActive);
+        var command = new UpdateItemCategoryCommand(id, request.Code, request.Name, request.Description, request.IsActive, request.RequiresAgeVerification);
         var updated = await _sender.Send(command, cancellationToken);
         return updated ? NoContent() : NotFound();
     }
@@ -80,4 +80,5 @@ public record UpdateItemCategoryRequest(
     string Code,
     string Name,
     string? Description,
-    bool IsActive);
+    bool IsActive,
+    bool RequiresAgeVerification);

@@ -7,7 +7,8 @@ namespace WarehouseKG.Application.Features.ItemCategories.Commands;
 public record CreateItemCategoryCommand(
     string Code,
     string Name,
-    string? Description = null) : IRequest<Guid>;
+    string? Description = null,
+    bool RequiresAgeVerification = false) : IRequest<Guid>;
 
 public class CreateItemCategoryCommandHandler : IRequestHandler<CreateItemCategoryCommand, Guid>
 {
@@ -25,7 +26,8 @@ public class CreateItemCategoryCommandHandler : IRequestHandler<CreateItemCatego
             Id = Guid.NewGuid(),
             Code = request.Code,
             Name = request.Name,
-            Description = request.Description
+            Description = request.Description,
+            RequiresAgeVerification = request.RequiresAgeVerification
         };
 
         _context.ItemCategories.Add(category);
@@ -40,7 +42,8 @@ public record UpdateItemCategoryCommand(
     string Code,
     string Name,
     string? Description,
-    bool IsActive) : IRequest<bool>;
+    bool IsActive,
+    bool RequiresAgeVerification) : IRequest<bool>;
 
 public class UpdateItemCategoryCommandHandler : IRequestHandler<UpdateItemCategoryCommand, bool>
 {
@@ -63,6 +66,7 @@ public class UpdateItemCategoryCommandHandler : IRequestHandler<UpdateItemCatego
         category.Name = request.Name;
         category.Description = request.Description;
         category.IsActive = request.IsActive;
+        category.RequiresAgeVerification = request.RequiresAgeVerification;
 
         await _context.SaveChangesAsync(cancellationToken);
         return true;

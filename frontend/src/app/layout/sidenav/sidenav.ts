@@ -77,6 +77,14 @@ export class Sidenav implements OnInit {
         { id: 'inspections', text: $localize`:@@nav.inspections:Техосмотр`, path: '/vehicles/inspections', resource: 'inspections' },
       ],
     },
+    {
+      id: 'dispatching-group', icon: 'map',
+      text: $localize`:@@nav.groups.dispatching:Диспетчерская`,
+      items: [
+        { id: 'disp-routes', text: $localize`:@@nav.dispatchingRoutes:Маршруты`, path: '/dispatching/routes', resource: 'delivery-routes' },
+        { id: 'disp-geofences', text: $localize`:@@nav.geofences:Геозоны`, path: '/dispatching/geofences', resource: 'geofences' },
+      ],
+    },
     { id: 'reports', icon: 'chart', text: $localize`:@@nav.reports:Отчёты`, path: '/reports', resource: 'reports' },
     { id: 'admin', icon: 'key', text: $localize`:@@nav.admin:Администрирование`, path: '/admin', resource: 'users' },
   ];

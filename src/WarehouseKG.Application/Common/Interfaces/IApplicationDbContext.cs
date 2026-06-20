@@ -68,5 +68,10 @@ public interface IApplicationDbContext
     DbSet<VehicleInspectionRecord> VehicleInspectionRecords { get; }
     DbSet<VehicleFuelRecord> VehicleFuelRecords { get; }
 
+    DbSet<DeliveryRoute> DeliveryRoutes { get; }
+    DbSet<DeliveryStop> DeliveryStops { get; }
+    DbSet<DeliveryShipment> DeliveryShipments { get; }
+    DbSet<Geofence> Geofences { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
