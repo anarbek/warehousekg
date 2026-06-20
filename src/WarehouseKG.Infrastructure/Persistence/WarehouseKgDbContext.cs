@@ -161,6 +161,11 @@ public class WarehouseKgDbContext
     {
         var tenantId = CurrentTenantId;
 
+        // If no tenant is resolved, skip — setting TenantId=Guid.Empty would make
+        // entities invisible under the global query filter. The tenant must be
+        // determinable for any write operation.
+        if (tenantId == Guid.Empty) return;
+
         foreach (var entry in ChangeTracker.Entries<BaseEntity>())
         {
             if (entry.State == EntityState.Added && entry.Entity.TenantId == Guid.Empty)

@@ -1,7 +1,7 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { DxDataGridModule, DxButtonModule, DxProgressBarModule, DxPopupModule, DxSelectBoxModule, DxDateBoxModule, DxNumberBoxModule, DxTextBoxModule, DxTextAreaModule } from 'devextreme-angular';
+import { DxDataGridModule, DxButtonModule, DxProgressBarModule, DxPopupModule, DxSelectBoxModule, DxDateBoxModule, DxNumberBoxModule, DxTextBoxModule, DxTextAreaModule, DxTabsModule, DxFormModule, DxToolbarModule } from 'devextreme-angular';
 import { VehiclesService } from '../services/vehicles.service';
 import { PersonnelService } from '../../personnel/services/personnel.service';
 import { VehicleDetail as VehicleDetailModel } from '../models/vehicles.model';
@@ -9,7 +9,7 @@ import { Employee } from '../../personnel/models/personnel.model';
 
 @Component({
   selector: 'app-vehicle-detail',
-  imports: [DxDataGridModule, DxButtonModule, DxProgressBarModule, DxPopupModule, DxSelectBoxModule, DxDateBoxModule, DxNumberBoxModule, DxTextBoxModule, DxTextAreaModule, RouterLink, DatePipe, DecimalPipe],
+  imports: [DxDataGridModule, DxButtonModule, DxProgressBarModule, DxPopupModule, DxSelectBoxModule, DxDateBoxModule, DxNumberBoxModule, DxTextBoxModule, DxTextAreaModule, DxTabsModule, DxFormModule, DxToolbarModule, RouterLink, DatePipe, DecimalPipe],
   templateUrl: './vehicle-detail.html',
   styleUrl: './vehicle-detail.scss'
 })
@@ -22,6 +22,20 @@ export class VehicleDetail implements OnInit {
   protected readonly loading = signal(false);
   protected readonly activeTab = signal<'info' | 'maintenance' | 'insurance' | 'inspections'>('info');
   protected readonly saving = signal(false);
+
+  // Tabs for dx-tabs
+  protected readonly tabs = [
+    { id: 'info', text: 'Информация', icon: 'info' },
+    { id: 'maintenance', text: 'ТО', icon: 'event' },
+    { id: 'insurance', text: 'Страховка', icon: 'checklist' },
+    { id: 'inspections', text: 'Техосмотр', icon: 'task' }
+  ];
+  protected readonly tabIds = ['info', 'maintenance', 'insurance', 'inspections'] as const;
+  protected readonly activeTabIndex = computed(() => this.tabIds.indexOf(this.activeTab()));
+  protected onTabChange(e: any) {
+    const idx = e.component.option('selectedIndex');
+    this.activeTab.set(this.tabIds[idx] as any);
+  }
 
   // Popup visibility signals
   protected readonly maintPopup = signal(false);
