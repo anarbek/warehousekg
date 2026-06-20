@@ -301,11 +301,25 @@ sequenceDiagram
 
 ## Access token claims & tenancy
 
-The JWT carries: `sub` (user id), `jti`, `unique_name` (username), `email`, role claims, and a custom
-`tenant_id` claim. On authenticated requests, `HttpTenantProvider` resolves the tenant from the
+The JWT carries: `sub` (user id), `jti`, `unique_name` (username), `email`, role claims, a custom
+`tenant_id` claim, and optionally an `employee_id` claim (when the user is linked to an Employee record
+via `ApplicationUser.EmployeeId`). On authenticated requests, `HttpTenantProvider` resolves the tenant from the
 `X-Tenant-Id` header if present, otherwise **falls back to the `tenant_id` claim** — so a logged-in user is
 automatically scoped to their tenant. See [[01-Architecture]] and [[02-Database-Schema]] for the tenant
 query filter.
+
+### Roles
+
+| Role | Purpose |
+|---|---|
+| `Admin` | Full system access, all modules |
+| `Manager` | Manage warehouse operations, personnel, reports |
+| `Operator` | Day-to-day stock operations |
+| `Viewer` | Read-only access to reports and inventory |
+| `Driver` | Mobile dispatching — own routes, stops, shipments (read-only reference) |
+
+The `Driver` role has write permissions for `delivery-routes` and `delivery-stops` (start/complete/arrive/skip),
+and read-only access to `delivery-shipments`, `geofences`, `sales-orders`, and `customers`.
 
 ## Configuration
 

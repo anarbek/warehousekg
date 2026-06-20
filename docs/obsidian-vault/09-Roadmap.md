@@ -41,3 +41,12 @@ and app should create a basic setup with admin user, some categories and other b
 - Offline login (currently requires online auth at least once per session)
 - Full warehouse management modules (receipts, transfers, shipments)
 - Reports and analytics in-app
+
+**Driver Dispatching** ✅ (implemented 2026-06-20)
+- Driver role with `employee_id` JWT claim
+- `GET /api/v1/routes/my` — driver's own route list (Planned, InProgress, Completed)
+- `GET /api/v1/routes/my/{id}/detail` — full route with stops + shipments
+- Route workflow: start → arrive at stops → complete stops (auto-ship sales orders) → complete route
+- Inventory auto-deduction on stop completion
+- Flutter screens: RouteList, RouteDetail, StopDetail
+- Dashboard "Доставка" tile enabled for all authenticated users

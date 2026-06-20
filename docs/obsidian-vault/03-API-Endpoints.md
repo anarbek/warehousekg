@@ -648,6 +648,8 @@ Full delivery route management with stops, shipments, geofencing, and workflow.
 | Method | Route | Description | Auth |
 |---|---|---|---|
 | `GET` | `/api/v1/routes` | List all routes (summary) | `delivery-routes:read` |
+| `GET` | `/api/v1/routes/my` | **Driver only**: list routes assigned to current user (Planned, InProgress, Completed) | any authenticated |
+| `GET` | `/api/v1/routes/my/{id}/detail` | **Driver only**: full route detail with stops + shipments (scoped to driver's EmployeeId) | any authenticated |
 | `GET` | `/api/v1/routes/{id}` | Get route detail with stops + shipments | `delivery-routes:read` |
 | `POST` | `/api/v1/routes` | Create route (Planned) | `delivery-routes:write` |
 | `PUT` | `/api/v1/routes/{id}` | Update route (Planned/InProgress only) | `delivery-routes:write` |
@@ -655,6 +657,10 @@ Full delivery route management with stops, shipments, geofencing, and workflow.
 | `POST` | `/api/v1/routes/{id}/start` | Planned → InProgress | `delivery-routes:write` |
 | `POST` | `/api/v1/routes/{id}/complete` | InProgress → Completed (auto-ships orders) | `delivery-routes:write` |
 | `POST` | `/api/v1/routes/{id}/cancel` | Planned/InProgress → Cancelled | `delivery-routes:write` |
+
+> **Driver endpoints**: `GET /my` and `GET /my/{id}/detail` use the JWT `employee_id` claim to filter
+> routes by `DriverEmployeeId`. Completed routes are included so drivers can reference past deliveries.
+> The `employee_id` claim is set at login for users linked to an Employee record (`ApplicationUser.EmployeeId`).
 
 ### Stops — `/api/v1/routes/{routeId}/stops`
 
@@ -689,6 +695,11 @@ Full delivery route management with stops, shipments, geofencing, and workflow.
 
 ### Auto-ship behavior
 When a delivery stop is completed (`/complete`), the backend checks all shipments for that stop. If ALL shipments for a given sales order are completed across all stops, the sales order is automatically transitioned to `Shipped`. This uses `SaveChangesAsync` BEFORE checking — ensuring DB state is fresh.
+
+**Inventory deduction**: During auto-ship, `CompleteDeliveryStopCommandHandler` loads the sales order lines (`.Include(so => so.Lines)`) and deducts `line.Quantity` from each inventory item's `QuantityOnHand` — identical logic to `ShipSalesOrderCommandHandler`. Before the fix, only `Status = Shipped` was set without inventory deduction.
+
+### Sales Order WarehouseId
+Sales orders **must** have a `WarehouseId` set for their shipments to appear in the inventory movement history. The movement query (`ItemMovementHistoryQueries`) filters by `SalesOrder.WarehouseId == selectedWarehouseId`. A NULL `WarehouseId` means the "Продажа" rows never match any warehouse filter.
 
 ### Route map
 The route detail page shows a Leaflet map with:

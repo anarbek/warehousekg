@@ -35,6 +35,14 @@ warehousekg_mobile/
 │           ├── audit_repository.dart       # Online/offline/sync methods
 │           └── models/
 │               └── audit_model.dart        # AuditModel, AuditLine, Warehouse, etc.
+│       └── dispatching/
+│           ├── dispatching_repository.dart  # Route/stop/shipment API methods + models
+│           ├── screens/
+│           │   ├── route_list_screen.dart   # Driver's route list
+│           │   ├── route_detail_screen.dart # Route detail + stops
+│           │   └── stop_detail_screen.dart  # Stop detail + shipments + workflow
+│           └── models/
+│               └── dispatching_models.dart  # RouteModel, StopModel, ShipmentModel
 ```
 
 ---
@@ -61,6 +69,9 @@ warehousekg_mobile/
 | `/audits` | AuditListScreen | Merged local + remote audit list |
 | `/audits/:id` | AuditDetailScreen | Summary, progress bar, line items with variance |
 | `/audits/:id/count` | AuditCountScreen | Item counting with search, filter, pause |
+| `/dispatching` | RouteListScreen | Driver's route list (my routes only) |
+| `/dispatching/routes/:id` | RouteDetailScreen | Route detail with stop list + status badges |
+| `/dispatching/routes/:routeId/stops/:stopId` | StopDetailScreen | Stop detail with shipment list + workflow buttons |
 
 **Auth guard**: GoRouter redirects unauthenticated users to `/login`.
 
@@ -75,8 +86,8 @@ warehousekg_mobile/
 - Auto-redirect after login/expiry
 
 ### Dashboard
-- 6 module cards: Склад, Закупки, Продажи, Персонал, Отчёты, Аудиты
-- Only **Аудиты** card is active (green badge); others disabled (grey)
+- 6 module cards: Склад, Закупки, Продажи, Персонал, Отчёты, Аудиты, Доставка
+- Active cards: **Аудиты**, **Доставка** (green badge); others disabled (grey)
 - Offline indicator (cloud-off icon) when `isOnlineProvider` is false
 
 ### Audit CRUD
@@ -101,6 +112,15 @@ warehousekg_mobile/
 - **Color coding**: green background if counted with no variance, orange if variance ≠ 0
 - **Pause**: Back arrow returns to detail screen (preserves counted values)
 - **Resume**: Continue button reopens count screen with previous values intact
+
+### Driver Dispatching (v1, 2026-06-20)
+- **Route list**: `GET /api/v1/routes/my` — shows routes assigned to the current driver (Planned, InProgress, Completed)
+- **Route detail**: `GET /api/v1/routes/my/{id}/detail` — full route with stops, shipments, status badges
+- **Stop detail**: Tapping a stop shows shipments, quantities, customer info
+- **Workflow buttons**: Start route, complete route, arrive at stop, complete stop (hidden for Completed routes)
+- **Offline indicator**: connectivity bar at top
+- **JWT claim**: Uses `employee_id` claim to filter routes; set at login for users linked to Employee record
+- **Models**: `RouteModel`, `RouteDetailModel`, `StopModel`, `ShipmentModel` in `dispatching_models.dart`
 
 ### Sync
 1. User taps "Завершить" → status changes to `PendingSync`
@@ -127,6 +147,13 @@ warehousekg_mobile/
 | `/api/v1/stock-audits` | POST | Create audit (sync) |
 | `/api/v1/stock-audits/{id}` | GET | Fetch audit detail |
 | `/api/v1/stock-audits/{id}/complete` | POST | Complete audit (web-only, requires stock-audits-complete:write) |
+| `/api/v1/routes/my` | GET | Driver's assigned routes |
+| `/api/v1/routes/my/{id}/detail` | GET | Full route detail with stops + shipments |
+| `/api/v1/routes/{id}/start` | POST | Start route (Planned → InProgress) |
+| `/api/v1/routes/{id}/complete` | POST | Complete route (InProgress → Completed) |
+| `/api/v1/routes/{routeId}/stops/{stopId}/arrive` | POST | Arrive at stop (Pending → InProgress) |
+| `/api/v1/routes/{routeId}/stops/{stopId}/complete` | POST | Complete stop (InProgress → Completed, auto-ships) |
+| `/api/v1/routes/{routeId}/stops/{stopId}/skip` | POST | Skip stop |
 
 ---
 
