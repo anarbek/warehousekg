@@ -26,12 +26,12 @@ and app should create a basic setup with admin user, some categories and other b
 - CI/CD to contabo's server
 - Jenkins install on contabo
 - GPS tracking of driver
-- Presell module where preseller take preorders from customers and after approval those preorders become sales orders (with mobile module)
 - Report designing using Devexpress
 - XML import capability to accept different formats of XML files(CCI, EFS, Pepsi, Philip Morris etc)
 - Turkish and english languages in admin panel
 - Preseller module, where users with preseller role visit customers and take pre-orders, and when those pre-orders are approved, they become sales orders
 - Mobile preseller module
+- Superadmin should see only superadmin, reports menu
 
 ### Flutter Mobile App — `warehousekg_mobile`
 
