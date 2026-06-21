@@ -67,6 +67,8 @@ public class CustomersController : ControllerBase
             request.Phone,
             request.Address,
             request.TaxId,
+            request.Latitude,
+            request.Longitude,
             request.IsActive);
 
         var updated = await _sender.Send(command, cancellationToken);
@@ -94,4 +96,6 @@ public record UpdateCustomerRequest(
     string? Phone,
     string? Address,
     string? TaxId,
+    double? Latitude,
+    double? Longitude,
     bool IsActive);

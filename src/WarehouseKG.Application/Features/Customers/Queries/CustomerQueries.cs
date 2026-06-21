@@ -34,6 +34,8 @@ public class GetCustomersQueryHandler
                 Phone = c.Phone,
                 Address = c.Address,
                 TaxId = c.TaxId,
+                Latitude = c.Latitude,
+                Longitude = c.Longitude,
                 IsActive = c.IsActive
             })
             .ToListAsync(cancellationToken);
@@ -69,6 +71,8 @@ public class GetCustomerByIdQueryHandler
                 Phone = c.Phone,
                 Address = c.Address,
                 TaxId = c.TaxId,
+                Latitude = c.Latitude,
+                Longitude = c.Longitude,
                 IsActive = c.IsActive
             })
             .FirstOrDefaultAsync(cancellationToken);

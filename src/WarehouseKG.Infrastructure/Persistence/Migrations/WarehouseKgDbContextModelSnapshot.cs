@@ -211,6 +211,12 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("double precision");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -901,6 +907,48 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.ToTable("pack_order_lines", (string)null);
                 });
 
+            modelBuilder.Entity("WarehouseKG.Domain.Entities.PaymentType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "Code")
+                        .IsUnique();
+
+                    b.ToTable("payment_types", (string)null);
+                });
+
             modelBuilder.Entity("WarehouseKG.Domain.Entities.PickOrder", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1052,6 +1100,160 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("positions", (string)null);
+                });
+
+            modelBuilder.Entity("WarehouseKG.Domain.Entities.PreOrder", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ApprovedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ConvertedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ConvertedSalesOrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ExpectedDateUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTime>("OrderDateUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PaymentType")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<Guid?>("PresellerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("RejectedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<DateTime?>("SubmittedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("WarehouseId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConvertedSalesOrderId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("PresellerId");
+
+                    b.HasIndex("WarehouseId");
+
+                    b.HasIndex("TenantId", "CustomerId");
+
+                    b.HasIndex("TenantId", "Number")
+                        .IsUnique();
+
+                    b.HasIndex("TenantId", "PresellerId");
+
+                    b.HasIndex("TenantId", "Status");
+
+                    b.ToTable("pre_orders", (string)null);
+                });
+
+            modelBuilder.Entity("WarehouseKG.Domain.Entities.PreOrderLine", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("DiscountPercent")
+                        .HasColumnType("numeric(5,2)");
+
+                    b.Property<Guid>("InventoryItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("LineTotal")
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<Guid>("PreOrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<decimal>("StockDifference")
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("WarehouseStockSnapshot")
+                        .HasColumnType("numeric(18,3)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InventoryItemId");
+
+                    b.HasIndex("PreOrderId");
+
+                    b.ToTable("pre_order_lines", (string)null);
                 });
 
             modelBuilder.Entity("WarehouseKG.Domain.Entities.PurchaseOrder", b =>
@@ -2953,6 +3155,58 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                     b.Navigation("WarehouseLocation");
                 });
 
+            modelBuilder.Entity("WarehouseKG.Domain.Entities.PreOrder", b =>
+                {
+                    b.HasOne("WarehouseKG.Domain.Entities.SalesOrder", "ConvertedSalesOrder")
+                        .WithMany()
+                        .HasForeignKey("ConvertedSalesOrderId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("WarehouseKG.Domain.Entities.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("WarehouseKG.Domain.Entities.Employee", "Preseller")
+                        .WithMany()
+                        .HasForeignKey("PresellerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("WarehouseKG.Domain.Entities.Warehouse", "Warehouse")
+                        .WithMany()
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ConvertedSalesOrder");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Preseller");
+
+                    b.Navigation("Warehouse");
+                });
+
+            modelBuilder.Entity("WarehouseKG.Domain.Entities.PreOrderLine", b =>
+                {
+                    b.HasOne("WarehouseKG.Domain.Entities.InventoryItem", "InventoryItem")
+                        .WithMany()
+                        .HasForeignKey("InventoryItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("WarehouseKG.Domain.Entities.PreOrder", "PreOrder")
+                        .WithMany("Lines")
+                        .HasForeignKey("PreOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("InventoryItem");
+
+                    b.Navigation("PreOrder");
+                });
+
             modelBuilder.Entity("WarehouseKG.Domain.Entities.PurchaseOrder", b =>
                 {
                     b.HasOne("WarehouseKG.Domain.Entities.Employee", "Employee")
@@ -3328,6 +3582,11 @@ namespace WarehouseKG.Infrastructure.Persistence.Migrations
                 });
 
             modelBuilder.Entity("WarehouseKG.Domain.Entities.PickOrder", b =>
+                {
+                    b.Navigation("Lines");
+                });
+
+            modelBuilder.Entity("WarehouseKG.Domain.Entities.PreOrder", b =>
                 {
                     b.Navigation("Lines");
                 });

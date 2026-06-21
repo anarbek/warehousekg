@@ -75,6 +75,11 @@ export const routes: Routes = [
           import('./features/dispatching/dispatching.routes').then((m) => m.dispatchingRoutes),
       },
       {
+        path: 'preseller',
+        loadChildren: () =>
+          import('./features/preseller/preseller.routes').then((m) => m.presellerRoutes),
+      },
+      {
         path: 'superadmin',
         canActivate: [superadminGuard],
         loadChildren: () =>

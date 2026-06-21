@@ -7,6 +7,9 @@ import '../features/audit/audit_count_screen.dart';
 import '../features/dispatching/screens/route_list_screen.dart';
 import '../features/dispatching/screens/route_detail_screen.dart';
 import '../features/dispatching/screens/stop_detail_screen.dart';
+import '../features/preseller/screens/pre_order_list_screen.dart';
+import '../features/preseller/screens/pre_order_detail_screen.dart';
+import '../features/preseller/screens/pre_order_form_screen.dart';
 
 final appRoutes = [
   GoRoute(
@@ -53,6 +56,22 @@ final appRoutes = [
             ),
           ),
         ],
+      ),
+    ],
+  ),
+  GoRoute(
+    path: '/preseller',
+    builder: (context, state) => const PreOrderListScreen(),
+    routes: [
+      GoRoute(
+        path: 'new',
+        builder: (context, state) => const PreOrderFormScreen(),
+      ),
+      GoRoute(
+        path: ':id',
+        builder: (context, state) => PreOrderDetailScreen(
+          id: state.pathParameters['id']!,
+        ),
       ),
     ],
   ),

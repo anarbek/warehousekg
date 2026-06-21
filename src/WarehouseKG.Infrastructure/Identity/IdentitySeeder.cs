@@ -76,6 +76,11 @@ public static class IdentitySeeder
         var driverWrite = new[] { "delivery-routes", "delivery-stops" };
         var driverReadOnly = new[] { "delivery-shipments", "geofences", "sales-orders", "customers" };
         await SeedPermissionRows(db, tenantId, Roles.Driver, driverWrite.Concat(driverReadOnly).ToArray(), Array.Empty<string>(), ct);
+
+        // Preseller: read customers, inventory, warehouses, reports, payment-types; write pre-orders
+        var presellerWrite = new[] { "pre-orders" };
+        var presellerReadOnly = new[] { "customers", "inventory-items", "warehouses", "reports", "payment-types" };
+        await SeedPermissionRows(db, tenantId, Roles.Preseller, presellerWrite.Concat(presellerReadOnly).ToArray(), Array.Empty<string>(), ct);
     }
 
     private static async Task SeedPermissionRows(
@@ -122,5 +127,55 @@ public static class IdentitySeeder
         {
             await userManager.AddToRoleAsync(admin, Roles.Admin);
         }
+    }
+
+    /// <summary>
+    /// Seeds default payment types (Наличные, Безналичный, Карта, Кредит) for all tenants.
+    /// </summary>
+    public static async Task SeedPaymentTypesAsync(IServiceProvider services, CancellationToken cancellationToken = default)
+    {
+        var db = services.GetRequiredService<Persistence.WarehouseKgDbContext>();
+
+        var allTenantIds = await db.PaymentTypes
+            .IgnoreQueryFilters()
+            .Select(p => p.TenantId)
+            .Distinct()
+            .ToListAsync(cancellationToken);
+
+        var tenantIds = allTenantIds.Count > 0
+            ? allTenantIds
+            : new List<Guid> { Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff") };
+
+        var defaults = new (string Code, string Name)[]
+        {
+            ("CASH", "Наличные"),
+            ("BANK", "Безналичный"),
+            ("CARD", "Карта"),
+            ("CREDIT", "Кредит"),
+        };
+
+        foreach (var tenantId in tenantIds)
+        {
+            foreach (var (code, name) in defaults)
+            {
+                var exists = await db.PaymentTypes
+                    .IgnoreQueryFilters()
+                    .AnyAsync(p => p.TenantId == tenantId && p.Code == code, cancellationToken);
+
+                if (!exists)
+                {
+                    db.PaymentTypes.Add(new Domain.Entities.PaymentType
+                    {
+                        Id = Guid.NewGuid(),
+                        TenantId = tenantId,
+                        Code = code,
+                        Name = name,
+                        IsActive = true,
+                    });
+                }
+            }
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
     }
 }

@@ -12,6 +12,7 @@ class DashboardScreen extends ConsumerWidget {
     (_Menu.items, 'Товары', Icons.inventory_2),
     (_Menu.receipts, 'Поступления', Icons.receipt_long),
     (_Menu.dispatching, 'Доставка', Icons.local_shipping),
+    (_Menu.preseller, 'Предзаказы', Icons.shopping_cart),
     (_Menu.transfers, 'Перемещения', Icons.swap_horiz),
     (_Menu.audit, 'Аудиты', Icons.checklist),
     (_Menu.reports, 'Отчёты', Icons.bar_chart),
@@ -55,7 +56,7 @@ class DashboardScreen extends ConsumerWidget {
           itemCount: _menuItems.length,
           itemBuilder: (context, index) {
             final (menu, title, icon) = _menuItems[index];
-            final enabled = menu == _Menu.audit || menu == _Menu.dispatching;
+            final enabled = menu == _Menu.audit || menu == _Menu.dispatching || menu == _Menu.preseller;
             return Card(
               color: enabled ? null : Colors.grey.shade200,
               child: InkWell(
@@ -64,6 +65,7 @@ class DashboardScreen extends ConsumerWidget {
                     ? () {
                         if (menu == _Menu.audit) context.push('/audits');
                         if (menu == _Menu.dispatching) context.push('/dispatching');
+                        if (menu == _Menu.preseller) context.push('/preseller');
                       }
                     : null,
                 child: Padding(
@@ -87,4 +89,4 @@ class DashboardScreen extends ConsumerWidget {
   }
 }
 
-enum _Menu { warehouse, items, receipts, transfers, audit, dispatching, reports }
+enum _Menu { warehouse, items, receipts, transfers, audit, dispatching, preseller, reports }

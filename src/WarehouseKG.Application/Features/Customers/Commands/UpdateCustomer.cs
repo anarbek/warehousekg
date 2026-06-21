@@ -13,6 +13,8 @@ public record UpdateCustomerCommand(
     string? Phone,
     string? Address,
     string? TaxId,
+    double? Latitude,
+    double? Longitude,
     bool IsActive) : IRequest<bool>;
 
 public class UpdateCustomerCommandHandler : IRequestHandler<UpdateCustomerCommand, bool>
@@ -41,6 +43,8 @@ public class UpdateCustomerCommandHandler : IRequestHandler<UpdateCustomerComman
         customer.Phone = request.Phone;
         customer.Address = request.Address;
         customer.TaxId = request.TaxId;
+        customer.Latitude = request.Latitude;
+        customer.Longitude = request.Longitude;
         customer.IsActive = request.IsActive;
 
         await _context.SaveChangesAsync(cancellationToken);

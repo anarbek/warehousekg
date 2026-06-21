@@ -11,6 +11,7 @@ public class IntegrationTestCollection : ICollectionFixture<SharedFixture>
 public class SharedFixture : IAsyncLifetime
 {
     public WarehouseKgClient Client { get; private set; } = null!;
+    public HttpClient CreateRawClient() => _factory!.CreateClient();
     private TestWebApplicationFactory _factory = null!;
 
     private const string ConnectionString =

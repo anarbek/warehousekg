@@ -29,9 +29,16 @@ and app should create a basic setup with admin user, some categories and other b
 - Report designing using Devexpress
 - XML import capability to accept different formats of XML files(CCI, EFS, Pepsi, Philip Morris etc)
 - Turkish and english languages in admin panel
-- Preseller module, where users with preseller role visit customers and take pre-orders, and when those pre-orders are approved, they become sales orders
-- Mobile preseller module
-- Superadmin should see only superadmin, reports menu
+- currently money type is hardcoded(KGS) it should be selecteable from dropdown, and there should be a menu to manage exchanges. so when user creates a receipt he should be able to select exchange and money type, exchange management screen should contain exchange rates management too
+- **Preseller module** ✅ — Pre-order workflow: Draft → Submitted → Approved/Rejected → Converted to SalesOrder.
+  Warehouse stock visibility with live difference calculation. PaymentType lookup table with 4 seeded types.
+  Full Angular web module (list/form/detail) at `/preseller/pre-orders`. Full Flutter mobile module with
+  my-orders list, create form with stock visibility, and detail screen. `Preseller` role with dedicated
+  permissions. 13 integration tests. See [[2026-06-21]].
+- **Mobile preseller module** ✅ — Flutter screens: PreOrderList, PreOrderForm (customer/warehouse/payment-type
+  dropdowns, item picker with stock diff, date picker, save), PreOrderDetail (status chip, submit button).
+  Dashboard tile "Предзаказы" enabled. See [[2026-06-21]].
+- Dispatchers should be able creating invoices from web app, it should create a printeable invoice which can be printed and signed by customer, printers are old dot based printers, used by warehouse workers, invoices should be designeable in separate module using devexpress report designer
 
 ### Flutter Mobile App — `warehousekg_mobile`
 

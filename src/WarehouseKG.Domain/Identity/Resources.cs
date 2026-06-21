@@ -48,6 +48,10 @@ public static class Resources
     public const string DeliveryShipments = "delivery-shipments";
     public const string Geofences = "geofences";
 
+    // Preseller resources
+    public const string PreOrders = "pre-orders";
+    public const string PaymentTypes = "payment-types";
+
     // Superadmin resources
     public const string Tenants = "tenants";
 
@@ -61,6 +65,7 @@ public static class Resources
         Employees, Positions, Departments, Shifts, Attendance,
         Vehicles, VehicleTypes, Maintenance, Insurance, Inspections, FuelLogs,
         DeliveryRoutes, DeliveryStops, DeliveryShipments, Geofences,
+        PreOrders, PaymentTypes,
         Tenants
     };
 }

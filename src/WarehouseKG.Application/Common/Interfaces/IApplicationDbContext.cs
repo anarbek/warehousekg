@@ -75,5 +75,9 @@ public interface IApplicationDbContext
 
     DbSet<Tenant> Tenants { get; }
 
+    DbSet<PaymentType> PaymentTypes { get; }
+    DbSet<PreOrder> PreOrders { get; }
+    DbSet<PreOrderLine> PreOrderLines { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

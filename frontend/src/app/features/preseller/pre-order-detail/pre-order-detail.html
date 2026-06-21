@@ -1,0 +1,129 @@
+@if (loading()) {
+  <dx-progress-bar [visible]="true" />
+}
+
+@if (po(); as p) {
+  <div class="detail-page">
+    <!-- Toolbar -->
+    <dx-toolbar>
+      <dxi-item location="before">
+        <h1 class="page__title">{{ p.number }}</h1>
+      </dxi-item>
+      <dxi-item location="after">
+        @if (p.status === 0) {
+          <dx-button text="Редактировать" icon="edit" stylingMode="outlined" [routerLink]="['edit']" />
+        }
+        @if (p.status === 0) {
+          <dx-button text="Удалить" icon="trash" type="danger" stylingMode="outlined" (onClick)="deletePreOrder()" />
+        }
+        <dx-button text="Назад" icon="arrowleft" stylingMode="text" routerLink=".." />
+      </dxi-item>
+    </dx-toolbar>
+
+    @if (working()) {
+      <dx-progress-bar [visible]="true" />
+    }
+
+    <!-- Status -->
+    <div class="status-row">
+      <span class="status-badge" [class]="'status-badge--' + p.status">
+        {{ statusText(p.status) }}
+      </span>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary-grid">
+      <div class="summary-item">
+        <span class="summary-label">Клиент</span>
+        <span class="summary-value">{{ p.customerName }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Продавец</span>
+        <span class="summary-value">{{ p.presellerName }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Склад</span>
+        <span class="summary-value">{{ p.warehouseName }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Тип оплаты</span>
+        <span class="summary-value">{{ p.paymentType }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Валюта</span>
+        <span class="summary-value">{{ p.currency }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Дата</span>
+        <span class="summary-value">{{ p.orderDateUtc | date:'dd.MM.yyyy' }}</span>
+      </div>
+      @if (p.expectedDateUtc) {
+        <div class="summary-item">
+          <span class="summary-label">Ожидаемая дата</span>
+          <span class="summary-value">{{ p.expectedDateUtc | date:'dd.MM.yyyy' }}</span>
+        </div>
+      }
+      <div class="summary-item">
+        <span class="summary-label">Сумма</span>
+        <span class="summary-value"><strong>{{ p.totalAmount | number:'1.2-2' }} {{ p.currency }}</strong></span>
+      </div>
+      @if (p.convertedSalesOrderNumber) {
+        <div class="summary-item">
+          <span class="summary-label">Заказ на продажу</span>
+          <span class="summary-value">
+            <a [routerLink]="['/customers/sales-orders', p.convertedSalesOrderId]">{{ p.convertedSalesOrderNumber }}</a>
+          </span>
+        </div>
+      }
+      @if (p.notes) {
+        <div class="summary-item full-width">
+          <span class="summary-label">Примечания</span>
+          <span class="summary-value">{{ p.notes }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- Workflow buttons -->
+    <div class="workflow-actions">
+      @if (canTransition(1)) {
+        <dx-button text="Отправить на согласование" icon="check" type="default" stylingMode="contained" (onClick)="transition('submit')" />
+      }
+      @if (canTransition(2)) {
+        <dx-button text="Одобрить" icon="check" type="default" stylingMode="contained" (onClick)="transition('approve')" />
+      }
+      @if (canTransition(3)) {
+        <dx-button text="Отклонить" icon="close" type="danger" stylingMode="outlined" (onClick)="transition('reject')" />
+      }
+      @if (canTransition(4)) {
+        <dx-button text="Конвертировать в заказ" icon="export" type="default" stylingMode="contained" (onClick)="transition('convert')" />
+      }
+    </div>
+
+    <!-- Lines -->
+    <h3 class="section-title">Товары</h3>
+    <dx-data-grid [dataSource]="p.lines" [showBorders]="true" [hoverStateEnabled]="true" [columnAutoWidth]="true">
+      <dxi-column dataField="inventoryItemName" caption="Товар" />
+      <dxi-column dataField="sku" caption="SKU" />
+      <dxi-column dataField="warehouseStockSnapshot" caption="На складе" [format]="'#,##0.###'" />
+      <dxi-column dataField="quantity" caption="Кол-во" [format]="'#,##0.###'" />
+      <dxi-column dataField="stockDifference" caption="Разница" cellTemplate="diffCell" />
+      <dxi-column dataField="unitPrice" caption="Цена" [format]="'#,##0.00'" />
+      <dxi-column dataField="discountPercent" caption="Скидка %" [format]="'#,##0.00'" />
+      <dxi-column dataField="lineTotal" caption="Сумма" [format]="'#,##0.00'" />
+
+      <div *dxTemplate="let d of 'diffCell'">
+        <span [style.color]="d.data.stockDifference >= 0 ? '#2e7d32' : '#c62828'" [style.fontWeight]="'bold'">
+          {{ d.data.stockDifference | number:'1.0-0' }}
+        </span>
+      </div>
+    </dx-data-grid>
+
+    <!-- Timestamps -->
+    <div class="timestamps">
+      @if (p.submittedAtUtc) { <span>Отправлен: {{ p.submittedAtUtc | date:'dd.MM.yyyy HH:mm' }}</span> }
+      @if (p.approvedAtUtc) { <span>Одобрен: {{ p.approvedAtUtc | date:'dd.MM.yyyy HH:mm' }}</span> }
+      @if (p.rejectedAtUtc) { <span>Отклонён: {{ p.rejectedAtUtc | date:'dd.MM.yyyy HH:mm' }}</span> }
+      @if (p.convertedAtUtc) { <span>Конвертирован: {{ p.convertedAtUtc | date:'dd.MM.yyyy HH:mm' }}</span> }
+    </div>
+  </div>
+}

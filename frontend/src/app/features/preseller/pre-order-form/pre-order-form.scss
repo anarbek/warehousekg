@@ -1,0 +1,30 @@
+.form-page {
+  padding: 20px;
+  max-width: 1200px;
+
+  &__header h2 {
+    margin: 0 0 16px;
+    font-size: 1.25rem;
+  }
+
+  &__content {
+    padding: 16px;
+  }
+}
+
+.section-title {
+  margin: 24px 0 12px;
+  font-size: 1.1rem;
+}
+
+.grand-total {
+  margin-top: 16px;
+  text-align: right;
+  font-size: 1.15rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}

@@ -18,6 +18,10 @@ public class Customer : BaseEntity
 
     public string? TaxId { get; set; }
 
+    public double? Latitude { get; set; }
+
+    public double? Longitude { get; set; }
+
     public bool IsActive { get; set; } = true;
 
     public ICollection<SalesOrder> SalesOrders { get; set; } = new List<SalesOrder>();

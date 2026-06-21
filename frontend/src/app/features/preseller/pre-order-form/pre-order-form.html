@@ -1,0 +1,75 @@
+@if (loading()) {
+  <dx-progress-bar [visible]="true" />
+}
+<div class="form-page">
+  <div class="dx-card">
+    @if (saving()) {
+      <dx-progress-bar [visible]="true" />
+    }
+    <div class="form-page__header">
+      <h2>{{ isEdit ? 'Редактировать предзаказ' : 'Новый предзаказ' }}</h2>
+    </div>
+    <div class="form-page__content">
+      <dx-form [formData]="formData" [colCount]="2" [items]="formItems" />
+
+      <!-- Lines section -->
+      <h3 class="section-title">Товары</h3>
+      <dx-data-grid [dataSource]="lines" [showBorders]="true" [hoverStateEnabled]="true" [columnAutoWidth]="true">
+        <dxi-column caption="Товар" cellTemplate="itemCell" />
+        <dxi-column caption="На складе" cellTemplate="stockCell" [width]="100" />
+        <dxi-column dataField="quantity" caption="Кол-во" cellTemplate="qtyCell" />
+        <dxi-column caption="Разница" cellTemplate="diffCell" [width]="100" />
+        <dxi-column dataField="unitPrice" caption="Цена" cellTemplate="priceCell" [width]="100" />
+        <dxi-column dataField="discountPercent" caption="Скидка %" cellTemplate="discCell" [width]="90" />
+        <dxi-column caption="Сумма" cellTemplate="totalCell" [width]="100" />
+        <dxi-column caption="" [width]="50" cellTemplate="delCell" />
+
+        <div *dxTemplate="let d of 'itemCell'">
+          <dx-select-box
+            [dataSource]="inventoryItems"
+            displayExpr="name"
+            valueExpr="id"
+            [(value)]="d.data.inventoryItemId"
+            stylingMode="outlined"
+            [searchEnabled]="true"
+          />
+        </div>
+        <div *dxTemplate="let d of 'stockCell'">
+          <strong>{{ getStockForItem(d.data.inventoryItemId) | number:'1.0-0' }}</strong>
+        </div>
+        <div *dxTemplate="let d of 'qtyCell'">
+          <dx-number-box [(value)]="d.data.quantity" [min]="0" [showSpinButtons]="true" stylingMode="outlined" />
+        </div>
+        <div *dxTemplate="let d of 'diffCell'">
+          @let diff = getStockDiff(d.data.inventoryItemId, d.data.quantity);
+          <span [style.color]="diff >= 0 ? '#2e7d32' : '#c62828'" [style.fontWeight]="'bold'">
+            {{ diff | number:'1.0-0' }}
+          </span>
+        </div>
+        <div *dxTemplate="let d of 'priceCell'">
+          <dx-number-box [(value)]="d.data.unitPrice" [min]="0" stylingMode="outlined" />
+        </div>
+        <div *dxTemplate="let d of 'discCell'">
+          <dx-number-box [(value)]="d.data.discountPercent" [min]="0" [max]="100" stylingMode="outlined" />
+        </div>
+        <div *dxTemplate="let d of 'totalCell'">
+          <strong>{{ getLineTotal(d.data) | number:'1.2-2' }}</strong>
+        </div>
+        <div *dxTemplate="let d of 'delCell'">
+          <dx-button icon="trash" hint="Delete" stylingMode="text" type="danger" (onClick)="removeLine(d.rowIndex)" />
+        </div>
+      </dx-data-grid>
+
+      <dx-button text="+ Добавить товар" icon="add" stylingMode="outlined" (onClick)="addLine()" style="margin-top: 12px;" />
+
+      <div class="grand-total">
+        <strong>Итого: {{ getGrandTotal() | number:'1.2-2' }}</strong>
+      </div>
+
+      <div class="form-actions">
+        <dx-button text="Сохранить" type="default" stylingMode="contained" (onClick)="submit()" />
+        <dx-button text="Отмена" stylingMode="outlined" (onClick)="cancel()" />
+      </div>
+    </div>
+  </div>
+</div>

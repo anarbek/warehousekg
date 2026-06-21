@@ -19,6 +19,8 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
         builder.Property(c => c.Phone).HasMaxLength(64);
         builder.Property(c => c.Address).HasMaxLength(512);
         builder.Property(c => c.TaxId).HasMaxLength(64);
+        builder.Property(c => c.Latitude);
+        builder.Property(c => c.Longitude);
 
         builder.HasIndex(c => new { c.TenantId, c.Code }).IsUnique();
     }

@@ -480,6 +480,88 @@ public class WarehouseKgClient
         return await response.Content.ReadAsStringAsync();
     }
 
+    // ─── Preseller: Pre-Orders ────────────────────────────────────────
+
+    public async Task<string> CreatePreOrderAsync(object body)
+    {
+        var response = await _http.PostAsJsonAsync("/api/v1/pre-orders", body);
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    public async Task<JsonElement> GetPreOrdersAsync()
+    {
+        var response = await _http.GetAsync("/api/v1/pre-orders");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
+    public async Task<JsonElement> GetPreOrderByIdAsync(string id)
+    {
+        var response = await _http.GetAsync($"/api/v1/pre-orders/{id}");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
+    public async Task<JsonElement> GetMyPreOrdersAsync()
+    {
+        var response = await _http.GetAsync("/api/v1/pre-orders/my");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
+    public async Task UpdatePreOrderAsync(string id, object body)
+    {
+        var response = await _http.PutAsJsonAsync($"/api/v1/pre-orders/{id}", body);
+        await EnsureSuccessAsync(response);
+    }
+
+    public async Task DeletePreOrderAsync(string id)
+    {
+        var response = await _http.DeleteAsync($"/api/v1/pre-orders/{id}");
+        await EnsureSuccessAsync(response);
+    }
+
+    public async Task SubmitPreOrderAsync(string id)
+    {
+        var response = await _http.PostAsync($"/api/v1/pre-orders/{id}/submit", null);
+        await EnsureSuccessAsync(response);
+    }
+
+    public async Task ApprovePreOrderAsync(string id)
+    {
+        var response = await _http.PostAsync($"/api/v1/pre-orders/{id}/approve", null);
+        await EnsureSuccessAsync(response);
+    }
+
+    public async Task RejectPreOrderAsync(string id, string? reason = null)
+    {
+        var body = reason is null ? new { reason = (string?)null } : new { reason };
+        var response = await _http.PostAsJsonAsync($"/api/v1/pre-orders/{id}/reject", body);
+        await EnsureSuccessAsync(response);
+    }
+
+    public async Task<string> ConvertPreOrderAsync(string id)
+    {
+        var response = await _http.PostAsync($"/api/v1/pre-orders/{id}/convert", null);
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    public async Task<JsonElement> GetPaymentTypesAsync()
+    {
+        var response = await _http.GetAsync("/api/v1/payment-types");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
+    public async Task<JsonElement> GetPreOrderWarehouseStockAsync(Guid warehouseId)
+    {
+        var response = await _http.GetAsync($"/api/v1/pre-orders/warehouse-stock?warehouseId={warehouseId}");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
     // ─── Internal helpers ─────────────────────────────────────────────
 
     private static async Task EnsureSuccessAsync(HttpResponseMessage response)

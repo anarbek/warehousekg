@@ -23,6 +23,8 @@ public static class Roles
 
     public const string Driver = "Driver";
 
+    public const string Preseller = "Preseller";
+
     public static readonly IReadOnlyList<string> All = new[]
     {
         Superadmin,
@@ -33,7 +35,8 @@ public static class Roles
         WarehouseOperator,
         HR,
         Viewer,
-        Driver
+        Driver,
+        Preseller
     };
 
     public static bool IsValid(string role) => All.Contains(role);

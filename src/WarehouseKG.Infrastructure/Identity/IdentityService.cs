@@ -9,10 +9,12 @@ namespace WarehouseKG.Infrastructure.Identity;
 public class IdentityService : IIdentityService
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IApplicationDbContext _dbContext;
 
-    public IdentityService(UserManager<ApplicationUser> userManager)
+    public IdentityService(UserManager<ApplicationUser> userManager, IApplicationDbContext dbContext)
     {
         _userManager = userManager;
+        _dbContext = dbContext;
     }
 
     public async Task<IdentityCreationResult> CreateUserAsync(
@@ -132,7 +134,19 @@ public class IdentityService : IIdentityService
     private async Task<AuthUser> ToAuthUserAsync(ApplicationUser user)
     {
         var roles = await _userManager.GetRolesAsync(user);
-        return new AuthUser(user.Id, user.UserName ?? string.Empty, user.Email, user.TenantId, roles.ToList(), user.EmployeeId);
+
+        // Resolve EmployeeId from the Employee table if not set directly on the user.
+        Guid? employeeId = user.EmployeeId;
+        if (employeeId is null)
+        {
+            employeeId = await _dbContext.Employees
+                .IgnoreQueryFilters()
+                .Where(e => e.ApplicationUserId == user.Id)
+                .Select(e => (Guid?)e.Id)
+                .FirstOrDefaultAsync();
+        }
+
+        return new AuthUser(user.Id, user.UserName ?? string.Empty, user.Email, user.TenantId, roles.ToList(), employeeId);
     }
 
     public async Task<int> GetUserCountForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)

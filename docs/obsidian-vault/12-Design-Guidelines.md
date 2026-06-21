@@ -234,4 +234,11 @@ click_element on combobox ref → listbox appears → click_element on option re
 3. type_in_page on password (ref=e36) → "Admin1234!"
 4. click_element on login button (ref=e37)
 5. navigate_page → target URL
+
+### Preseller login flow
+1. navigate_page → http://localhost:4200/login
+2. type_in_page on username (ref=e32) → "pre1"
+3. type_in_page on password (ref=e36) → "Preseller1234!"
+4. click_element on login button (ref=e37)
+5. navigate_page → target URL
 ```

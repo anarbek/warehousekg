@@ -1,0 +1,81 @@
+<dx-toolbar>
+  <dxi-item location="before">
+    <h1>{{ customer()?.name ?? 'Клиент' }}</h1>
+  </dxi-item>
+  <dxi-item location="after">
+    <dx-button text="Редактировать" icon="edit" stylingMode="outlined" [routerLink]="['edit']" />
+  </dxi-item>
+  <dxi-item location="after">
+    <dx-button text="Назад" icon="arrowleft" stylingMode="text" routerLink=".." />
+  </dxi-item>
+</dx-toolbar>
+
+@if (loading()) {
+  <p>Загрузка...</p>
+}
+
+@if (customer(); as c) {
+  <div class="detail-card">
+    <div class="detail-grid">
+      <div class="detail-item">
+        <span class="detail-label">Код</span>
+        <span class="detail-value">{{ c.code }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Название</span>
+        <span class="detail-value">{{ c.name }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Контактное лицо</span>
+        <span class="detail-value">{{ c.contactName || '—' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Email</span>
+        <span class="detail-value">{{ c.email || '—' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Телефон</span>
+        <span class="detail-value">{{ c.phone || '—' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Адрес</span>
+        <span class="detail-value">{{ c.address || '—' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Tax ID</span>
+        <span class="detail-value">{{ c.taxId || '—' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Координаты</span>
+        <span class="detail-value">
+          @if (c.latitude && c.longitude) {
+            {{ c.latitude }}, {{ c.longitude }}
+          } @else {
+            Не заданы
+          }
+        </span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Статус</span>
+        <span class="detail-value">
+          <span [class]="c.isActive ? 'badge--active' : 'badge--inactive'">
+            {{ c.isActive ? 'Активен' : 'Неактивен' }}
+          </span>
+        </span>
+      </div>
+    </div>
+
+    @if (c.latitude && c.longitude) {
+      <div class="map-section">
+        <h3>Местоположение</h3>
+        <app-map-picker
+          [centerLat]="c.latitude"
+          [centerLon]="c.longitude"
+          mode="point"
+          [editable]="false"
+          [height]="300"
+        ></app-map-picker>
+      </div>
+    }
+  </div>
+}

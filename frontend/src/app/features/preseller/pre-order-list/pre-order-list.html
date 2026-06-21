@@ -1,0 +1,48 @@
+<div class="list-page">
+  <div class="list-page__toolbar">
+    <h1 i18n="@@preseller.list.title">Предзаказы</h1>
+    <dx-button text="Добавить" icon="add" type="default" stylingMode="contained" [routerLink]="['new']" />
+  </div>
+
+  @if (loading()) {
+    <dx-progress-bar [visible]="true" />
+  }
+  @if (error()) {
+    <p class="list-page__error">{{ error() }}</p>
+  }
+
+  <dx-data-grid
+    [dataSource]="items()"
+    [showBorders]="true"
+    [hoverStateEnabled]="true"
+    [columnAutoWidth]="true"
+    [showColumnLines]="true"
+    [showRowLines]="true"
+  >
+    <dxi-column dataField="number" caption="Номер" i18n-caption="@@preseller.list.number" [sortOrder]="'desc'" />
+    <dxi-column dataField="customerName" caption="Клиент" i18n-caption="@@preseller.list.customer" />
+    <dxi-column dataField="presellerName" caption="Продавец" i18n-caption="@@preseller.list.preseller" />
+    <dxi-column dataField="status" caption="Статус" i18n-caption="@@preseller.list.status" cellTemplate="statusCell" />
+    <dxi-column dataField="totalAmount" caption="Сумма" i18n-caption="@@preseller.list.total" [format]="'#,##0.00'" />
+    <dxi-column dataField="lineCount" caption="Позиций" i18n-caption="@@preseller.list.lines" [width]="80" />
+    <dxi-column dataField="orderDateUtc" caption="Дата" i18n-caption="@@preseller.list.date" dataType="date" [format]="'dd.MM.yyyy'" />
+    <dxi-column caption="" [width]="100" cellTemplate="actions" />
+
+    <div *dxTemplate="let d of 'statusCell'">
+      <span [class]="'status-badge ' + statusCss(d.data.status)">
+        {{ statusText(d.data.status) }}
+      </span>
+    </div>
+
+    <div *dxTemplate="let d of 'actions'">
+      <a [routerLink]="[d.data.id]">
+        <dx-button icon="info" hint="View" stylingMode="text" />
+      </a>
+      @if (d.data.status === 0) {
+        <a [routerLink]="[d.data.id, 'edit']">
+          <dx-button icon="edit" hint="Edit" stylingMode="text" />
+        </a>
+      }
+    </div>
+  </dx-data-grid>
+</div>

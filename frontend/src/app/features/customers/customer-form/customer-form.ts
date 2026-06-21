@@ -3,14 +3,15 @@ import { DxFormModule, DxButtonModule, DxProgressBarModule } from 'devextreme-an
 import { ActivatedRoute, Router } from '@angular/router';
 import { CustomerSoService } from '../services/customer-so.service';
 import { ErrorToastService } from '../../../core/services/error-toast.service';
+import { MapPicker } from '../../../shared/map-picker/map-picker';
 
-@Component({selector:'app-customer-form',imports:[DxFormModule,DxButtonModule,DxProgressBarModule],templateUrl:'./customer-form.html',styleUrl:'./customer-form.scss'})
+@Component({selector:'app-customer-form',imports:[DxFormModule,DxButtonModule,DxProgressBarModule,MapPicker],templateUrl:'./customer-form.html',styleUrl:'./customer-form.scss'})
 export class CustomerForm implements OnInit {
   private readonly svc=inject(CustomerSoService);private readonly route=inject(ActivatedRoute);private readonly router=inject(Router);private readonly toast=inject(ErrorToastService);
   protected readonly editId=this.route.snapshot.paramMap.get('id');protected readonly isEdit=this.editId!==null;
-  protected readonly saving=signal(false);protected readonly loading=signal(false);protected readonly err=signal<string|null>(null);
+  protected readonly saving=signal(false);protected readonly loading=signal(false);
   protected readonly title=this.isEdit?$localize`:@@cust.form.edit:Редактировать клиента`:$localize`:@@cust.form.create:Новый клиент`;
-  protected formData:any={code:'',name:'',contactName:'',email:'',phone:'',address:'',taxId:'',isActive:true};
+  protected formData:any={code:'',name:'',contactName:'',email:'',phone:'',address:'',taxId:'',latitude:null,longitude:null,isActive:true};
   protected readonly formItems:any[]=[
     {dataField:'code',label:{text:$localize`:@@cust.form.code:Код`},isRequired:true,editorOptions:{stylingMode:'outlined'}},
     {dataField:'name',label:{text:$localize`:@@cust.form.name:Название`},isRequired:true,editorOptions:{stylingMode:'outlined'}},
@@ -29,15 +30,14 @@ export class CustomerForm implements OnInit {
       error: (e) => { this.toast.showLoad(e); this.loading.set(false); },
     });
   }
-
+  protected onMapChanged(e:{lat:number;lon:number}){this.formData.latitude=e.lat;this.formData.longitude=e.lon;}
   submit(){
-    this.saving.set(true); this.err.set(null);
-    const r: any = { ...this.formData, contactName: this.formData.contactName || null, email: this.formData.email || null, phone: this.formData.phone || null, address: this.formData.address || null, taxId: this.formData.taxId || null };
+    this.saving.set(true);
+    const r: any = { ...this.formData, contactName: this.formData.contactName || null, email: this.formData.email || null, phone: this.formData.phone || null, address: this.formData.address || null, taxId: this.formData.taxId || null, latitude: this.formData.latitude || null, longitude: this.formData.longitude || null };
     const done = () => { this.saving.set(false); void this.router.navigate(['..'], { relativeTo: this.route }); };
     const fail = (e: any) => { this.toast.showSave(e); this.saving.set(false); };
     if (this.isEdit) { (this.svc.updateCustomer(this.editId!, r) as any).subscribe({ next: done, error: fail }); }
     else { (this.svc.createCustomer(r) as any).subscribe({ next: done, error: fail }); }
   }
-
   cancel(){ void this.router.navigate(['..'], { relativeTo: this.route }); }
 }

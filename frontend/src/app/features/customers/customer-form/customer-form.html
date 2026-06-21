@@ -1,2 +1,15 @@
 @if(loading()){<dx-progress-bar [visible]="true"/>}
-<div class="form-page"><div class="dx-card">@if(saving()){<dx-progress-bar [visible]="true"/>}<div class="form-page__header"><h2>{{title}}</h2></div><div class="form-page__content">@if(err()){<p class="form-page__error">{{err()}}</p>}<dx-form [formData]="formData" [colCount]="2" [items]="formItems"/><div class="form-actions"><dx-button text="Сохранить" type="default" stylingMode="contained" (onClick)="submit()"/><dx-button text="Отмена" stylingMode="outlined" (onClick)="cancel()"/></div></div></div></div>
+<div class="form-page"><div class="dx-card">@if(saving()){<dx-progress-bar [visible]="true"/>}<div class="form-page__header"><h2>{{title}}</h2></div><div class="form-page__content"><dx-form [formData]="formData" [colCount]="2" [items]="formItems"/>
+<h3 class="map-title">Местоположение</h3>
+<app-map-picker
+  [centerLat]="formData.latitude ?? 42.8746"
+  [centerLon]="formData.longitude ?? 74.5698"
+  mode="point"
+  [editable]="true"
+  [height]="300"
+  (centerChanged)="onMapChanged($event)"
+></app-map-picker>
+@if (formData.latitude && formData.longitude) {
+  <p class="coords-display">Координаты: {{ formData.latitude }}, {{ formData.longitude }}</p>
+}
+<div class="form-actions"><dx-button text="Сохранить" type="default" stylingMode="contained" (onClick)="submit()"/><dx-button text="Отмена" stylingMode="outlined" (onClick)="cancel()"/></div></div></div></div>

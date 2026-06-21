@@ -135,6 +135,7 @@ var app = builder.Build();
 await SeedRolesAsync(app);
 await SeedAdminUserAsync(app);
 await SeedDefaultPermissionsAsync(app);
+await SeedPaymentTypesAsync(app);
 
 if (app.Environment.IsDevelopment())
 {
@@ -184,7 +185,7 @@ static async Task SeedAdminUserAsync(WebApplication app)
     }
 }
 
-// Seeds default TenantPermission rows for new roles (Auditor, Dispatcher, HR).
+// Seeds default TenantPermission rows for new roles (Auditor, Dispatcher, HR, Driver, Preseller).
 static async Task SeedDefaultPermissionsAsync(WebApplication app)
 {
     using var scope = app.Services.CreateScope();
@@ -196,5 +197,20 @@ static async Task SeedDefaultPermissionsAsync(WebApplication app)
     {
         var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
         logger.LogWarning(ex, "Default permission seeding skipped.");
+    }
+}
+
+// Seeds default payment types (Наличные, Безналичный, Карта, Кредит).
+static async Task SeedPaymentTypesAsync(WebApplication app)
+{
+    using var scope = app.Services.CreateScope();
+    try
+    {
+        await IdentitySeeder.SeedPaymentTypesAsync(scope.ServiceProvider);
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
+        logger.LogWarning(ex, "Payment type seeding skipped.");
     }
 }

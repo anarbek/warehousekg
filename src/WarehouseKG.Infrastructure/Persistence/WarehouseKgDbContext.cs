@@ -102,6 +102,10 @@ public class WarehouseKgDbContext
     public DbSet<Geofence> Geofences => Set<Geofence>();
     public DbSet<Tenant> Tenants => Set<Tenant>();
 
+    public DbSet<PaymentType> PaymentTypes => Set<PaymentType>();
+    public DbSet<PreOrder> PreOrders => Set<PreOrder>();
+    public DbSet<PreOrderLine> PreOrderLines => Set<PreOrderLine>();
+
     public Guid CurrentTenantId => _tenantProvider.GetTenantId();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

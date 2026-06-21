@@ -12,6 +12,8 @@ public record CreateCustomerCommand(
     string? Phone,
     string? Address,
     string? TaxId,
+    double? Latitude = null,
+    double? Longitude = null,
     bool IsActive = true) : IRequest<Guid>;
 
 public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommand, Guid>
@@ -35,6 +37,8 @@ public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerComman
             Phone = request.Phone,
             Address = request.Address,
             TaxId = request.TaxId,
+            Latitude = request.Latitude,
+            Longitude = request.Longitude,
             IsActive = request.IsActive
         };
 

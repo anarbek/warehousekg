@@ -1,5 +1,5 @@
-export interface Customer { id: string; code: string; name: string; contactName?: string|null; email?: string|null; phone?: string|null; address?: string|null; taxId?: string|null; isActive: boolean; }
-export interface CreateCustomerRequest { code: string; name: string; contactName?: string|null; email?: string|null; phone?: string|null; address?: string|null; taxId?: string|null; isActive: boolean; }
+export interface Customer { id: string; code: string; name: string; contactName?: string|null; email?: string|null; phone?: string|null; address?: string|null; taxId?: string|null; latitude?: number|null; longitude?: number|null; isActive: boolean; }
+export interface CreateCustomerRequest { code: string; name: string; contactName?: string|null; email?: string|null; phone?: string|null; address?: string|null; taxId?: string|null; latitude?: number|null; longitude?: number|null; isActive: boolean; }
 export type UpdateCustomerRequest = CreateCustomerRequest;
 export type SalesOrderStatus = 'Draft'|'Confirmed'|'Shipped'|'Cancelled';
 export interface SalesOrderLine { id?: string; inventoryItemId: string; inventoryItemName?: string|null; quantity: number; unitPrice: number; lineTotal: number; }

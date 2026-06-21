@@ -20,4 +20,12 @@ class ApiConstants {
   static String stopArrive(String routeId, String stopId) => '$apiPrefix/routes/$routeId/stops/$stopId/arrive';
   static String stopComplete(String routeId, String stopId) => '$apiPrefix/routes/$routeId/stops/$stopId/complete';
   static String stopSkip(String routeId, String stopId) => '$apiPrefix/routes/$routeId/stops/$stopId/skip';
+
+  // ─── Preseller ────────────────────────────────────
+  static const String preOrders = '$apiPrefix/pre-orders';
+  static const String myPreOrders = '$apiPrefix/pre-orders/my';
+  static const String paymentTypes = '$apiPrefix/payment-types';
+  static const String preOrderWarehouseStock = '$apiPrefix/pre-orders/warehouse-stock';
+  static String preOrderDetail(String id) => '$preOrders/$id';
+  static String preOrderSubmit(String id) => '$preOrders/$id/submit';
 }

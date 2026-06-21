@@ -1,0 +1,13 @@
+{
+  "number": "TEST-FLUTTER2",
+  "customerId": "5ed63d5e-6cc9-4611-85ed-c0c885320429",
+  "warehouseId": "6d835177-f5f1-4f01-a944-44fb2bafce43",
+  "paymentType": "Наличные",
+  "currency": "KGS",
+  "expectedDateUtc": "2026-06-22T00:00:00.000",
+  "notes": "test flutter format",
+  "lines": [
+    {"inventoryItemId": "21ca97d7-53f7-4ccd-a98a-3af249e118c0", "quantity": 5, "unitPrice": 2.0, "discountPercent": 0},
+    {"inventoryItemId": "b90df7e4-510c-4aa8-a1c1-8e42a448f7e3", "quantity": 5, "unitPrice": 3.0, "discountPercent": 0}
+  ]
+}
