@@ -98,6 +98,12 @@ If the DB already exists this is a harmless no-op; if it doesn't, tests will fai
 - **Auto-ship inventory deduction** — `CompleteDeliveryStopCommandHandler` must `.Include(so => so.Lines)` and deduct `QuantityOnHand`; don't just set `Status = Shipped`
 - **`TenantId` Guid.Empty guard** — `ApplyTenantId()` skips when `tenantId == Guid.Empty`; don't remove that guard
 - **EF Core concurrency on update** — update existing child entities in-place by key instead of `RemoveRange` + re-add
+- **EF Core navigation collection rebuild** — do NOT `.Include()` child collections when rebuilding. Query old children directly via `.Where(l => l.ParentId == request.Id)`, delete with `RemoveRange`, add new with explicit FK. Avoids `DbUpdateConcurrencyException`.
+- **Flutter `TextFormField` recalculation** — every number field used in computed expressions MUST have `onChanged` with `setState(() {})`. Without it, changes don't trigger rebuilds and computed values stay stale.
+- **Flutter autocomplete dismiss** — call `FocusScope.of(context).unfocus()` after selecting an item or after clicking add, to dismiss both keyboard and dropdown overlay.
+- **Flutter modal layout** — use `Column` with `Expanded(child: ListView(...))` for fixed-top + scrollable-bottom layouts. Don't wrap everything in a single `ListView`.
+- **Flutter `initialValue` on dropdown** — use `initialValue` not `value` on `DropdownButtonFormField` (Flutter 3.33+ deprecated `value`).
+- **Angular `dx-number-box` select-all** — use `(onFocusIn)` with `setTimeout(() => e.element.querySelector('input').select())`.
 - **Angular route order** — static routes before `:id` param routes
 - **DevExtreme popup footer** — `dx-toolbar` must be INSIDE `*dxTemplate="let data of 'content'"`, not outside
 - **Stale JWT after backend restart** — sessions are invalidated; flush secure storage and re-login on the mobile device
