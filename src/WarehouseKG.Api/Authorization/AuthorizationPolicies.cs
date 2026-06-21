@@ -11,6 +11,8 @@ public static class AuthorizationPolicies
 {
     public const string RequireAdmin = "RequireAdmin";
 
+    public const string RequireSuperadmin = "RequireSuperadmin";
+
     public const string RequireManager = "RequireManager";
 
     public const string RequireOperator = "RequireOperator";
@@ -25,6 +27,8 @@ public static class AuthorizationPolicies
         services.AddScoped<IAuthorizationHandler, TenantPermissionHandler>();
 
         services.AddAuthorizationBuilder()
+            .AddPolicy(RequireSuperadmin, policy =>
+                policy.RequireRole(Roles.Superadmin))
             .AddPolicy(RequireAdmin, policy =>
                 policy.RequireRole(Roles.Admin))
             .AddPolicy(RequireManager, policy =>

@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth.guard';
+import { superadminGuard } from './core/auth/superadmin.guard';
 
 export const routes: Routes = [
   {
@@ -72,6 +73,12 @@ export const routes: Routes = [
         path: 'dispatching',
         loadChildren: () =>
           import('./features/dispatching/dispatching.routes').then((m) => m.dispatchingRoutes),
+      },
+      {
+        path: 'superadmin',
+        canActivate: [superadminGuard],
+        loadChildren: () =>
+          import('./features/superadmin/superadmin.routes').then((m) => m.superadminRoutes),
       },
     ],
   },

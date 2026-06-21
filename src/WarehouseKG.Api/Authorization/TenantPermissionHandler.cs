@@ -39,6 +39,13 @@ public class TenantPermissionHandler : AuthorizationHandler<TenantPermissionRequ
         var tenantId = Guid.Parse(tenantIdClaim);
         var roles = context.User.FindAll(ClaimTypes.Role).Select(r => r.Value).ToList();
 
+        // Superadmin bypasses all permission checks
+        if (roles.Contains(Roles.Superadmin))
+        {
+            context.Succeed(requirement);
+            return;
+        }
+
         // Admin bypasses all permission checks
         if (roles.Contains(Roles.Admin))
         {

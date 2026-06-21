@@ -64,6 +64,12 @@ public class WarehouseKgClient
         return await _http.GetAsync(url);
     }
 
+    /// <summary>Raw HTTP PUT — returns full response.</summary>
+    public async Task<HttpResponseMessage> PutRawAsync(string url, object? body = null)
+    {
+        return await _http.PutAsJsonAsync(url, body);
+    }
+
     /// <summary>Raw HTTP POST — returns full response for permission testing.</summary>
     public async Task<HttpResponseMessage> PostRawAsync(string url, object? body = null)
     {

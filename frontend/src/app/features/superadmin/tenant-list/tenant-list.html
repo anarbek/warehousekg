@@ -1,0 +1,51 @@
+<div class="list-page">
+  <div class="list-page__toolbar">
+    <h1 i18n="@@tenant.list.title">Арендаторы</h1>
+    <dx-button
+      text="Добавить арендатора"
+      icon="add"
+      type="default"
+      stylingMode="contained"
+      [routerLink]="['new']"
+    />
+  </div>
+
+  @if (loading()) {
+    <dx-progress-bar [visible]="true" />
+  }
+
+  @if (error()) {
+    <p class="list-page__error">{{ error() }}</p>
+  }
+
+  <dx-data-grid
+    [dataSource]="tenants()"
+    [showBorders]="true"
+    [allowColumnResizing]="true"
+    [hoverStateEnabled]="true"
+    [showColumnLines]="true"
+    [showRowLines]="true"
+  >
+    <dxi-column dataField="name" caption="Название" [sortOrder]="'asc'" />
+    <dxi-column dataField="slug" caption="Slug" [width]="140" />
+    <dxi-column dataField="contactEmail" caption="Email" />
+    <dxi-column dataField="defaultCurrency" caption="Валюта" [width]="100" />
+    <dxi-column dataField="status" caption="Статус" [width]="140" cellTemplate="statusCell" />
+    <dxi-column dataField="userCount" caption="Пользователи" [width]="120" />
+    <dxi-column dataField="createdAt" caption="Создан" dataType="date" [width]="120" />
+    <dxi-column caption="" [width]="100" cellTemplate="actionsCell" />
+
+    <div *dxTemplate="let cell of 'statusCell'">
+      {{ statusText(cell.value) }}
+    </div>
+
+    <div *dxTemplate="let cell of 'actionsCell'">
+      <a [routerLink]="[cell.data.id]">
+        <dx-button icon="info" hint="Просмотр" stylingMode="text" />
+      </a>
+      <a [routerLink]="[cell.data.id, 'edit']">
+        <dx-button icon="edit" hint="Редактировать" stylingMode="text" />
+      </a>
+    </div>
+  </dx-data-grid>
+</div>

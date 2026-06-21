@@ -11,6 +11,8 @@ interface NavItem {
   icon?: string;
   path?: string;
   resource?: string;
+  module?: string;
+  requiresSuperadmin?: boolean;
   items?: NavItem[];
   expanded?: boolean;
 }
@@ -29,9 +31,8 @@ export class Sidenav implements OnInit {
   private readonly allItems: NavItem[] = [
     { id: 'dashboard', icon: 'chart', text: $localize`:@@nav.dashboard:Панель управления`, path: '/dashboard' },
     {
-      id: 'warehouse-group', icon: 'home',
+      id: 'warehouse-group', icon: 'home', module: 'inventory',
       text: $localize`:@@nav.groups.warehouse:Склад`,
-      expanded: true,
       items: [
         { id: 'warehouses', icon: 'home', text: $localize`:@@nav.warehouses:Склады`, path: '/inventory/warehouses', resource: 'warehouses' },
         { id: 'items', icon: 'product', text: $localize`:@@nav.inventory:Товары`, path: '/inventory/items', resource: 'inventory-items' },
@@ -46,7 +47,7 @@ export class Sidenav implements OnInit {
       ],
     },
     {
-      id: 'crm-group', icon: 'user',
+      id: 'crm-group', icon: 'user', module: 'crm',
       text: $localize`:@@nav.groups.crm:Клиенты и поставщики`,
       items: [
         { id: 'suppliers', icon: 'globe', text: $localize`:@@nav.suppliers:Поставщики`, path: '/suppliers/suppliers', resource: 'suppliers' },
@@ -56,7 +57,7 @@ export class Sidenav implements OnInit {
       ],
     },
     {
-      id: 'personnel-group', icon: 'card',
+      id: 'personnel-group', icon: 'card', module: 'personnel',
       text: $localize`:@@nav.groups.personnel:Персонал`,
       items: [
         { id: 'employees', icon: 'user', text: $localize`:@@nav.employees:Сотрудники`, path: '/personnel/employees', resource: 'employees' },
@@ -67,7 +68,7 @@ export class Sidenav implements OnInit {
       ],
     },
     {
-      id: 'vehicles-group', icon: 'car',
+      id: 'vehicles-group', icon: 'car', module: 'vehicles',
       text: $localize`:@@nav.groups.vehicles:Автопарк`,
       items: [
         { id: 'vehicles', icon: 'car', text: $localize`:@@nav.vehicles:Транспорт`, path: '/vehicles/list', resource: 'vehicles' },
@@ -78,27 +79,30 @@ export class Sidenav implements OnInit {
       ],
     },
     {
-      id: 'dispatching-group', icon: 'map',
+      id: 'dispatching-group', icon: 'map', module: 'dispatching',
       text: $localize`:@@nav.groups.dispatching:Диспетчерская`,
       items: [
         { id: 'disp-routes', icon: 'map', text: $localize`:@@nav.dispatchingRoutes:Маршруты`, path: '/dispatching/routes', resource: 'delivery-routes' },
         { id: 'disp-geofences', icon: 'globe', text: $localize`:@@nav.geofences:Геозоны`, path: '/dispatching/geofences', resource: 'geofences' },
       ],
     },
-    { id: 'reports', icon: 'chart', text: $localize`:@@nav.reports:Отчёты`, path: '/reports', resource: 'reports' },
+    { id: 'reports', icon: 'chart', text: $localize`:@@nav.reports:Отчёты`, path: '/reports', resource: 'reports', module: 'reports' },
     { id: 'admin', icon: 'key', text: $localize`:@@nav.admin:Администрирование`, path: '/admin', resource: 'users' },
+    { id: 'superadmin', icon: 'key', text: $localize`:@@nav.superadmin:Суперадмин`, path: '/superadmin/tenants', requiresSuperadmin: true },
   ];
 
   protected readonly items = signal<NavItem[]>([]);
 
   ngOnInit(): void {
-    this.http.get<{ resources: Record<string, ResourcePermissions>; roles: string[] }>(
+    this.http.get<{ resources: Record<string, ResourcePermissions>; roles: string[]; enabledModules: string[] }>(
       `${AppSettings.apiBaseUrl}/auth/my-permissions`,
     ).subscribe({
       next: (data) => {
         this.perms.setAll(data.resources, data.roles);
         const isAdmin = data.roles.includes('Admin');
-        this.items.set(this.filterItems(this.allItems, data.resources, isAdmin));
+        const isSuperadmin = data.roles.includes('Superadmin');
+        const enabledModules = data.enabledModules ?? [];
+        this.items.set(this.filterItems(this.allItems, data.resources, isAdmin, isSuperadmin, enabledModules));
       },
       error: () => {
         this.items.set(this.allItems);
@@ -106,16 +110,31 @@ export class Sidenav implements OnInit {
     });
   }
 
-  /// Recursively filter items: Admin sees everything, others by permission.
-  private filterItems(items: NavItem[], permissions: Record<string, ResourcePermissions>, isAdmin: boolean): NavItem[] {
+  /// Recursively filter items: module restriction applies to Admin too (unless Superadmin).
+  private filterItems(
+    items: NavItem[],
+    permissions: Record<string, ResourcePermissions>,
+    isAdmin: boolean,
+    isSuperadmin: boolean,
+    enabledModules: string[],
+  ): NavItem[] {
     const result: NavItem[] = [];
     for (const item of items) {
+      // Superadmin-only items: visible ONLY to users with the Superadmin role
+      if (item.requiresSuperadmin) {
+        if (isSuperadmin) result.push(item);
+        continue;
+      }
+      // Module-restricted items: skip if module is set and not enabled (Superadmin bypasses)
+      if (item.module && !isSuperadmin && enabledModules.length > 0 && !enabledModules.includes(item.module)) {
+        continue;
+      }
       if (item.items && item.items.length > 0) {
-        const filteredChildren = this.filterItems(item.items, permissions, isAdmin);
+        const filteredChildren = this.filterItems(item.items, permissions, isAdmin, isSuperadmin, enabledModules);
         if (filteredChildren.length > 0) {
           result.push({ ...item, items: filteredChildren });
         }
-      } else if (!item.resource || isAdmin || permissions[item.resource]?.canRead === true) {
+      } else if (!item.resource || isAdmin || isSuperadmin || permissions[item.resource]?.canRead === true) {
         result.push(item);
       }
     }

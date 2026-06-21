@@ -17,6 +17,8 @@ Multi-tenant warehouse management system. See `docs/obsidian-vault/00-Project-Ov
 
 **Auth** — JWT Bearer + hybrid RBAC/PBAC. Every controller action uses `[Authorize(Policy = "{resource}:read|write|delete")]`. Admin role bypasses all checks. See `docs/obsidian-vault/04-Auth-Flow.md`.
 
+**Superadmin** — `RequireSuperadmin` policy for cross-tenant endpoints. Superadmin users have `TenantId = Guid.Empty`. All tenant queries must `.IgnoreQueryFilters()`. Superadmin bypasses `TenantPermissionHandler`. See `docs/obsidian-vault/2026-06-21.md`.
+
 **Frontend** — Angular 20 standalone components with DevExtreme 24.2. State via `signal<>()`, DI via `inject()`.
 **Mobile** — Flutter with Riverpod, GoRouter, Dio. See `docs/obsidian-vault/08-Mobile-App.md`.
 
@@ -37,6 +39,8 @@ Multi-tenant warehouse management system. See `docs/obsidian-vault/00-Project-Ov
 
 - **All entities inherit `BaseEntity`** — provides `Id` (Guid) and `TenantId`
 - **TenantId is automatic**: global query filter + `SaveChanges` stamping. Do NOT set it in application code
+- **Exception**: `Tenant` entity uses `TenantId = Guid.Empty` (not scoped to any tenant). `ApplyTenantId()` skips when `tenantId == Guid.Empty`.
+- **Cross-tenant queries**: Use `.IgnoreQueryFilters()` in handlers that need to access data across all tenants (e.g., `TenantsController`, superadmin queries).
 - **Index pattern**: include `TenantId` as leading column: `(TenantId, Code)`, `(TenantId, Sku)`, etc.
 - **Migrations**: `dotnet ef migrations add Name --project src/WarehouseKG.Infrastructure --startup-project src/WarehouseKG.Api`
 - **DB update**: `dotnet ef database update --project src/WarehouseKG.Infrastructure --startup-project src/WarehouseKG.Api`
@@ -97,6 +101,10 @@ If the DB already exists this is a harmless no-op; if it doesn't, tests will fai
 - **Angular route order** — static routes before `:id` param routes
 - **DevExtreme popup footer** — `dx-toolbar` must be INSIDE `*dxTemplate="let data of 'content'"`, not outside
 - **Stale JWT after backend restart** — sessions are invalidated; flush secure storage and re-login on the mobile device
+- **Seed data must fill all required fields** — `ItemCategory` needs `Code` + `IsActive`; `UnitOfMeasure` needs `Code` + `IsActive`. Missing required fields cause `InternalServerError`.
+- **PUT in tests** — use `PutRawAsync` (HTTP PUT), not `PostRawAsync` (HTTP POST) for update endpoints. `PostRawAsync` returns `405 MethodNotAllowed`.
+- **Capture generated values** — store admin username before creating tenant in tests; don't generate a second random value.
+- **`IgnoreQueryFilters()` for all superadmin queries** — superadmin has `TenantId = Guid.Empty`, so the global tenant filter would exclude everything.
 
 ## Integration Tests
 
@@ -105,11 +113,13 @@ If the DB already exists this is a harmless no-op; if it doesn't, tests will fai
 - Payloads: anonymous objects (no DTOs needed in tests)
 - Parsing: `System.Text.Json.JsonElement` → `.GetProperty("id").GetString()`
 - Test DB: `WAREHOUSEKG_TEST` on same PostgreSQL instance (port 15432)
-- Fixtures: `SharedFixture` logs in once as `admin`/`Admin1234!` for all tests
+- Fixtures: `SharedFixture` logs in once as `admin`/`Admin1234!` for all tests; `CreateClientAsync("superadmin", "Super1234!")` for superadmin-scoped tests
+- Test user seeding: `TestWebApplicationFactory` seeds `admin`/`Admin1234!` and `superadmin`/`Super1234!` (with `TenantId = Guid.Empty` and `Superadmin` role)
 
 ## Documentation
 
 - Full docs: `docs/obsidian-vault/` (Obsidian vault, 12 topic files + session logs)
 - Key files: `00-Project-Overview.md`, `01-Architecture.md`, `02-Database-Schema.md`, `03-API-Endpoints.md`, `04-Auth-Flow.md`, `08-Mobile-App.md`, `12-Design-Guidelines.md`
+- Session logs: `2026-06-19.md`, `2026-06-20.md`, `2026-06-21.md` — detailed change logs for each session
 - Dev workflow (restart commands, browser testing): stored in user memory
 - Roadmap: `docs/obsidian-vault/09-Roadmap.md`

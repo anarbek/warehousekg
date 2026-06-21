@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using WarehouseKG.Application.Common.Interfaces;
 using WarehouseKG.Application.Common.Models;
 using WarehouseKG.Domain.Identity;
@@ -132,5 +133,22 @@ public class IdentityService : IIdentityService
     {
         var roles = await _userManager.GetRolesAsync(user);
         return new AuthUser(user.Id, user.UserName ?? string.Empty, user.Email, user.TenantId, roles.ToList(), user.EmployeeId);
+    }
+
+    public async Task<int> GetUserCountForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)
+    {
+        return await _userManager.Users.CountAsync(u => u.TenantId == tenantId, cancellationToken);
+    }
+
+    public async Task<Guid?> GetAdminUserIdForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)
+    {
+        var admins = await _userManager.GetUsersInRoleAsync(Roles.Admin);
+        return admins.FirstOrDefault(u => u.TenantId == tenantId)?.Id;
+    }
+
+    public async Task<string?> GetAdminUserNameForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)
+    {
+        var admins = await _userManager.GetUsersInRoleAsync(Roles.Admin);
+        return admins.FirstOrDefault(u => u.TenantId == tenantId)?.UserName;
     }
 }

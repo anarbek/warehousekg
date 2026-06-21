@@ -100,6 +100,7 @@ public class WarehouseKgDbContext
     public DbSet<DeliveryStop> DeliveryStops => Set<DeliveryStop>();
     public DbSet<DeliveryShipment> DeliveryShipments => Set<DeliveryShipment>();
     public DbSet<Geofence> Geofences => Set<Geofence>();
+    public DbSet<Tenant> Tenants => Set<Tenant>();
 
     public Guid CurrentTenantId => _tenantProvider.GetTenantId();
 

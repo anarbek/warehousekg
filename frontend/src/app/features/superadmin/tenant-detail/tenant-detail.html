@@ -1,0 +1,99 @@
+<div class="detail-page">
+  @if (loading()) {
+    <p>Загрузка...</p>
+  } @else if (error()) {
+    <p class="detail-page__error">{{ error() }}</p>
+  } @else if (tenant(); as t) {
+
+    <dx-toolbar>
+      <dxi-item location="before">
+        <h1>{{ t.name }}</h1>
+      </dxi-item>
+      <dxi-item location="after">
+        <dx-button text="Назад" icon="arrowleft" stylingMode="text" (onClick)="back()" />
+      </dxi-item>
+      @if (canWrite()) {
+        <dxi-item location="after">
+          <dx-button text="Редактировать" icon="edit" stylingMode="outlined" (onClick)="edit()" />
+        </dxi-item>
+      }
+      @if (canDelete() && t.status === TenantStatus.Active) {
+        <dxi-item location="after">
+          <dx-button text="Приостановить" icon="close" type="danger" stylingMode="outlined" (onClick)="suspend()" [disabled]="actionInProgress()" />
+        </dxi-item>
+      }
+      @if (canDelete() && t.status === TenantStatus.Suspended) {
+        <dxi-item location="after">
+          <dx-button text="Активировать" icon="check" type="default" stylingMode="outlined" (onClick)="activate()" [disabled]="actionInProgress()" />
+        </dxi-item>
+      }
+      @if (canWrite() && t.adminUserId) {
+        <dxi-item location="after">
+          <dx-button text="Сменить пароль" icon="key" stylingMode="outlined" (onClick)="openPasswordReset()" />
+        </dxi-item>
+      }
+    </dx-toolbar>
+
+    <div class="dx-card" style="margin-top: 16px; padding: 16px;">
+      <dx-form [formData]="t" [readOnly]="true" [colCount]="2">
+        <dxi-item dataField="name" [label]="{ text: 'Название' }" />
+        <dxi-item dataField="slug" [label]="{ text: 'Slug' }" />
+        <dxi-item dataField="contactEmail" [label]="{ text: 'Email' }" />
+        <dxi-item dataField="contactPhone" [label]="{ text: 'Телефон' }" />
+        <dxi-item dataField="defaultCurrency" [label]="{ text: 'Валюта' }" />
+        <dxi-item dataField="status" [label]="{ text: 'Статус' }">
+          <div *dxTemplate>{{ statusText(t.status) }}</div>
+        </dxi-item>
+        <dxi-item dataField="userCount" [label]="{ text: 'Пользователи' }" />
+        @if (t.adminUserName) {
+          <dxi-item [label]="{ text: 'Администратор' }">
+            <div *dxTemplate>{{ t.adminUserName }}</div>
+          </dxi-item>
+        }
+        <dxi-item dataField="maxUsers" [label]="{ text: 'Макс. пользователей' }" />
+        <dxi-item dataField="enabledModules" [label]="{ text: 'Включённые модули' }" />
+        <dxi-item dataField="createdAt" [label]="{ text: 'Создан' }" dataType="date" />
+      </dx-form>
+    </div>
+
+    <!-- Password Reset Popup -->
+    <dx-popup
+      [visible]="passwordResetVisible()"
+      (onHiding)="passwordResetVisible.set(false)"
+      title="Сменить пароль администратора"
+      [width]="400"
+      [height]="'auto'"
+      [showCloseButton]="true"
+      [closeOnOutsideClick]="true"
+    >
+      <div *dxTemplate="let data of 'content'" style="padding: 16px;">
+        @if (passwordResetError()) {
+          <p style="color: red; margin-bottom: 12px;">{{ passwordResetError() }}</p>
+        }
+        <dx-text-box
+          [(value)]="newPassword"
+          mode="password"
+          placeholder="Новый пароль"
+          stylingMode="outlined"
+          [disabled]="passwordResetting()"
+          (onEnterKey)="resetPassword()"
+        />
+        <div style="margin-top: 16px; display: flex; gap: 8px; justify-content: flex-end;">
+          <dx-button
+            text="Отмена"
+            stylingMode="text"
+            (onClick)="passwordResetVisible.set(false)"
+            [disabled]="passwordResetting()"
+          />
+          <dx-button
+            text="Сменить"
+            type="default"
+            stylingMode="contained"
+            (onClick)="resetPassword()"
+            [disabled]="passwordResetting() || !newPassword()"
+          />
+        </div>
+      </div>
+    </dx-popup>
+  }
+</div>

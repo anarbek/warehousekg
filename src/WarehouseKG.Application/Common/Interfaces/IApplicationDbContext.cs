@@ -73,5 +73,7 @@ public interface IApplicationDbContext
     DbSet<DeliveryShipment> DeliveryShipments { get; }
     DbSet<Geofence> Geofences { get; }
 
+    DbSet<Tenant> Tenants { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

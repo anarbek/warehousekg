@@ -709,6 +709,104 @@ The route detail page shows a Leaflet map with:
 
 ---
 
+## Tenants API (Superadmin only) — `/api/v1/tenants`
+
+> **Auth**: All endpoints require `[Authorize(Policy = "RequireSuperadmin")]`.
+> Superadmin users have `TenantId = Guid.Empty` — they bypass the global tenant filter via `.IgnoreQueryFilters()`.
+
+### Frontend routes (Angular)
+
+| Angular route | Component |
+|---|---|
+| `/superadmin/tenants` | `TenantList` — data grid with name, slug, email, currency, status, user count, created |
+| `/superadmin/tenants/new` | `TenantForm` — create tenant with admin user + optional demo data seeding |
+| `/superadmin/tenants/:id` | `TenantDetail` — detail view with suspend/activate workflow buttons |
+| `/superadmin/tenants/:id/edit` | `TenantForm` (edit mode) |
+
+The `TenantService` wraps `/api/v1/tenants`.
+
+### Endpoints
+
+| Method | Route | Description | Success |
+|--------|-------|-------------|---------|
+| GET | `/api/v1/tenants` | List all tenants (with user counts) | `200 OK` |
+| GET | `/api/v1/tenants/{id}` | Get tenant detail | `200 OK` / `404` |
+| POST | `/api/v1/tenants` | Create tenant + admin user + optional demo data | `201 Created` |
+| PUT | `/api/v1/tenants/{id}` | Update tenant info | `204` / `404` |
+| POST | `/api/v1/tenants/{id}/suspend` | Suspend tenant (sets `Status = Suspended`) | `204` / `404` |
+| POST | `/api/v1/tenants/{id}/activate` | Activate tenant (sets `Status = Active`) | `204` / `404` |
+| PUT | `/api/v1/tenants/{tenantId}/users/{userId}/password` | Reset a tenant user's password | `204` / `404` / `400` |
+
+### Create body
+
+```json
+{
+  "name": "ООО Тестовая Компания",
+  "slug": "test-company",
+  "contactEmail": "info@company.kz",
+  "contactPhone": "+77011234567",
+  "defaultCurrency": "KGS",
+  "adminUserName": "testadmin",
+  "adminEmail": "admin@company.kz",
+  "adminPassword": "Test1234!",
+  "seedDemoData": true
+}
+```
+
+**`seedDemoData: true`** creates 3 item categories (GEN/ELEC/FOOD), 3 units of measure (pcs/kg/l), and 1 warehouse ("Основной склад").
+
+### TenantDto response shape
+
+```json
+{
+  "id": "guid",
+  "name": "string",
+  "slug": "string",
+  "contactEmail": "string|null",
+  "contactPhone": "string|null",
+  "defaultCurrency": "string (ISO 3-letter)",
+  "status": 1,
+  "maxUsers": "int|null",
+  "enabledModules": "string|null (comma-separated)",
+  "createdAt": "ISO 8601 UTC",
+  "userCount": 1
+}
+```
+
+**Status values**: `1` = Active, `2` = Suspended, `3` = Trial.
+
+### Access control
+
+| User role | GET | POST | PUT | Suspend/Activate |
+|-----------|-----|------|-----|-------------------|
+| Superadmin | ✅ | ✅ | ✅ | ✅ |
+| Admin (any tenant) | ❌ 403 | ❌ 403 | ❌ 403 | ❌ 403 |
+| All others | ❌ 403 | ❌ 403 | ❌ 403 | ❌ 403 |
+
+### Set up superadmin user
+
+```sql
+-- Create superadmin user via register API, then assign role:
+DELETE FROM "AspNetUserRoles" WHERE "UserId" = '<user-id>';
+INSERT INTO "AspNetUserRoles" ("UserId", "RoleId")
+  VALUES ('<user-id>', (SELECT "Id" FROM "AspNetRoles" WHERE "Name" = 'Superadmin'));
+```
+
+### Reset tenant user password
+
+```json
+PUT /api/v1/tenants/{tenantId}/users/{userId}/password
+{
+  "newPassword": "NewSecurePass123!"
+}
+```
+
+Superadmin only. Resets any user's password in any tenant. The user can then log in with the new password.
+
+Login: `superadmin` / `Super1234!` (after setup).
+
+---
+
 ## Integration Tests
 
 All dispatching and stock consistency behaviors are covered by integration tests in `tests/WarehouseKG.IntegrationTests/`.

@@ -60,6 +60,18 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
             await userManager.AddToRoleAsync(admin, "Admin");
         }
 
+        // Ensure Superadmin role exists and seed superadmin user
+        if (!await roleManager.RoleExistsAsync("Superadmin"))
+            await roleManager.CreateAsync(new ApplicationRole { Name = "Superadmin" });
+
+        var superadmin = await userManager.FindByNameAsync("superadmin");
+        if (superadmin is null)
+        {
+            superadmin = new ApplicationUser { UserName = "superadmin", Email = "superadmin@example.com", TenantId = Guid.Empty };
+            await userManager.CreateAsync(superadmin, "Super1234!");
+            await userManager.AddToRoleAsync(superadmin, "Superadmin");
+        }
+
         // Seed warehouse if none exist
         if (!db.Warehouses.IgnoreQueryFilters().Any(w => w.TenantId == tenantId))
         {

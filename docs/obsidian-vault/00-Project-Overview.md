@@ -45,6 +45,7 @@ warehousekg/
 | Vehicle Fleet | ✅ | ✅ Full | - |
 | Reporting | ✅ | ✅ Dashboard | - |
 | Admin | ✅ | ✅ Users, permissions | - |
+| Superadmin | ✅ | ✅ Tenant CRUD + seed | - |
 
 ## Ports
 

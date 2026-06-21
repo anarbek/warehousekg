@@ -48,6 +48,9 @@ public static class Resources
     public const string DeliveryShipments = "delivery-shipments";
     public const string Geofences = "geofences";
 
+    // Superadmin resources
+    public const string Tenants = "tenants";
+
     public static readonly IReadOnlyList<string> All = new[]
     {
         Warehouses, InventoryItems, ItemCategories, UnitsOfMeasure,
@@ -57,6 +60,7 @@ public static class Resources
         Reports, Users, AddItemsBackInTime, ReceivingDelete,
         Employees, Positions, Departments, Shifts, Attendance,
         Vehicles, VehicleTypes, Maintenance, Insurance, Inspections, FuelLogs,
-        DeliveryRoutes, DeliveryStops, DeliveryShipments, Geofences
+        DeliveryRoutes, DeliveryStops, DeliveryShipments, Geofences,
+        Tenants
     };
 }

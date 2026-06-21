@@ -35,4 +35,13 @@ public interface IIdentityService
         string? displayName,
         Guid tenantId,
         CancellationToken cancellationToken = default);
+
+    /// <summary>Returns the number of users belonging to a specific tenant.</summary>
+    Task<int> GetUserCountForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default);
+
+    /// <summary>Returns the ID of the first Admin user in a tenant, or null.</summary>
+    Task<Guid?> GetAdminUserIdForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default);
+
+    /// <summary>Returns the username of the first Admin user in a tenant, or null.</summary>
+    Task<string?> GetAdminUserNameForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default);
 }

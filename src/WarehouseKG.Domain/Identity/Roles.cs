@@ -5,6 +5,8 @@ namespace WarehouseKG.Domain.Identity;
 /// </summary>
 public static class Roles
 {
+    public const string Superadmin = "Superadmin";
+
     public const string Admin = "Admin";
 
     public const string Manager = "Manager";
@@ -23,6 +25,7 @@ public static class Roles
 
     public static readonly IReadOnlyList<string> All = new[]
     {
+        Superadmin,
         Admin,
         Manager,
         Auditor,

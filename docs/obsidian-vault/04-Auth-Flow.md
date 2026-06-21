@@ -15,14 +15,19 @@ Authorization is a **hybrid RBAC + tenant-scoped PBAC model**:
 
 ## Roles
 
-Four canonical roles are seeded at startup:
+Nine canonical roles are seeded at startup:
 
 | Role                | System Default                                        |
 | ------------------- | ----------------------------------------------------- |
+| `Superadmin`        | Full cross-tenant access. Manages tenants, bypasses tenant filter. TenantId = Guid.Empty. |
 | `Admin`             | Full access, user/tenant admin, bypasses all permission checks |
 | `Manager`           | Manage catalog, orders, suppliers, customers, and stock operations |
 | `WarehouseOperator` | Execute day-to-day stock operations (receiving, picking, packing, transfers, adjustments, audits) |
 | `Viewer`            | View dashboard and reports; read-only                 |
+| `Auditor`           | Read all, write adjustments + audits, delete audits   |
+| `Dispatcher`        | Read all, write fleet + purchase/sales/suppliers/customers |
+| `HR`                | Read all, write personnel resources                   |
+| `Driver`            | Read delivery resources, write routes + stops         |
 
 On first startup, the **first registered user automatically gets the Admin role** (`IdentitySeeder.SeedAdminUserAsync`).
 
@@ -48,6 +53,12 @@ Every controller action uses **resource-level policies** checked by `TenantPermi
 | `{resource}:read`   | `warehouses:read`                | GET requests    |
 | `{resource}:write`  | `stock-receipts:write`           | POST, PUT       |
 | `{resource}:delete` | `inventory-items:delete`         | DELETE          |
+
+### Superadmin Policy
+
+| Policy              | Satisfied by roles | Purpose |
+| ------------------- | ------------------ | ------- |
+| `RequireSuperadmin` | `Superadmin`       | Tenant management endpoints (`/api/v1/tenants`). Uses `.IgnoreQueryFilters()` to bypass tenant scope. |
 
 **18 resources** are defined in `Resources.All` (16 CRUD + 2 scenario):
 

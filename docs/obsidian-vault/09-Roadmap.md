@@ -4,6 +4,9 @@ Planned features, milestones, and the prioritized backlog over time.
 
 ## Completed
 
+- **Superadmin tenant management** ✅ — Full tenant CRUD with demo data seeding, suspend/activate workflow,
+  `RequireSuperadmin` auth policy, Angular module at `/superadmin/tenants`.
+  Superadmin users have `TenantId = Guid.Empty` (no tenant scope). See [[2026-06-21]].
 - **Authorization rollout** ✅ — All controllers use resource-based policies with hybrid RBAC + PBAC.
   Tenant permission matrix with `CanRead`/`CanWrite`/`CanDelete` per role per resource. Admin UI at
   `/admin/permissions` and `/admin/users`. See [[04-Auth-Flow]].
@@ -17,7 +20,6 @@ Planned features, milestones, and the prioritized backlog over time.
   notifications instead of generic inline text.
 
 ## Open items
-- Superadmin screen where user can create other Tenants.
 - Main site where user can register and create a Tenant himself, there should be basic questionnaire where he should be able to select which features he wants
 and app should create a basic setup with admin user, some categories and other basic data so the app is not empty when he logs in
 - Full live testing

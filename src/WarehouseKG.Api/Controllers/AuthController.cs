@@ -84,6 +84,15 @@ public class AuthController : ApiControllerBase
         var tenantId = Guid.Parse(tenantIdClaim);
         var result = new Dictionary<string, object>();
 
+        // Get tenant's enabled modules
+        var tenant = await context.Tenants
+            .IgnoreQueryFilters()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(t => t.Id == tenantId, cancellationToken);
+        var enabledModules = tenant?.EnabledModules
+            ?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToList() ?? new List<string>();
+
         foreach (var resource in Resources.All)
         {
             bool canRead = roles.Count > 0;
@@ -117,7 +126,7 @@ public class AuthController : ApiControllerBase
             result[resource] = new { canRead, canWrite, canDelete };
         }
 
-        return Ok(new { resources = result, roles });
+        return Ok(new { resources = result, roles, enabledModules });
     }
 
     /// <summary>

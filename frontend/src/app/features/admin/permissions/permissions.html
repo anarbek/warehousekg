@@ -14,6 +14,7 @@
   </div>
 
   <dx-data-grid [dataSource]="rows()" [showBorders]="true" [hoverStateEnabled]="true" [showColumnLines]="true" [showRowLines]="true">
+    <dxo-grouping [autoExpandAll]="false" />
     <dxi-column dataField="roleName" caption="Роль" [width]="150" [groupIndex]="0" />
     <dxi-column dataField="resource" caption="Ресурс" [width]="180" />
     <dxi-column caption="Чтение" [width]="80" cellTemplate="readCell" />
