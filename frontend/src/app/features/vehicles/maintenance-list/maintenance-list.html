@@ -15,10 +15,15 @@
     <dxi-column dataField="serviceProvider" caption="Сервис"/>
     <dxi-column dataField="nextDueDate" caption="След. ТО" dataType="date" [width]="110"/>
     <dxi-column dataField="notes" caption="Заметки"/>
+    <dxi-column caption="" [width]="100" cellTemplate="actions"/>
     <div *dxTemplate="let cell of 'typeCell'">{{typeLabel(cell.data.maintenanceType)}}</div>
+    <div *dxTemplate="let cell of 'actions'">
+      <dx-button icon="edit" stylingMode="text" hint="Редактировать" (onClick)="openEdit(cell.data)"/>
+      <dx-button icon="trash" type="danger" stylingMode="text" hint="Удалить" (onClick)="deleteRecord(cell.data)"/>
+    </div>
   </dx-data-grid>
 
-  <dx-popup [(visible)]="popupVisible" title="Добавить ТО" [width]="500">
+  <dx-popup [(visible)]="popupVisible" [title]="editingId ? 'Редактировать ТО' : 'Добавить ТО'" [width]="500">
     <div class="popup-form">
       <div class="form-row">
         <dx-select-box [dataSource]="vehicles()" displayExpr="licensePlate" valueExpr="id"

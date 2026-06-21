@@ -31,7 +31,9 @@ public class GetItemCategoriesQueryHandler
                 Name = c.Name,
                 Description = c.Description,
                 IsActive = c.IsActive,
-                RequiresAgeVerification = c.RequiresAgeVerification
+                RequiresAgeVerification = c.RequiresAgeVerification,
+                ParentId = c.ParentId,
+                ParentName = c.Parent != null ? c.Parent.Name : null,
             })
             .ToListAsync(cancellationToken);
     }

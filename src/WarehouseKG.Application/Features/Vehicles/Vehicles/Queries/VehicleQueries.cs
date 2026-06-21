@@ -129,7 +129,9 @@ public class GetVehicleDetailQueryHandler : IRequestHandler<GetVehicleDetailQuer
             .Where(m => m.VehicleId == r.Id).OrderByDescending(m => m.Date)
             .Select(m => new MaintenanceRecordDto
             {
-                Id = m.Id, MaintenanceType = m.MaintenanceType.ToString(),
+                Id = m.Id,
+                VehicleId = m.VehicleId,
+                MaintenanceType = m.MaintenanceType.ToString(),
                 Date = m.Date, MileageKm = m.MileageKm, Cost = m.Cost,
                 Description = m.Description, ServiceProvider = m.ServiceProvider,
                 Notes = m.Notes, NextDueMileageKm = m.NextDueMileageKm,
@@ -141,7 +143,9 @@ public class GetVehicleDetailQueryHandler : IRequestHandler<GetVehicleDetailQuer
             .Where(i => i.VehicleId == r.Id).OrderByDescending(i => i.StartDate)
             .Select(i => new InsuranceRecordDto
             {
-                Id = i.Id, PolicyNumber = i.PolicyNumber, Provider = i.Provider,
+                Id = i.Id,
+                VehicleId = i.VehicleId,
+                PolicyNumber = i.PolicyNumber, Provider = i.Provider,
                 CoverageType = i.CoverageType, StartDate = i.StartDate,
                 EndDate = i.EndDate, PremiumAmount = i.PremiumAmount,
                 Description = i.Description
@@ -152,7 +156,9 @@ public class GetVehicleDetailQueryHandler : IRequestHandler<GetVehicleDetailQuer
             .Where(i => i.VehicleId == r.Id).OrderByDescending(i => i.InspectionDate)
             .Select(i => new InspectionRecordDto
             {
-                Id = i.Id, InspectionDate = i.InspectionDate, ExpiryDate = i.ExpiryDate,
+                Id = i.Id,
+                VehicleId = i.VehicleId,
+                InspectionDate = i.InspectionDate, ExpiryDate = i.ExpiryDate,
                 Result = i.Result.ToString(), Inspector = i.Inspector, Notes = i.Notes
             })
             .ToListAsync(ct);

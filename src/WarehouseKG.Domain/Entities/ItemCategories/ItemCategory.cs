@@ -18,5 +18,12 @@ public class ItemCategory : BaseEntity
     /// </summary>
     public bool RequiresAgeVerification { get; set; }
 
+    /// <summary>Parent category for hierarchical tree structure.</summary>
+    public Guid? ParentId { get; set; }
+
+    public ItemCategory? Parent { get; set; }
+
+    public ICollection<ItemCategory> Children { get; set; } = new List<ItemCategory>();
+
     public ICollection<InventoryItem> Items { get; set; } = new List<InventoryItem>();
 }

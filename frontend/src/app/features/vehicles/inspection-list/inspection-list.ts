@@ -17,6 +17,7 @@ export class InspectionList {
   protected readonly error = signal<string | null>(null);
   protected readonly popupVisible = signal(false);
   protected readonly vehicles = signal<Vehicle[]>([]);
+  protected editingId: string | null = null;
   protected formData: any = { vehicleId: undefined, inspectionDate: new Date().toISOString().slice(0, 10), expiryDate: '', result: 'Passed', inspector: '', notes: '' };
   protected readonly saving = signal(false);
 
@@ -37,6 +38,7 @@ export class InspectionList {
   }
 
   protected openAdd() {
+    this.editingId = null;
     this.vehicles.set([]);
     this.svc.getVehicles().subscribe(v => this.vehicles.set(v));
     this.formData.vehicleId = undefined;
@@ -48,13 +50,38 @@ export class InspectionList {
     this.popupVisible.set(true);
   }
 
+  protected openEdit(item: InspectionRecord) {
+    this.editingId = item.id;
+    this.vehicles.set([]);
+    this.svc.getVehicles().subscribe(v => this.vehicles.set(v));
+    this.formData.vehicleId = item.vehicleId;
+    this.formData.inspectionDate = item.inspectionDate?.slice(0, 10) ?? '';
+    this.formData.expiryDate = item.expiryDate?.slice(0, 10) ?? '';
+    this.formData.result = item.result ?? 'Passed';
+    this.formData.inspector = item.inspector ?? '';
+    this.formData.notes = item.notes ?? '';
+    this.popupVisible.set(true);
+  }
+
   protected closePopup() { this.popupVisible.set(false); }
   protected save() {
     if (!this.formData.vehicleId) return;
     this.saving.set(true);
-    this.svc.createInspectionRecord(this.formData.vehicleId, this.formData).subscribe({
-      next: () => { this.saving.set(false); this.popupVisible.set(false); this.load(); },
-      error: () => this.saving.set(false)
+    const req = this.formData as CreateInspectionRecordRequest;
+    const done = () => { this.saving.set(false); this.popupVisible.set(false); this.load(); };
+    const fail = () => this.saving.set(false);
+    if (this.editingId) {
+      (this.svc.updateInspectionRecord(this.formData.vehicleId, this.editingId, req) as any).subscribe({ next: done, error: fail });
+    } else {
+      (this.svc.createInspectionRecord(this.formData.vehicleId, req) as any).subscribe({ next: done, error: fail });
+    }
+  }
+
+  protected deleteRecord(item: InspectionRecord) {
+    if (!confirm($localize`:@@common.confirmDelete:Удалить запись?`)) return;
+    this.svc.deleteInspectionRecord(item.vehicleId, item.id).subscribe({
+      next: () => this.load(),
+      error: () => {}
     });
   }
 }

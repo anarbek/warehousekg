@@ -57,6 +57,7 @@ export interface DriverAssignment {
 
 export interface MaintenanceRecord {
   id: string;
+  vehicleId: string;
   maintenanceType: string;
   date: string;
   mileageKm: number;
@@ -72,6 +73,7 @@ export interface MaintenanceRecord {
 
 export interface InsuranceRecord {
   id: string;
+  vehicleId: string;
   policyNumber: string;
   provider: string;
   coverageType?: string;
@@ -85,6 +87,7 @@ export interface InsuranceRecord {
 
 export interface InspectionRecord {
   id: string;
+  vehicleId: string;
   inspectionDate: string;
   expiryDate: string;
   result: string;

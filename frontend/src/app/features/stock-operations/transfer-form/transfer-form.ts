@@ -24,12 +24,16 @@ export class TransferForm implements OnInit {
   ngOnInit(){forkJoin({warehouses:this.inv.getWarehouses(),items:this.inv.getInventoryItems(),employees:this.personnel.getEmployees()}).subscribe({next:d=>{
     this.items.set(d.items);
     this.headerItems.set([
-      {dataField:'number',label:{text:'Номер'},isRequired:true,editorOptions:{placeholder:'TRF-0001',stylingMode:'outlined'}},
-      {dataField:'sourceWarehouseId',editorType:'dxSelectBox',label:{text:'Склад-источник'},isRequired:true,editorOptions:{dataSource:d.warehouses,displayExpr:'name',valueExpr:'id',stylingMode:'outlined'}},
-      {dataField:'destinationWarehouseId',editorType:'dxSelectBox',label:{text:'Склад-назначение'},isRequired:true,editorOptions:{dataSource:d.warehouses,displayExpr:'name',valueExpr:'id',stylingMode:'outlined'}},
-      {dataField:'employeeId',editorType:'dxSelectBox',label:{text:'Сотрудник (опц.)'},editorOptions:{dataSource:d.employees,displayExpr:'lastName',valueExpr:'id',placeholder:'Не указан',stylingMode:'outlined'}},
-      {dataField:'notes',label:{text:'Примечание'},editorOptions:{stylingMode:'outlined'}},
-      {dataField:'transferredAtUtc',editorType:'dxDateBox',label:{text:'Дата перемещения'},editorOptions:{type:'date',displayFormat:'dd.MM.yyyy',stylingMode:'outlined'}},
+      {dataField:'number',label:{text:'Номер'},isRequired:true,colSpan:2,editorOptions:{placeholder:'TRF-0001',stylingMode:'outlined'}},
+      {itemType:'group',caption:'Склад-источник → Склад-назначение',colCount:2,items:[
+        {dataField:'sourceWarehouseId',editorType:'dxSelectBox',label:{text:'Откуда'},isRequired:true,editorOptions:{dataSource:d.warehouses,displayExpr:'name',valueExpr:'id',stylingMode:'outlined'}},
+        {dataField:'destinationWarehouseId',editorType:'dxSelectBox',label:{text:'Куда'},isRequired:true,editorOptions:{dataSource:d.warehouses,displayExpr:'name',valueExpr:'id',stylingMode:'outlined'}},
+      ]},
+      {itemType:'group',colCount:2,items:[
+        {dataField:'employeeId',editorType:'dxSelectBox',label:{text:'Сотрудник (опц.)'},editorOptions:{dataSource:d.employees,displayExpr:'lastName',valueExpr:'id',placeholder:'Не указан',stylingMode:'outlined'}},
+        {dataField:'transferredAtUtc',editorType:'dxDateBox',label:{text:'Дата перемещения'},editorOptions:{type:'date',displayFormat:'dd.MM.yyyy',stylingMode:'outlined'}},
+      ]},
+      {dataField:'notes',label:{text:'Примечание'},colSpan:2,editorOptions:{stylingMode:'outlined'}},
     ]);
     this.ready.set(true);
   }})}

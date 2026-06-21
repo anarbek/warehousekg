@@ -53,6 +53,7 @@ public class DriverAssignmentDto
 public class MaintenanceRecordDto
 {
     public Guid Id { get; set; }
+    public Guid VehicleId { get; set; }
     public string MaintenanceType { get; set; } = string.Empty;
     public DateTime Date { get; set; }
     public decimal MileageKm { get; set; }
@@ -69,6 +70,7 @@ public class MaintenanceRecordDto
 public class InsuranceRecordDto
 {
     public Guid Id { get; set; }
+    public Guid VehicleId { get; set; }
     public string PolicyNumber { get; set; } = string.Empty;
     public string Provider { get; set; } = string.Empty;
     public string? CoverageType { get; set; }
@@ -83,6 +85,7 @@ public class InsuranceRecordDto
 public class InspectionRecordDto
 {
     public Guid Id { get; set; }
+    public Guid VehicleId { get; set; }
     public DateTime InspectionDate { get; set; }
     public DateTime ExpiryDate { get; set; }
     public string Result { get; set; } = string.Empty;

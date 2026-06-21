@@ -26,6 +26,7 @@
     <dxi-column dataField="totalAmount" caption="Сумма" i18n-caption="@@preseller.list.total" [format]="'#,##0.00'" />
     <dxi-column dataField="lineCount" caption="Позиций" i18n-caption="@@preseller.list.lines" [width]="80" />
     <dxi-column dataField="orderDateUtc" caption="Дата" i18n-caption="@@preseller.list.date" dataType="date" [format]="'dd.MM.yyyy'" />
+    <dxi-column dataField="createdAt" caption="Создан" i18n-caption="@@preseller.list.createdAt" dataType="datetime" [format]="'dd.MM.yyyy HH:mm'" />
     <dxi-column caption="" [width]="100" cellTemplate="actions" />
 
     <div *dxTemplate="let d of 'statusCell'">

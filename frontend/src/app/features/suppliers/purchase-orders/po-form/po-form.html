@@ -4,8 +4,8 @@
 <dx-form [formData]="formData" [colCount]="2" [items]="headerItems()"/>
 <form [formGroup]="form">
 <h3>Позиции</h3><div formArrayName="lines" class="form-lines">
-@for(line of lines.controls;track $index){<div [formGroupName]="$index" class="form-lines__row"><dx-select-box [items]="items()" displayExpr="name" valueExpr="id" [(value)]="$any($any(line).controls.inventoryItemId.value)" stylingMode="outlined" (onValueChanged)="$any($any(line).controls.inventoryItemId).setValue($event.value)"/>
-<dx-text-box [(value)]="$any($any(line).controls.quantity.value)" placeholder="Кол-во" stylingMode="outlined" (onValueChanged)="$any($any(line).controls.quantity).setValue($event.value)"/><dx-text-box [(value)]="$any($any(line).controls.unitPrice.value)" placeholder="Цена" stylingMode="outlined" (onValueChanged)="$any($any(line).controls.unitPrice).setValue($event.value)"/>
+@for(line of lines.controls;track $index){<div [formGroupName]="$index" class="form-lines__row"><dx-select-box [items]="items()" displayExpr="name" valueExpr="id" placeholder="Товар" [(value)]="$any($any(line).controls.inventoryItemId.value)" stylingMode="outlined" (onValueChanged)="$any($any(line).controls.inventoryItemId).setValue($event.value)"/>
+<dx-text-box [(value)]="$any($any(line).controls.quantity.value)" placeholder="Кол-во" stylingMode="outlined" (onValueChanged)="$any($any(line).controls.quantity).setValue($event.value)"/><dx-text-box [(value)]="$any($any(line).controls.unitPrice.value)" placeholder="Цена за ед." stylingMode="outlined" (onValueChanged)="$any($any(line).controls.unitPrice).setValue($event.value)"/>
 <dx-button icon="trash" type="danger" stylingMode="text" (onClick)="removeLine($index)"/></div>}
 <dx-button text="+ Добавить позицию" icon="add" stylingMode="outlined" (onClick)="addLine()"/></div>
 <div class="form-actions"><dx-button text="Сохранить" type="default" stylingMode="contained" (onClick)="submit()"/><dx-button text="Отмена" stylingMode="outlined" (onClick)="cancel()"/></div>

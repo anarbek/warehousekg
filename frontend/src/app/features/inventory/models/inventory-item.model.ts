@@ -42,6 +42,8 @@ export interface ItemCategory {
   code: string;
   name: string;
   description?: string | null;
+  parentId?: string | null;
+  parentName?: string | null;
 }
 
 export interface UnitOfMeasure {
@@ -56,6 +58,7 @@ export interface CreateItemCategoryRequest {
   name: string;
   description?: string | null;
   isActive: boolean;
+  parentId?: string | null;
 }
 
 export type UpdateItemCategoryRequest = CreateItemCategoryRequest;

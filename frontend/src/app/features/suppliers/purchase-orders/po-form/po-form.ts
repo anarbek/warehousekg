@@ -18,6 +18,7 @@ export class PoForm implements OnInit {
   protected readonly headerItems=signal<any[]>([]);
   protected readonly ready=signal(false);
   protected formData:any={number:'',supplierId:'',warehouseId:'',currency:'KGS',receivedAtUtc:null,notes:''};
+  protected readonly currencies=['KGS','USD','EUR','RUB','KZT','CNY','TRY'];
   protected readonly form=this.fb.group({lines:this.fb.array([this.cl()])});
   get lines():FormArray{return this.form.get('lines') as FormArray}
   private cl(){return this.fb.group({inventoryItemId:['',Validators.required],quantity:[0,[Validators.required,Validators.min(1)]],unitPrice:[0,[Validators.required,Validators.min(0)]]})}
@@ -27,7 +28,7 @@ export class PoForm implements OnInit {
       {dataField:'number',label:{text:'Номер'},isRequired:true,editorOptions:{placeholder:'PO-0001',stylingMode:'outlined'}},
       {dataField:'supplierId',editorType:'dxSelectBox',label:{text:'Поставщик'},isRequired:true,editorOptions:{dataSource:d.suppliers,displayExpr:'name',valueExpr:'id',stylingMode:'outlined'}},
       {dataField:'warehouseId',editorType:'dxSelectBox',label:{text:'Склад (опц.)'},editorOptions:{dataSource:d.warehouses,displayExpr:'name',valueExpr:'id',stylingMode:'outlined'}},
-      {dataField:'currency',label:{text:'Валюта'},editorOptions:{placeholder:'KGS',stylingMode:'outlined'}},
+      {dataField:'currency',editorType:'dxSelectBox',label:{text:'Валюта'},editorOptions:{dataSource:this.currencies,stylingMode:'outlined'}},
       {dataField:'receivedAtUtc',editorType:'dxDateBox',label:{text:'Ожидаемая дата'},editorOptions:{type:'date',displayFormat:'dd.MM.yyyy',stylingMode:'outlined'}},
       {dataField:'notes',label:{text:'Примечание'},editorOptions:{stylingMode:'outlined'}},
     ]);

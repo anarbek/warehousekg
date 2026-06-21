@@ -17,6 +17,7 @@ export class InsuranceList {
   protected readonly error = signal<string | null>(null);
   protected readonly popupVisible = signal(false);
   protected readonly vehicles = signal<Vehicle[]>([]);
+  protected editingId: string | null = null;
   protected formData: any = { vehicleId: undefined, policyNumber: '', provider: '', coverageType: '', startDate: new Date().toISOString().slice(0, 10), endDate: '', premiumAmount: 0 };
   protected readonly saving = signal(false);
 
@@ -31,6 +32,7 @@ export class InsuranceList {
   }
 
   protected openAdd() {
+    this.editingId = null;
     this.vehicles.set([]);
     this.svc.getVehicles().subscribe(v => this.vehicles.set(v));
     this.formData.vehicleId = undefined;
@@ -43,13 +45,39 @@ export class InsuranceList {
     this.popupVisible.set(true);
   }
 
+  protected openEdit(item: InsuranceRecord) {
+    this.editingId = item.id;
+    this.vehicles.set([]);
+    this.svc.getVehicles().subscribe(v => this.vehicles.set(v));
+    this.formData.vehicleId = item.vehicleId;
+    this.formData.policyNumber = item.policyNumber ?? '';
+    this.formData.provider = item.provider ?? '';
+    this.formData.coverageType = item.coverageType ?? '';
+    this.formData.startDate = item.startDate?.slice(0, 10) ?? '';
+    this.formData.endDate = item.endDate?.slice(0, 10) ?? '';
+    this.formData.premiumAmount = item.premiumAmount;
+    this.popupVisible.set(true);
+  }
+
   protected closePopup() { this.popupVisible.set(false); }
   protected save() {
     if (!this.formData.vehicleId) return;
     this.saving.set(true);
-    this.svc.createInsuranceRecord(this.formData.vehicleId, this.formData).subscribe({
-      next: () => { this.saving.set(false); this.popupVisible.set(false); this.load(); },
-      error: () => this.saving.set(false)
+    const req = this.formData as CreateInsuranceRecordRequest;
+    const done = () => { this.saving.set(false); this.popupVisible.set(false); this.load(); };
+    const fail = () => this.saving.set(false);
+    if (this.editingId) {
+      (this.svc.updateInsuranceRecord(this.formData.vehicleId, this.editingId, req) as any).subscribe({ next: done, error: fail });
+    } else {
+      (this.svc.createInsuranceRecord(this.formData.vehicleId, req) as any).subscribe({ next: done, error: fail });
+    }
+  }
+
+  protected deleteRecord(item: InsuranceRecord) {
+    if (!confirm($localize`:@@common.confirmDelete:Удалить запись?`)) return;
+    this.svc.deleteInsuranceRecord(item.vehicleId, item.id).subscribe({
+      next: () => this.load(),
+      error: () => {}
     });
   }
 

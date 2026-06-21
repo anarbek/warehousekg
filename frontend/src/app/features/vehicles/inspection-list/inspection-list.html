@@ -13,9 +13,14 @@
     <dxi-column dataField="result" caption="Результат" [width]="120"/>
     <dxi-column dataField="inspector" caption="Инспектор"/>
     <dxi-column dataField="notes" caption="Заметки"/>
+    <dxi-column caption="" [width]="100" cellTemplate="actions"/>
+    <div *dxTemplate="let cell of 'actions'">
+      <dx-button icon="edit" stylingMode="text" hint="Редактировать" (onClick)="openEdit(cell.data)"/>
+      <dx-button icon="trash" type="danger" stylingMode="text" hint="Удалить" (onClick)="deleteRecord(cell.data)"/>
+    </div>
   </dx-data-grid>
 
-  <dx-popup [(visible)]="popupVisible" title="Добавить техосмотр" [width]="500">
+  <dx-popup [(visible)]="popupVisible" [title]="editingId ? 'Редактировать техосмотр' : 'Добавить техосмотр'" [width]="500">
     <div class="popup-form">
       <div class="form-row">
         <dx-select-box [dataSource]="vehicles()" displayExpr="licensePlate" valueExpr="id"

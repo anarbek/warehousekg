@@ -17,8 +17,10 @@ export class MaintenanceList {
   protected readonly error = signal<string | null>(null);
   protected readonly popupVisible = signal(false);
   protected readonly vehicles = signal<Vehicle[]>([]);
+  protected editingId: string | null = null;
   protected formData: any = { vehicleId: undefined, maintenanceType: 'GeneralCheck', date: new Date().toISOString().slice(0, 10), mileageKm: 0, cost: 0, serviceProvider: '', notes: '', nextDueMileageKm: null, nextDueDate: null };
   protected readonly saving = signal(false);
+  protected readonly deleting = signal(false);
 
   protected readonly maintenanceTypes = [
     { id: 'OilChange', name: 'Замена масла' },
@@ -42,6 +44,7 @@ export class MaintenanceList {
   }
 
   protected openAdd() {
+    this.editingId = null;
     this.vehicles.set([]);
     this.svc.getVehicles().subscribe(v => this.vehicles.set(v));
     this.formData.vehicleId = undefined;
@@ -56,13 +59,43 @@ export class MaintenanceList {
     this.popupVisible.set(true);
   }
 
+  protected openEdit(item: MaintenanceRecord) {
+    this.editingId = item.id;
+    this.vehicles.set([]);
+    this.svc.getVehicles().subscribe(v => this.vehicles.set(v));
+    this.formData.vehicleId = item.vehicleId;
+    this.formData.maintenanceType = item.maintenanceType;
+    this.formData.date = item.date?.slice(0, 10) ?? new Date().toISOString().slice(0, 10);
+    this.formData.mileageKm = item.mileageKm;
+    this.formData.cost = item.cost;
+    this.formData.serviceProvider = item.serviceProvider ?? '';
+    this.formData.notes = item.notes ?? '';
+    this.formData.nextDueMileageKm = item.nextDueMileageKm;
+    this.formData.nextDueDate = item.nextDueDate?.slice(0, 10) ?? undefined;
+    this.popupVisible.set(true);
+  }
+
   protected closePopup() { this.popupVisible.set(false); }
+
   protected save() {
     if (!this.formData.vehicleId) return;
     this.saving.set(true);
-    this.svc.createMaintenanceRecord(this.formData.vehicleId, this.formData).subscribe({
-      next: () => { this.saving.set(false); this.popupVisible.set(false); this.load(); },
-      error: () => this.saving.set(false)
+    const req = this.formData as CreateMaintenanceRecordRequest;
+    const done = () => { this.saving.set(false); this.popupVisible.set(false); this.load(); };
+    const fail = () => this.saving.set(false);
+    if (this.editingId) {
+      (this.svc.updateMaintenanceRecord(this.formData.vehicleId, this.editingId, req) as any).subscribe({ next: done, error: fail });
+    } else {
+      (this.svc.createMaintenanceRecord(this.formData.vehicleId, req) as any).subscribe({ next: done, error: fail });
+    }
+  }
+
+  protected deleteRecord(item: MaintenanceRecord) {
+    if (!confirm($localize`:@@common.confirmDelete:Удалить запись?`)) return;
+    this.deleting.set(true);
+    this.svc.deleteMaintenanceRecord(item.vehicleId, item.id).subscribe({
+      next: () => { this.deleting.set(false); this.load(); },
+      error: () => this.deleting.set(false)
     });
   }
 

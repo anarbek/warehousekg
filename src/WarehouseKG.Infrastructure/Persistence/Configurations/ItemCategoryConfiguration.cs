@@ -17,5 +17,11 @@ public class ItemCategoryConfiguration : IEntityTypeConfiguration<ItemCategory>
         builder.Property(c => c.Description).HasMaxLength(512);
 
         builder.HasIndex(c => new { c.TenantId, c.Code }).IsUnique();
+        builder.HasIndex(c => new { c.TenantId, c.ParentId });
+
+        builder.HasOne(c => c.Parent)
+            .WithMany(c => c.Children)
+            .HasForeignKey(c => c.ParentId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

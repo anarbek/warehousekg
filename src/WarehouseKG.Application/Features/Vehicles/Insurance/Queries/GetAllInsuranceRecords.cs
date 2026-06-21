@@ -16,7 +16,9 @@ public class GetAllInsuranceRecordsQueryHandler : IRequestHandler<GetAllInsuranc
             .OrderByDescending(i => i.StartDate)
             .Select(i => new InsuranceRecordDto
             {
-                Id = i.Id, PolicyNumber = i.PolicyNumber, Provider = i.Provider,
+                Id = i.Id,
+                VehicleId = i.VehicleId,
+                PolicyNumber = i.PolicyNumber, Provider = i.Provider,
                 CoverageType = i.CoverageType, StartDate = i.StartDate,
                 EndDate = i.EndDate, PremiumAmount = i.PremiumAmount,
                 Description = i.Description,

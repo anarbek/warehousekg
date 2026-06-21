@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -8,6 +9,8 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { LowStockItem } from '../models/report.model';
 import { InventoryItem, ItemCategory } from '../../inventory/models/inventory-item.model';
@@ -15,6 +18,7 @@ import { ReportsService } from '../services/reports.service';
 import { InventoryService } from '../../inventory/services/inventory.service';
 
 interface StockRow {
+  id: string;
   sku: string;
   name: string;
   categoryName: string;
@@ -26,7 +30,7 @@ interface StockRow {
 @Component({
   selector: 'app-stock-levels',
   standalone: true,
-  imports: [DecimalPipe, MatTableModule, MatPaginatorModule, MatSortModule, MatProgressBarModule, MatFormFieldModule, MatSelectModule, MatSlideToggleModule, FormsModule],
+  imports: [DecimalPipe, RouterLink, MatTableModule, MatPaginatorModule, MatSortModule, MatProgressBarModule, MatFormFieldModule, MatSelectModule, MatSlideToggleModule, MatButtonModule, MatIconModule, FormsModule],
   templateUrl: './stock-levels.html',
   styleUrl: './stock-levels.scss',
 })
@@ -34,7 +38,7 @@ export class StockLevels implements OnInit, AfterViewInit {
   private readonly rpt = inject(ReportsService);
   private readonly inv = inject(InventoryService);
 
-  protected readonly cols = ['sku', 'name', 'categoryName', 'quantityOnHand', 'reorderLevel', 'deficit'];
+  protected readonly cols = ['sku', 'name', 'categoryName', 'quantityOnHand', 'reorderLevel', 'deficit', 'actions'];
   protected readonly ds = new MatTableDataSource<StockRow>([]);
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
@@ -109,6 +113,7 @@ export class StockLevels implements OnInit, AfterViewInit {
   private mapRows(lowItems: LowStockItem[], categories: ItemCategory[]): StockRow[] {
     const catMap = new Map(categories.map((c) => [c.id, c.name]));
     return lowItems.map((l) => ({
+      id: l.id,
       sku: l.sku,
       name: l.name,
       categoryName: catMap.get(l.categoryId) || '—',
@@ -121,6 +126,7 @@ export class StockLevels implements OnInit, AfterViewInit {
   private mapAllRows(items: InventoryItem[], categories: ItemCategory[]): StockRow[] {
     const catMap = new Map(categories.map((c) => [c.id, c.name]));
     return items.map((i) => ({
+      id: i.id,
       sku: i.sku,
       name: i.name,
       categoryName: i.categoryName || catMap.get(i.categoryId) || '—',

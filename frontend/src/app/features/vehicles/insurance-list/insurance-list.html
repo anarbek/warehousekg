@@ -14,12 +14,17 @@
     <dxi-column dataField="startDate" caption="Начало" dataType="date" [width]="110"/>
     <dxi-column dataField="endDate" caption="Конец" dataType="date" [width]="110" cellTemplate="endCell"/>
     <dxi-column dataField="premiumAmount" caption="Премия" [width]="110"/>
+    <dxi-column caption="" [width]="100" cellTemplate="actions"/>
     <div *dxTemplate="let cell of 'endCell'">
       <span [style.color]="isExpired(cell.data.endDate) ? 'var(--dx-color-danger)' : 'inherit'">{{cell.data.endDate | date:'dd.MM.yyyy'}}</span>
     </div>
+    <div *dxTemplate="let cell of 'actions'">
+      <dx-button icon="edit" stylingMode="text" hint="Редактировать" (onClick)="openEdit(cell.data)"/>
+      <dx-button icon="trash" type="danger" stylingMode="text" hint="Удалить" (onClick)="deleteRecord(cell.data)"/>
+    </div>
   </dx-data-grid>
 
-  <dx-popup [(visible)]="popupVisible" title="Добавить страховку" [width]="500">
+  <dx-popup [(visible)]="popupVisible" [title]="editingId ? 'Редактировать страховку' : 'Добавить страховку'" [width]="500">
     <div class="popup-form">
       <div class="form-row">
         <dx-select-box [dataSource]="vehicles()" displayExpr="licensePlate" valueExpr="id"

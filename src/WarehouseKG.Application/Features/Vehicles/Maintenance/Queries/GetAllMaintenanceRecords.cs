@@ -16,7 +16,9 @@ public class GetAllMaintenanceRecordsQueryHandler : IRequestHandler<GetAllMainte
             .OrderByDescending(m => m.Date)
             .Select(m => new MaintenanceRecordDto
             {
-                Id = m.Id, MaintenanceType = m.MaintenanceType.ToString(),
+                Id = m.Id,
+                VehicleId = m.VehicleId,
+                MaintenanceType = m.MaintenanceType.ToString(),
                 Date = m.Date, MileageKm = m.MileageKm, Cost = m.Cost,
                 Description = m.Description, ServiceProvider = m.ServiceProvider,
                 Notes = m.Notes, NextDueMileageKm = m.NextDueMileageKm,

@@ -13,4 +13,10 @@ public class ItemCategoryDto
     public bool IsActive { get; set; }
 
     public bool RequiresAgeVerification { get; set; }
+
+    public Guid? ParentId { get; set; }
+
+    public string? ParentName { get; set; }
+
+    public IReadOnlyList<ItemCategoryDto> Children { get; set; } = Array.Empty<ItemCategoryDto>();
 }

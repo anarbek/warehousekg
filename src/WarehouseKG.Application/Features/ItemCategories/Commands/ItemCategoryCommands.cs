@@ -8,7 +8,8 @@ public record CreateItemCategoryCommand(
     string Code,
     string Name,
     string? Description = null,
-    bool RequiresAgeVerification = false) : IRequest<Guid>;
+    bool RequiresAgeVerification = false,
+    Guid? ParentId = null) : IRequest<Guid>;
 
 public class CreateItemCategoryCommandHandler : IRequestHandler<CreateItemCategoryCommand, Guid>
 {
@@ -27,7 +28,8 @@ public class CreateItemCategoryCommandHandler : IRequestHandler<CreateItemCatego
             Code = request.Code,
             Name = request.Name,
             Description = request.Description,
-            RequiresAgeVerification = request.RequiresAgeVerification
+            RequiresAgeVerification = request.RequiresAgeVerification,
+            ParentId = request.ParentId
         };
 
         _context.ItemCategories.Add(category);
@@ -43,7 +45,8 @@ public record UpdateItemCategoryCommand(
     string Name,
     string? Description,
     bool IsActive,
-    bool RequiresAgeVerification) : IRequest<bool>;
+    bool RequiresAgeVerification,
+    Guid? ParentId = null) : IRequest<bool>;
 
 public class UpdateItemCategoryCommandHandler : IRequestHandler<UpdateItemCategoryCommand, bool>
 {
@@ -67,6 +70,7 @@ public class UpdateItemCategoryCommandHandler : IRequestHandler<UpdateItemCatego
         category.Description = request.Description;
         category.IsActive = request.IsActive;
         category.RequiresAgeVerification = request.RequiresAgeVerification;
+        category.ParentId = request.ParentId;
 
         await _context.SaveChangesAsync(cancellationToken);
         return true;
