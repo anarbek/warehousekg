@@ -21,7 +21,7 @@ Planned features, milestones, and the prioritized backlog over time.
 
 ## Open items
 - Main site where user can register and create a Tenant himself, there should be basic questionnaire where he should be able to select which features he wants
-and app should create a basic setup with admin user, some categories and other basic data so the app is not empty when he logs in
+and app should create a basic setup with admin user, some categories and other basic data so the app is not empty when he logs in, content should be in 4 languages, CEO optimized
 - Full live testing
 - CI/CD to contabo's server
 - Jenkins install on contabo
@@ -29,6 +29,9 @@ and app should create a basic setup with admin user, some categories and other b
 - Presell module where preseller take preorders from customers and after approval those preorders become sales orders (with mobile module)
 - Report designing using Devexpress
 - XML import capability to accept different formats of XML files(CCI, EFS, Pepsi, Philip Morris etc)
+- Turkish and english languages in admin panel
+- Preseller module, where users with preseller role visit customers and take pre-orders, and when those pre-orders are approved, they become sales orders
+- Mobile preseller module
 
 ### Flutter Mobile App — `warehousekg_mobile`
 
