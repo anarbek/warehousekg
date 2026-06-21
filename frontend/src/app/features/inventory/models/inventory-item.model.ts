@@ -10,6 +10,7 @@ export interface InventoryItem {
   unitOfMeasureName?: string | null;
   quantityOnHand: number;
   reorderLevel: number;
+  unitPrice: number;
   isActive: boolean;
 }
 
@@ -21,6 +22,7 @@ export interface CreateInventoryItemRequest {
   categoryId: string;
   unitOfMeasureId: string;
   reorderLevel: number;
+  unitPrice: number;
   isActive: boolean;
   warehouseId?: string | null;
   initialQuantity?: number;
@@ -34,6 +36,7 @@ export interface UpdateInventoryItemRequest {
   categoryId: string;
   unitOfMeasureId: string;
   reorderLevel: number;
+  unitPrice: number;
   isActive: boolean;
 }
 

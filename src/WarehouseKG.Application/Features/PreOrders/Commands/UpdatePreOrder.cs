@@ -17,7 +17,9 @@ public record UpdatePreOrderCommand(
     string? Currency,
     DateTime? ExpectedDateUtc,
     string? Notes,
-    IReadOnlyList<PreOrderLineInput> Lines) : IRequest<OperationResult>;
+    IReadOnlyList<PreOrderLineInput> Lines,
+    decimal? AmountPlanned = null,
+    decimal? AmountPaid = null) : IRequest<OperationResult>;
 
 public class UpdatePreOrderCommandHandler : IRequestHandler<UpdatePreOrderCommand, OperationResult>
 {
@@ -31,7 +33,6 @@ public class UpdatePreOrderCommandHandler : IRequestHandler<UpdatePreOrderComman
     public async Task<OperationResult> Handle(UpdatePreOrderCommand request, CancellationToken cancellationToken)
     {
         var preOrder = await _context.PreOrders
-            .Include(p => p.Lines)
             .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
         if (preOrder is null) return OperationResult.NotFound;
@@ -44,6 +45,8 @@ public class UpdatePreOrderCommandHandler : IRequestHandler<UpdatePreOrderComman
         preOrder.Currency = string.IsNullOrWhiteSpace(request.Currency) ? "KGS" : request.Currency;
         preOrder.ExpectedDateUtc = request.ExpectedDateUtc.HasValue ? DateTime.SpecifyKind(request.ExpectedDateUtc.Value, DateTimeKind.Utc) : null;
         preOrder.Notes = request.Notes;
+        preOrder.AmountPlanned = request.AmountPlanned ?? preOrder.AmountPlanned;
+        preOrder.AmountPaid = request.AmountPaid ?? preOrder.AmountPaid;
 
         // Capture warehouse stock for line items
         var itemIds = request.Lines.Select(l => l.InventoryItemId).Distinct().ToList();
@@ -51,47 +54,32 @@ public class UpdatePreOrderCommandHandler : IRequestHandler<UpdatePreOrderComman
             .Where(i => itemIds.Contains(i.Id))
             .ToDictionaryAsync(i => i.Id, i => i.QuantityOnHand, cancellationToken);
 
-        // Remove lines not in the request
-        var requestItemIds = request.Lines.Select(l => l.InventoryItemId).ToHashSet();
-        var toRemove = preOrder.Lines.Where(l => !requestItemIds.Contains(l.InventoryItemId)).ToList();
-        foreach (var line in toRemove)
-        {
-            _context.PreOrderLines.Remove(line);
-        }
+        // Delete old lines directly (avoid EF Core navigation/tracking conflicts)
+        var oldLines = await _context.PreOrderLines
+            .Where(l => l.PreOrderId == request.Id)
+            .ToListAsync(cancellationToken);
+        _context.PreOrderLines.RemoveRange(oldLines);
 
-        // Update existing or add new
+        // Add new lines from request
         foreach (var input in request.Lines)
         {
-            var existing = preOrder.Lines.FirstOrDefault(l => l.InventoryItemId == input.InventoryItemId);
             var stock = stockQuantities.GetValueOrDefault(input.InventoryItemId, 0m);
             var lineTotal = input.Quantity * input.UnitPrice * (1 - input.DiscountPercent / 100);
-
-            if (existing is not null)
+            _context.PreOrderLines.Add(new PreOrderLine
             {
-                existing.Quantity = input.Quantity;
-                existing.UnitPrice = input.UnitPrice;
-                existing.WarehouseStockSnapshot = stock;
-                existing.StockDifference = stock - input.Quantity;
-                existing.DiscountPercent = input.DiscountPercent;
-                existing.LineTotal = lineTotal;
-            }
-            else
-            {
-                preOrder.Lines.Add(new PreOrderLine
-                {
-                    Id = Guid.NewGuid(),
-                    InventoryItemId = input.InventoryItemId,
-                    Quantity = input.Quantity,
-                    UnitPrice = input.UnitPrice,
-                    WarehouseStockSnapshot = stock,
-                    StockDifference = stock - input.Quantity,
-                    DiscountPercent = input.DiscountPercent,
-                    LineTotal = lineTotal,
-                });
-            }
+                Id = Guid.NewGuid(),
+                PreOrderId = request.Id,
+                InventoryItemId = input.InventoryItemId,
+                Quantity = input.Quantity,
+                UnitPrice = input.UnitPrice,
+                WarehouseStockSnapshot = stock,
+                StockDifference = stock - input.Quantity,
+                DiscountPercent = input.DiscountPercent,
+                LineTotal = lineTotal,
+            });
         }
 
-        preOrder.TotalAmount = preOrder.Lines.Sum(l => l.LineTotal);
+        preOrder.TotalAmount = request.Lines.Sum(l => l.Quantity * l.UnitPrice * (1 - l.DiscountPercent / 100));
 
         await _context.SaveChangesAsync(cancellationToken);
         return OperationResult.Success;

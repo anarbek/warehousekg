@@ -75,6 +75,7 @@ public class InventoryItemsController : ControllerBase
             request.CategoryId,
             request.UnitOfMeasureId,
             request.ReorderLevel,
+            request.UnitPrice,
             request.IsActive);
 
         var updated = await _sender.Send(command, cancellationToken);
@@ -102,4 +103,5 @@ public record UpdateInventoryItemRequest(
     Guid CategoryId,
     Guid UnitOfMeasureId,
     decimal ReorderLevel,
+    decimal UnitPrice,
     bool IsActive);

@@ -24,5 +24,7 @@ public class InventoryItem : BaseEntity
 
     public decimal ReorderLevel { get; set; }
 
+    public decimal UnitPrice { get; set; }
+
     public bool IsActive { get; set; } = true;
 }

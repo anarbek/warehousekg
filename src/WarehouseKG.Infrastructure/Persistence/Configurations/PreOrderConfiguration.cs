@@ -18,6 +18,8 @@ public class PreOrderConfiguration : IEntityTypeConfiguration<PreOrder>
         builder.Property(p => p.Notes).HasMaxLength(1024);
         builder.Property(p => p.Status).HasConversion<string>().HasMaxLength(32);
         builder.Property(p => p.TotalAmount).HasColumnType("numeric(18,2)");
+        builder.Property(p => p.AmountPlanned).HasColumnType("numeric(18,2)");
+        builder.Property(p => p.AmountPaid).HasColumnType("numeric(18,2)");
 
         builder.HasIndex(p => new { p.TenantId, p.Number }).IsUnique();
         builder.HasIndex(p => new { p.TenantId, p.CustomerId });

@@ -50,7 +50,7 @@ and app should create a basic setup with admin user, some categories and other b
 - Report designing using Devexpress
 - XML import capability to accept different formats of XML files(CCI, EFS, Pepsi, Philip Morris etc)
 - Turkish and english languages in admin panel
-- Dispatchers should be able creating invoices from web app, it should create a printeable invoice which can be printed and signed by customer, printers are old dot based printers, used by warehouse workers, invoices should be designeable in separate module using devexpress report designer
+- ~~Dispatchers should be able creating invoices from web app~~ → see **Invoice System** detailed plan below
 - Предзаказы: CreatedAt should be shown in grid in date and time format, currently there is no such column
 - Filtering across all the grids on all columns (odata can be used)
 - categories should be multilevel (treeview should be used when creating stock item to select category)
@@ -65,6 +65,185 @@ use this design approach when adding positions: adjustments/new in pages like: t
 - there should be a way to see all inventories of route detail with filtering, ability to navigate to related details like warehouse, inventory-detail etc, currently only orders are visible
 - in customers/customers there should be a way to see all customers in map together, a new link with popup can be added, inside map also geofences should be shown as overlays(if tenant does not have acivated dispatch module, geofences should not be shown)
 - from reports there should be a way to navigate to related pages
+
+---
+
+## Invoice System (Detailed Plan)
+
+> *Updated 2026-06-21 based on architecture analysis.*
+
+### Domain Context
+
+Two distinct invoice types exist in warehouse distribution:
+
+| | **Sales Invoice** (Outbound) | **Purchase Invoice** (Inbound) |
+|---|---|---|
+| **Direction** | Warehouse → Customer | Producer → Warehouse |
+| **Trigger** | Delivery stop completed / SalesOrder shipped | Goods received from producer |
+| **Created by** | WarehouseKG backend (auto-generated) | Parsed from producer XML |
+| **Existing entity** | `SalesOrder` (Draft→Confirmed→Shipped) | `PurchaseOrder` / `StockReceipt` |
+| **Goal** | Replace producer-system dependency; own invoices | Import CCI/EFS/Pepsi/Philip Morris XML formats |
+| **Priority** | **Phase 1** — core feature | **Phase 5+** — depends on XML import module |
+
+### Entity Design
+
+New `Invoice` entity in `WarehouseKG.Domain`:
+
+```csharp
+public class Invoice : BaseEntity
+{
+    public string Number { get; set; } = string.Empty;      // Sequential per-tenant, e.g. "INV-2026-0001"
+    public InvoiceType Type { get; set; }                    // Sales, Purchase, CreditNote
+    public InvoiceStatus Status { get; set; }                // Draft, Issued, Printed, Signed, Cancelled
+
+    // Links
+    public Guid? SalesOrderId { get; set; }                  // FK → SalesOrder (for sales invoices)
+    public SalesOrder? SalesOrder { get; set; }
+    public Guid? PurchaseOrderId { get; set; }               // FK → PurchaseOrder (for purchase invoices)
+    public PurchaseOrder? PurchaseOrder { get; set; }
+    public Guid CustomerId { get; set; }                     // Denormalized for fast lookup
+    public Customer? Customer { get; set; }
+    public Guid? SupplierId { get; set; }                    // For purchase invoices
+    public Supplier? Supplier { get; set; }
+    public Guid WarehouseId { get; set; }                    // Originating warehouse
+    public Warehouse? Warehouse { get; set; }
+
+    // Dates
+    public DateTime IssuedAtUtc { get; set; }
+    public DateTime? PrintedAtUtc { get; set; }
+    public DateTime? SignedAtUtc { get; set; }
+    public DateTime? DueDateUtc { get; set; }                // Payment due date
+
+    // Financial
+    public decimal TotalAmount { get; set; }                 // Computed from order lines
+    public decimal TaxAmount { get; set; }
+    public string Currency { get; set; } = "KGS";
+    public decimal ExchangeRate { get; set; } = 1m;          // Rate to base currency
+    public string? PaymentType { get; set; }                 // Cash, BankTransfer, etc.
+
+    // Print & Signature
+    public string? ReportLayoutId { get; set; }               // DevExpress report template ID
+    public string? PrintedBy { get; set; }                    // User who printed
+    public string? SignedByName { get; set; }                 // Customer signature name
+    public string? SignatureDataUrl { get; set; }             // Base64 signature image (mobile capture)
+
+    // Metadata
+    public string? Notes { get; set; }
+    public string? ExternalReference { get; set; }            // Producer's invoice number (XML import)
+
+    public ICollection<InvoiceLine> Lines { get; set; } = new List<InvoiceLine>();
+}
+
+public class InvoiceLine : BaseEntity
+{
+    public Guid InvoiceId { get; set; }
+    public Invoice? Invoice { get; set; }
+    public Guid InventoryItemId { get; set; }
+    public InventoryItem? InventoryItem { get; set; }
+    public decimal Quantity { get; set; }
+    public decimal UnitPrice { get; set; }
+    public decimal LineTotal { get; set; }                    // Quantity × UnitPrice
+    public decimal TaxRate { get; set; }                      // e.g. 0.12 for 12% VAT
+    public decimal TaxAmount { get; set; }
+    public string? Notes { get; set; }
+}
+
+public enum InvoiceType { Sales = 0, Purchase = 1, CreditNote = 2 }
+public enum InvoiceStatus { Draft = 0, Issued = 1, Printed = 2, Signed = 3, Cancelled = 4 }
+```
+
+**Indexes**: `(TenantId, Number)` unique, `(TenantId, CustomerId)`, `(TenantId, SalesOrderId)`, `(TenantId, Status)`.
+
+### Phase 1 — Sales Invoice Core (Priority: HIGH)
+
+**Goal**: Auto-generate a printable invoice when a delivery stop is completed. Office prints it; driver presents to customer for signature.
+
+#### 1a. Domain & Database
+- [ ] Add `Invoice`, `InvoiceLine` entities + `InvoiceType`, `InvoiceStatus` enums
+- [ ] EF Core configuration + migration
+- [ ] Seed data: invoice numbering sequence per tenant (e.g., `InvoiceSequence` table or `Tenant.NextInvoiceNumber`)
+
+#### 1b. Backend — CQRS
+- [ ] `CreateInvoiceCommand` — generates invoice from `SalesOrder`; sets `Number` from sequence
+- [ ] `IssueInvoiceCommand` — transitions Draft → Issued
+- [ ] `PrintInvoiceCommand` — marks as Printed, records `PrintedBy` + `PrintedAtUtc`
+- [ ] `SignInvoiceCommand` — marks as Signed (for mobile signature capture)
+- [ ] `CancelInvoiceCommand` — transitions to Cancelled (only Issued/Printed, not Signed)
+- [ ] `GetInvoiceByIdQuery` — full invoice with lines, customer, sales order ref
+- [ ] `GetInvoicesQuery` — paginated list with filters (status, customer, date range, warehouse)
+- [ ] `GetInvoicePdfQuery` — returns PDF bytes (delegates to report engine)
+
+**Integration point**: Modify `CompleteDeliveryStopCommandHandler` to **auto-create** an `Invoice` (Draft → auto-Issued) when the stop is completed. This ties invoice generation to the natural delivery workflow.
+
+#### 1c. Backend — Controller
+- [ ] `InvoicesController` at `/api/v1/invoices`
+- [ ] Policies: `invoices:read`, `invoices:write`, `invoices:delete`
+- [ ] PDF download endpoint: `GET /api/v1/invoices/{id}/pdf`
+- [ ] Permissions registered in `TenantPermission` seed
+
+#### 1d. Frontend — Angular
+- [ ] `InvoiceListComponent` at `/invoices` — DevExtreme data grid with filters (status, date range, customer, warehouse)
+- [ ] `InvoiceDetailComponent` at `/invoices/:id` — full invoice view, customer info, line items, totals, status badge
+- [ ] Print button → triggers `GET /api/v1/invoices/{id}/pdf` download
+- [ ] "Print & Sign" workflow: Print → Mark as Printed → (customer signs physical copy) → office marks as Signed
+- [ ] Navigation links from SalesOrder detail → related Invoice
+- [ ] Navigation links from Route/Stop detail → related Invoice
+
+#### 1e. Mobile — Flutter
+- [ ] `InvoiceViewScreen` — view invoice PDF (via `flutter_pdfview` or webview)
+- [ ] Print trigger — send to Bluetooth/network printer (`flutter_bluetooth_serial` or raw socket to dot-matrix printer)
+- [ ] Signature capture — draw signature on canvas, upload via `SignInvoiceCommand`
+- [ ] Invoice list on driver's route stop screen — see invoices for shipments at current stop
+- [ ] After stop completion, show "Invoice ready" with print/view options
+
+### Phase 2 — Invoice Numbering & Sequences
+- [ ] `InvoiceSequence` entity: per-tenant, per-type numbering with prefix, padding
+- [ ] Configurable format: `{PREFIX}-{YEAR}-{NNNN}`, `{NNNNNN}`, etc.
+- [ ] Tenant settings UI for invoice numbering format
+- [ ] Concurrency-safe number allocation (database sequence or row lock)
+
+### Phase 3 — Printable Layout (DevExpress Report Designer)
+- [ ] Design report template in DevExpress Report Designer
+- [ ] Multiple templates: A4 laser (modern), dot-matrix 80mm (legacy), thermal 58mm
+- [ ] Template variables: invoice number, date, customer name/address/taxId, line items, totals, warehouse stamp
+- [ ] `ReportLayout` entity — tenants can upload/select custom layouts
+- [ ] PDF rendering endpoint uses selected layout
+- [ ] Print preview in Angular with DevExpress report viewer component
+
+### Phase 4 — Credit Notes & Corrections
+- [ ] `CreditNote` → subtype of `Invoice` with `InvoiceType.CreditNote`
+- [ ] Link to original `Invoice` via `OriginalInvoiceId`
+- [ ] Workflow: Cancelled invoice → optional credit note for accounting
+- [ ] Re-issue capability: cancelled invoices can trigger a new Draft
+
+### Phase 5 — Purchase Invoice XML Import
+- [ ] XML parser abstraction with format-specific implementations
+- [ ] CCI format parser (Coca-Cola)
+- [ ] EFS format parser
+- [ ] Pepsi format parser
+- [ ] Philip Morris format parser
+- [ ] Import endpoint: `POST /api/v1/invoices/import-xml` — parses XML, creates `PurchaseOrder` + `Invoice`
+- [ ] Validation: duplicate detection via `ExternalReference`, schema validation
+- [ ] Dashboard for import history with success/error logs
+
+### Phase 6 — Invoice Reports & Analytics
+- [ ] Invoice summary report: issued, printed, signed, cancelled counts per period
+- [ ] Revenue by customer/warehouse/period
+- [ ] Outstanding (unpaid) invoices aging report
+- [ ] Tax summary report (for fiscal authorities)
+- [ ] Export to Excel/CSV
+
+### Auth & Permissions
+
+| Permission | Role |
+|---|---|
+| `invoices:read` | Admin, Dispatcher, Driver, Preseller |
+| `invoices:write` | Admin, Dispatcher |
+| `invoices:delete` | Admin |
+| `invoices:print` | Admin, Dispatcher, Driver |
+| `invoices:sign` | Admin, Dispatcher, Driver |
+
+---
 
 ## Backlog — UI & Feature Enhancements
 

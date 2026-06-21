@@ -33,6 +33,8 @@ public class GetPreOrdersQueryHandler
                 Status = p.Status,
                 PaymentType = p.PaymentType,
                 TotalAmount = p.TotalAmount,
+                AmountPlanned = p.AmountPlanned,
+                AmountPaid = p.AmountPaid,
                 LineCount = p.Lines.Count,
                 OrderDateUtc = p.OrderDateUtc,
                 CreatedAt = p.CreatedAt,
@@ -83,6 +85,8 @@ public class GetPreOrderByIdQueryHandler
                     : null,
                 Notes = p.Notes,
                 TotalAmount = p.TotalAmount,
+                AmountPlanned = p.AmountPlanned,
+                AmountPaid = p.AmountPaid,
                 Lines = p.Lines.Select(l => new PreOrderLineDto
                 {
                     Id = l.Id,
@@ -138,6 +142,8 @@ public class GetMyPreOrdersQueryHandler
                 Status = p.Status,
                 PaymentType = p.PaymentType,
                 TotalAmount = p.TotalAmount,
+                AmountPlanned = p.AmountPlanned,
+                AmountPaid = p.AmountPaid,
                 LineCount = p.Lines.Count,
                 OrderDateUtc = p.OrderDateUtc,
                 CreatedAt = p.CreatedAt,

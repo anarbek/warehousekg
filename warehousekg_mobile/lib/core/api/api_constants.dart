@@ -27,5 +27,6 @@ class ApiConstants {
   static const String paymentTypes = '$apiPrefix/payment-types';
   static const String preOrderWarehouseStock = '$apiPrefix/pre-orders/warehouse-stock';
   static String preOrderDetail(String id) => '$preOrders/$id';
+  static String preOrderUpdate(String id) => '$preOrders/$id';
   static String preOrderSubmit(String id) => '$preOrders/$id/submit';
 }

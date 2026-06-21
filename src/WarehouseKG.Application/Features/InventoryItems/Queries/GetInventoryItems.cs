@@ -37,6 +37,7 @@ public class GetInventoryItemsQueryHandler
                 UnitOfMeasureName = i.UnitOfMeasure != null ? i.UnitOfMeasure.Name : null,
                 QuantityOnHand = i.QuantityOnHand,
                 ReorderLevel = i.ReorderLevel,
+                UnitPrice = i.UnitPrice,
                 IsActive = i.IsActive
             })
             .ToListAsync(cancellationToken);

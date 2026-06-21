@@ -68,6 +68,12 @@ final appRoutes = [
         builder: (context, state) => const PreOrderFormScreen(),
       ),
       GoRoute(
+        path: 'edit/:id',
+        builder: (context, state) => PreOrderFormScreen(
+          editId: state.pathParameters['id'],
+        ),
+      ),
+      GoRoute(
         path: ':id',
         builder: (context, state) => PreOrderDetailScreen(
           id: state.pathParameters['id']!,

@@ -43,6 +43,7 @@
         <a [routerLink]="[d.data.id, 'edit']">
           <dx-button icon="edit" hint="Edit" stylingMode="text" />
         </a>
+        <dx-button icon="trash" hint="Delete" stylingMode="text" type="danger" (onClick)="deletePreOrder(d.data.id)" />
       }
     </div>
   </dx-data-grid>

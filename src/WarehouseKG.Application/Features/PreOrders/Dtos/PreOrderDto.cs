@@ -25,6 +25,8 @@ public class PreOrderDto
     public string? ConvertedSalesOrderNumber { get; set; }
     public string? Notes { get; set; }
     public decimal TotalAmount { get; set; }
+    public decimal AmountPlanned { get; set; }
+    public decimal AmountPaid { get; set; }
     public List<PreOrderLineDto> Lines { get; set; } = new();
 }
 
@@ -52,6 +54,8 @@ public class PreOrderSummaryDto
     public PreOrderStatus Status { get; set; }
     public string PaymentType { get; set; } = string.Empty;
     public decimal TotalAmount { get; set; }
+    public decimal AmountPlanned { get; set; }
+    public decimal AmountPaid { get; set; }
     public int LineCount { get; set; }
     public DateTime OrderDateUtc { get; set; }
     public DateTime CreatedAt { get; set; }

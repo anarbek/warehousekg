@@ -15,7 +15,9 @@ public record CreatePreOrderCommand(
     string? Currency,
     DateTime? ExpectedDateUtc,
     string? Notes,
-    IReadOnlyList<PreOrderLineInput> Lines) : IRequest<Guid>;
+    IReadOnlyList<PreOrderLineInput> Lines,
+    decimal? AmountPlanned = null,
+    decimal? AmountPaid = null) : IRequest<Guid>;
 
 public class CreatePreOrderCommandHandler : IRequestHandler<CreatePreOrderCommand, Guid>
 {
@@ -54,6 +56,8 @@ public class CreatePreOrderCommandHandler : IRequestHandler<CreatePreOrderComman
             ExpectedDateUtc = request.ExpectedDateUtc.HasValue ? DateTime.SpecifyKind(request.ExpectedDateUtc.Value, DateTimeKind.Utc) : null,
             Notes = request.Notes,
             Status = PreOrderStatus.Draft,
+            AmountPlanned = request.AmountPlanned ?? 0,
+            AmountPaid = request.AmountPaid ?? 0,
             Lines = request.Lines.Select(l =>
             {
                 var stock = stockQuantities.GetValueOrDefault(l.InventoryItemId, 0m);

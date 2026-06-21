@@ -88,7 +88,11 @@ class _PreOrderListScreenState extends ConsumerState<PreOrderListScreen> {
             margin: const EdgeInsets.only(bottom: 8),
             child: InkWell(
               onTap: () async {
-                await context.push('/preseller/${o.id}');
+                if (o.isDraft) {
+                  await context.push('/preseller/edit/${o.id}');
+                } else {
+                  await context.push('/preseller/${o.id}');
+                }
                 _load();
               },
               child: Padding(

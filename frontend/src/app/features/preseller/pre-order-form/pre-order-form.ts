@@ -156,6 +156,8 @@ export class PreOrderForm implements OnInit {
                 unitPrice: l.unitPrice,
                 discountPercent: l.discountPercent,
               }));
+              // Auto-fill prices from inventory for lines with price = 0
+              this.lines.forEach((line) => this.onItemChanged(line.inventoryItemId, line));
               if (po.warehouseId) this.onWarehouseChanged(po.warehouseId);
               this.loading.set(false);
             },
@@ -203,6 +205,20 @@ export class PreOrderForm implements OnInit {
 
   protected addLine() {
     this.lines.push({ inventoryItemId: '', quantity: 1, unitPrice: 0, discountPercent: 0 });
+  }
+
+  protected onItemChanged(itemId: string, line: PreOrderLineInput) {
+    const item = this.inventoryItems.find((i: any) => i.id === itemId);
+    if (item && item.unitPrice > 0 && line.unitPrice === 0) {
+      line.unitPrice = item.unitPrice;
+    }
+  }
+
+  protected onNumberFocusIn(e: any) {
+    setTimeout(() => {
+      const input = e.element?.querySelector('input');
+      if (input) input.select();
+    });
   }
 
   protected removeLine(idx: number) {

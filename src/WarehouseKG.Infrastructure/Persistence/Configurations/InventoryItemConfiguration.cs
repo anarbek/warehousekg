@@ -18,6 +18,7 @@ public class InventoryItemConfiguration : IEntityTypeConfiguration<InventoryItem
         builder.Property(i => i.Barcode).HasMaxLength(128);
         builder.Property(i => i.QuantityOnHand).HasColumnType("numeric(18,3)");
         builder.Property(i => i.ReorderLevel).HasColumnType("numeric(18,3)");
+        builder.Property(i => i.UnitPrice).HasColumnType("numeric(18,2)");
 
         builder.HasIndex(i => new { i.TenantId, i.Sku }).IsUnique();
         builder.HasIndex(i => new { i.TenantId, i.Barcode });

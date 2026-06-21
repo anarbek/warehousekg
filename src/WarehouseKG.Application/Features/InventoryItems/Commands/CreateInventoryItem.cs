@@ -17,6 +17,7 @@ public record CreateInventoryItemCommand(
     Guid CategoryId,
     Guid UnitOfMeasureId,
     decimal ReorderLevel,
+    decimal UnitPrice = 0,
     bool IsActive = true,
     Guid? WarehouseId = null,
     decimal InitialQuantity = 0) : IRequest<Guid>;
@@ -43,6 +44,7 @@ public class CreateInventoryItemCommandHandler : IRequestHandler<CreateInventory
             UnitOfMeasureId = request.UnitOfMeasureId,
             QuantityOnHand = 0,
             ReorderLevel = request.ReorderLevel,
+            UnitPrice = request.UnitPrice,
             IsActive = request.IsActive
         };
 

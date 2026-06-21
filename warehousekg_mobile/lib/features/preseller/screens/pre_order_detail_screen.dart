@@ -93,23 +93,42 @@ class _PreOrderDetailScreenState extends ConsumerState<PreOrderDetailScreen> {
           if (o.convertedSalesOrderNumber != null)
             _infoRow('Заказ на продажу', o.convertedSalesOrderNumber!),
 
-          // Submit button (draft only)
+          // Edit + Submit buttons (draft only)
           if (o.status == PreOrderStatus.draft) ...[
             const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: _working ? null : _submit,
-                icon: _working
-                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Icon(Icons.send),
-                label: const Text('Отправить на согласование'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      await context.push('/preseller/edit/${o.id}');
+                      _load();
+                    },
+                    icon: const Icon(Icons.edit),
+                    label: const Text('Редактировать'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: _working ? null : _submit,
+                    icon: _working
+                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                        : const Icon(Icons.send),
+                    label: const Text('Отправить'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
 

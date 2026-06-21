@@ -32,13 +32,14 @@
             [(value)]="d.data.inventoryItemId"
             stylingMode="outlined"
             [searchEnabled]="true"
+            (onValueChanged)="onItemChanged($event.value, d.data)"
           />
         </div>
         <div *dxTemplate="let d of 'stockCell'">
           <strong>{{ getStockForItem(d.data.inventoryItemId) | number:'1.0-0' }}</strong>
         </div>
         <div *dxTemplate="let d of 'qtyCell'">
-          <dx-number-box [(value)]="d.data.quantity" [min]="0" [showSpinButtons]="true" stylingMode="outlined" />
+          <dx-number-box [(value)]="d.data.quantity" [min]="0" [showSpinButtons]="true" stylingMode="outlined" (onFocusIn)="onNumberFocusIn($event)" />
         </div>
         <div *dxTemplate="let d of 'diffCell'">
           @let diff = getStockDiff(d.data.inventoryItemId, d.data.quantity);
@@ -47,10 +48,10 @@
           </span>
         </div>
         <div *dxTemplate="let d of 'priceCell'">
-          <dx-number-box [(value)]="d.data.unitPrice" [min]="0" stylingMode="outlined" />
+          <dx-number-box [(value)]="d.data.unitPrice" [min]="0" stylingMode="outlined" (onFocusIn)="onNumberFocusIn($event)" />
         </div>
         <div *dxTemplate="let d of 'discCell'">
-          <dx-number-box [(value)]="d.data.discountPercent" [min]="0" [max]="100" stylingMode="outlined" />
+          <dx-number-box [(value)]="d.data.discountPercent" [min]="0" [max]="100" stylingMode="outlined" (onFocusIn)="onNumberFocusIn($event)" />
         </div>
         <div *dxTemplate="let d of 'totalCell'">
           <strong>{{ getLineTotal(d.data) | number:'1.2-2' }}</strong>

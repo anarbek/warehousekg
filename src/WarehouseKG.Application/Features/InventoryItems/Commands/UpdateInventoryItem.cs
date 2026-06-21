@@ -13,6 +13,7 @@ public record UpdateInventoryItemCommand(
     Guid CategoryId,
     Guid UnitOfMeasureId,
     decimal ReorderLevel,
+    decimal UnitPrice,
     bool IsActive) : IRequest<bool>;
 
 public class UpdateInventoryItemCommandHandler : IRequestHandler<UpdateInventoryItemCommand, bool>
@@ -41,6 +42,7 @@ public class UpdateInventoryItemCommandHandler : IRequestHandler<UpdateInventory
         item.CategoryId = request.CategoryId;
         item.UnitOfMeasureId = request.UnitOfMeasureId;
         item.ReorderLevel = request.ReorderLevel;
+        item.UnitPrice = request.UnitPrice;
         item.IsActive = request.IsActive;
 
         await _context.SaveChangesAsync(cancellationToken);

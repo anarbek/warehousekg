@@ -45,5 +45,9 @@ public class PreOrder : BaseEntity
 
     public decimal TotalAmount { get; set; }
 
+    public decimal AmountPlanned { get; set; }
+
+    public decimal AmountPaid { get; set; }
+
     public ICollection<PreOrderLine> Lines { get; set; } = new List<PreOrderLine>();
 }

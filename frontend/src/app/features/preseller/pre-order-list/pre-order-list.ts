@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { DxDataGridModule, DxButtonModule, DxProgressBarModule } from 'devextreme-angular';
 import { PreOrderService } from '../services/pre-order.service';
 import { PreOrderSummary, PreOrderStatus } from '../models/pre-order.model';
+import { ErrorToastService } from '../../../core/services/error-toast.service';
 
 @Component({
   selector: 'app-pre-order-list',
@@ -12,6 +13,7 @@ import { PreOrderSummary, PreOrderStatus } from '../models/pre-order.model';
 })
 export class PreOrderList {
   private readonly svc = inject(PreOrderService);
+  private readonly toast = inject(ErrorToastService);
   protected readonly items = signal<PreOrderSummary[]>([]);
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
@@ -55,5 +57,13 @@ export class PreOrderList {
       case PreOrderStatus.Converted: return 'status--converted';
       default: return '';
     }
+  }
+
+  deletePreOrder(id: string) {
+    if (!confirm('Удалить предзаказ?')) return;
+    this.svc.deletePreOrder(id).subscribe({
+      next: () => this.load(),
+      error: (e) => this.toast.showSave(e),
+    });
   }
 }

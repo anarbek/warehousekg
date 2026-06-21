@@ -33,5 +33,9 @@ public class SalesOrder : BaseEntity
 
     public Employee? Employee { get; set; }
 
+    public decimal AmountPlanned { get; set; }
+
+    public decimal AmountPaid { get; set; }
+
     public ICollection<SalesOrderLine> Lines { get; set; } = new List<SalesOrderLine>();
 }

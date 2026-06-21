@@ -28,7 +28,7 @@ export class InventoryItemForm implements OnInit {
     sku: '', name: '', description: '', barcode: '',
     categoryId: '', unitOfMeasureId: '',
     warehouseId: '', initialQuantity: 0,
-    reorderLevel: 0, isActive: true,
+    reorderLevel: 0, unitPrice: 0, isActive: true,
   };
 
   protected readonly formItems = signal<any[]>([]);
@@ -52,6 +52,7 @@ export class InventoryItemForm implements OnInit {
           { dataField: 'categoryId', editorType: 'dxSelectBox', label: { text: 'Категория' }, isRequired: true, editorOptions: { dataSource: cats, displayExpr: 'name', valueExpr: 'id', stylingMode: 'outlined' } },
           { dataField: 'unitOfMeasureId', editorType: 'dxSelectBox', label: { text: 'Ед. измерения' }, isRequired: true, editorOptions: { dataSource: uoms, displayExpr: 'name', valueExpr: 'id', stylingMode: 'outlined' } },
           { dataField: 'reorderLevel', label: { text: 'Мин. остаток' }, editorOptions: { stylingMode: 'outlined' } },
+          { dataField: 'unitPrice', label: { text: 'Цена' }, editorOptions: { stylingMode: 'outlined', format: '#,##0.00' } },
           { dataField: 'isActive', editorType: 'dxCheckBox', label: { text: 'Активен' } },
         ];
 
@@ -90,6 +91,7 @@ export class InventoryItemForm implements OnInit {
       categoryId: this.formData.categoryId,
       unitOfMeasureId: this.formData.unitOfMeasureId,
       reorderLevel: Number(this.formData.reorderLevel ?? 0),
+      unitPrice: Number(this.formData.unitPrice ?? 0),
       isActive: this.formData.isActive,
     };
 

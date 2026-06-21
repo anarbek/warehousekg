@@ -35,6 +35,7 @@
         <dxi-item dataField="categoryName" [label]="{text:'Категория'}" />
         <dxi-item dataField="unitOfMeasureName" [label]="{text:'Ед. измерения'}" />
         <dxi-item dataField="reorderLevel" [label]="{text:'Мин. остаток'}" [editorType]="'dxNumberBox'" />
+        <dxi-item dataField="unitPrice" [label]="{text:'Цена'}" [editorType]="'dxNumberBox'" [editorOptions]="{format:'#,##0.00'}" />
       </dx-form>
       @if (it.description) {
         <div class="item-detail__desc">

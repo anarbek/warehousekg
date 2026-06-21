@@ -16,6 +16,8 @@ public class SalesOrderConfiguration : IEntityTypeConfiguration<SalesOrder>
         builder.Property(s => s.Currency).HasMaxLength(3).IsRequired();
         builder.Property(s => s.Notes).HasMaxLength(1024);
         builder.Property(s => s.Status).HasConversion<string>().HasMaxLength(32);
+        builder.Property(s => s.AmountPlanned).HasColumnType("numeric(18,2)");
+        builder.Property(s => s.AmountPaid).HasColumnType("numeric(18,2)");
 
         builder.HasIndex(s => new { s.TenantId, s.Number }).IsUnique();
 

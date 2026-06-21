@@ -37,6 +37,8 @@ public class GetSalesOrdersQueryHandler
                 CreatedAt = s.CreatedAt,
                 ExpectedDateUtc = s.ExpectedDateUtc,
                 TotalAmount = s.Lines.Sum(l => l.Quantity * l.UnitPrice),
+                AmountPlanned = s.AmountPlanned,
+                AmountPaid = s.AmountPaid,
                 EmployeeId = s.EmployeeId,
                 EmployeeName = s.Employee != null ? s.Employee.LastName + " " + s.Employee.FirstName : null,
                 LineCount = s.Lines.Count
@@ -80,6 +82,8 @@ public class GetSalesOrderByIdQueryHandler
                 ShippedAtUtc = s.ShippedAtUtc,
                 Notes = s.Notes,
                 TotalAmount = s.Lines.Sum(l => l.Quantity * l.UnitPrice),
+                AmountPlanned = s.AmountPlanned,
+                AmountPaid = s.AmountPaid,
                 Lines = s.Lines.Select(l => new SalesOrderLineDto
                 {
                     Id = l.Id,

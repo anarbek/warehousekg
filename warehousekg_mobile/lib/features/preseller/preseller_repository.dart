@@ -34,6 +34,10 @@ class PresellerRepository {
     await _api.dio.post(ApiConstants.preOrderSubmit(id));
   }
 
+  Future<void> updatePreOrder(String id, Map<String, dynamic> data) async {
+    await _api.dio.put(ApiConstants.preOrderUpdate(id), data: data);
+  }
+
   Future<List<PaymentType>> getPaymentTypes() async {
     final resp = await _api.dio.get(ApiConstants.paymentTypes);
     return (resp.data as List<dynamic>)

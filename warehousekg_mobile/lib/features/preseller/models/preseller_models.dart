@@ -58,8 +58,10 @@ class PreOrderSummary {
 class PreOrderModel {
   final String id;
   final String number;
+  final String customerId;
   final String? customerName;
   final String? presellerName;
+  final String warehouseId;
   final String? warehouseName;
   final PreOrderStatus status;
   final String paymentType;
@@ -68,14 +70,18 @@ class PreOrderModel {
   final DateTime? expectedDateUtc;
   final String? notes;
   final double totalAmount;
+  final double amountPlanned;
+  final double amountPaid;
   final String? convertedSalesOrderNumber;
   final List<PreOrderLineModel> lines;
 
   PreOrderModel({
     required this.id,
     required this.number,
+    required this.customerId,
     this.customerName,
     this.presellerName,
+    required this.warehouseId,
     this.warehouseName,
     required this.status,
     required this.paymentType,
@@ -84,6 +90,8 @@ class PreOrderModel {
     this.expectedDateUtc,
     this.notes,
     required this.totalAmount,
+    this.amountPlanned = 0,
+    this.amountPaid = 0,
     this.convertedSalesOrderNumber,
     required this.lines,
   });
@@ -91,8 +99,10 @@ class PreOrderModel {
   factory PreOrderModel.fromJson(Map<String, dynamic> json) => PreOrderModel(
     id: json['id'] ?? '',
     number: json['number'] ?? '',
+    customerId: json['customerId'] ?? '',
     customerName: json['customerName'],
     presellerName: json['presellerName'],
+    warehouseId: json['warehouseId'] ?? '',
     warehouseName: json['warehouseName'],
     status: PreOrderStatus.values[json['status'] ?? 0],
     paymentType: json['paymentType'] ?? '',
@@ -101,6 +111,8 @@ class PreOrderModel {
     expectedDateUtc: json['expectedDateUtc'] != null ? DateTime.parse(json['expectedDateUtc']) : null,
     notes: json['notes'],
     totalAmount: (json['totalAmount'] ?? 0).toDouble(),
+    amountPlanned: (json['amountPlanned'] ?? 0).toDouble(),
+    amountPaid: (json['amountPaid'] ?? 0).toDouble(),
     convertedSalesOrderNumber: json['convertedSalesOrderNumber'],
     lines: (json['lines'] as List<dynamic>?)
         ?.map((l) => PreOrderLineModel.fromJson(l as Map<String, dynamic>))
@@ -110,6 +122,7 @@ class PreOrderModel {
 
 class PreOrderLineModel {
   final String id;
+  final String inventoryItemId;
   final String? inventoryItemName;
   final String? sku;
   final double quantity;
@@ -121,6 +134,7 @@ class PreOrderLineModel {
 
   PreOrderLineModel({
     required this.id,
+    required this.inventoryItemId,
     this.inventoryItemName,
     this.sku,
     required this.quantity,
@@ -133,6 +147,7 @@ class PreOrderLineModel {
 
   factory PreOrderLineModel.fromJson(Map<String, dynamic> json) => PreOrderLineModel(
     id: json['id'] ?? '',
+    inventoryItemId: json['inventoryItemId'] ?? '',
     inventoryItemName: json['inventoryItemName'],
     sku: json['sku'],
     quantity: (json['quantity'] ?? 0).toDouble(),
