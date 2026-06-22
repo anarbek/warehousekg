@@ -71,6 +71,9 @@ use this design approach when adding positions: adjustments/new in pages like: t
 - there should be a way to see all inventories of route detail with filtering, ability to navigate to related details like warehouse, inventory-detail etc, currently only orders are visible
 - in customers/customers there should be a way to see all customers in map together, a new link with popup can be added, inside map also geofences should be shown as overlays(if tenant does not have acivated dispatch module, geofences should not be shown)
 - from reports there should be a way to navigate to related pages
+- [x]Sales invoice(satis fatura) completed, 
+- Purchase invoice(Alis fatura) should be done
+- invoices module in flutter app should be done
 
 ---
 
