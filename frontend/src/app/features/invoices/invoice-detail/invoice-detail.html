@@ -1,0 +1,176 @@
+@if (loading()) {
+  <dx-progress-bar [visible]="true" />
+}
+
+@if (error() && !invoice()) {
+  <div class="detail-page detail-page--error">
+    <p>{{ error() }}</p>
+    <dx-button text="Назад" icon="arrowleft" stylingMode="outlined" (onClick)="goBack()" />
+  </div>
+}
+
+@if (invoice(); as inv) {
+  <div class="detail-page">
+    <div class="detail-page__toolbar">
+      <dx-button icon="arrowleft" stylingMode="text" (onClick)="goBack()" />
+      <h1 class="detail-page__title">Счёт: {{ inv.number }}</h1>
+      <span class="detail-page__spacer"></span>
+
+      <dx-button
+        text="Печать"
+        icon="export"
+        stylingMode="outlined"
+        (onClick)="printPdf()"
+      />
+
+      @if (canTransition('Issued')) {
+        <dx-button
+          text="Выписать"
+          icon="check"
+          type="default"
+          stylingMode="contained"
+          (onClick)="transition('issue')"
+          [disabled]="saving()"
+        />
+      }
+      @if (canTransition('Printed')) {
+        <dx-button
+          text="Напечатать"
+          icon="export"
+          type="default"
+          stylingMode="contained"
+          (onClick)="transition('print')"
+          [disabled]="saving()"
+        />
+      }
+      @if (canTransition('Signed')) {
+        <dx-button
+          text="Подписать"
+          icon="check"
+          type="default"
+          stylingMode="contained"
+          (onClick)="transition('sign')"
+          [disabled]="saving()"
+        />
+      }
+      @if (canTransition('Cancelled')) {
+        <dx-button
+          text="Отменить"
+          icon="close"
+          type="danger"
+          stylingMode="outlined"
+          (onClick)="transition('cancel')"
+          [disabled]="saving()"
+        />
+      }
+      @if (inv.status === 'Draft') {
+        <dx-button text="Редактировать" icon="edit" stylingMode="outlined" [routerLink]="['/invoices', id, 'edit']" />
+      }
+    </div>
+
+    @if (saving()) {
+      <dx-progress-bar [visible]="true" />
+    }
+
+    <div class="dx-card">
+      <dl class="detail-list">
+        <dt i18n="@@invoices.detail.number">Номер</dt>
+        <dd>{{ inv.number }}</dd>
+
+        <dt i18n="@@invoices.detail.status">Статус</dt>
+        <dd>
+          <span
+            class="badge"
+            [class.badge--draft]="inv.status === 'Draft'"
+            [class.badge--issued]="inv.status === 'Issued'"
+            [class.badge--printed]="inv.status === 'Printed'"
+            [class.badge--signed]="inv.status === 'Signed'"
+            [class.badge--cancelled]="inv.status === 'Cancelled'"
+          >{{ statusText(inv.status) }}</span>
+        </dd>
+
+        <dt i18n="@@invoices.detail.customer">Клиент</dt>
+        <dd>{{ inv.customerName || inv.customerId }}</dd>
+
+        <dt i18n="@@invoices.detail.warehouse">Склад</dt>
+        <dd>{{ inv.warehouseName || inv.warehouseId || '—' }}</dd>
+
+        @if (inv.salesOrderNumber) {
+          <dt i18n="@@invoices.detail.salesOrder">Заказ клиента</dt>
+          <dd>{{ inv.salesOrderNumber }}</dd>
+        }
+
+        <dt i18n="@@invoices.detail.currency">Валюта</dt>
+        <dd>{{ inv.currency }}</dd>
+
+        <dt i18n="@@invoices.detail.issuedAt">Дата выписки</dt>
+        <dd>{{ inv.issuedAtUtc | date : 'dd.MM.yyyy, HH:mm' }}</dd>
+
+        @if (inv.printedAtUtc) {
+          <dt i18n="@@invoices.detail.printedAt">Напечатан</dt>
+          <dd>{{ inv.printedAtUtc | date : 'dd.MM.yyyy, HH:mm' }}</dd>
+        }
+
+        @if (inv.signedAtUtc) {
+          <dt i18n="@@invoices.detail.signedAt">Подписан</dt>
+          <dd>{{ inv.signedAtUtc | date : 'dd.MM.yyyy, HH:mm' }}</dd>
+        }
+
+        @if (inv.signedByName) {
+          <dt i18n="@@invoices.detail.signedBy">Подписант</dt>
+          <dd>{{ inv.signedByName }}</dd>
+        }
+
+        <dt i18n="@@invoices.detail.subtotal">Сумма без налога</dt>
+        <dd>{{ inv.totalAmount | number : '1.2-2' }} {{ inv.currency }}</dd>
+
+        <dt i18n="@@invoices.detail.tax">Налог</dt>
+        <dd>{{ inv.taxAmount | number : '1.2-2' }} {{ inv.currency }}</dd>
+
+        <dt i18n="@@invoices.detail.total">Итого</dt>
+        <dd><strong>{{ inv.totalAmount + inv.taxAmount | number : '1.2-2' }} {{ inv.currency }}</strong></dd>
+
+        @if (inv.paymentType) {
+          <dt i18n="@@invoices.detail.paymentType">Тип оплаты</dt>
+          <dd>{{ inv.paymentType }}</dd>
+        }
+
+        @if (inv.dueDateUtc) {
+          <dt i18n="@@invoices.detail.dueDate">Срок оплаты</dt>
+          <dd>{{ inv.dueDateUtc | date : 'dd.MM.yyyy' }}</dd>
+        }
+
+        @if (inv.notes) {
+          <dt i18n="@@invoices.detail.notes">Примечание</dt>
+          <dd>{{ inv.notes }}</dd>
+        }
+      </dl>
+    </div>
+
+    <div class="dx-card">
+      <h3 i18n="@@invoices.detail.lines">Позиции</h3>
+      <dx-data-grid
+        [dataSource]="getLines()"
+        [showBorders]="true"
+        [hoverStateEnabled]="true"
+      >
+        <dxi-column dataField="inventoryItemName" caption="Товар" i18n-caption="@@invoices.lines.item" />
+        <dxi-column dataField="quantity" caption="Кол-во" i18n-caption="@@invoices.lines.qty" [width]="85" />
+        <dxi-column dataField="unitPrice" caption="Цена" i18n-caption="@@invoices.lines.price" [width]="90" />
+        <dxi-column dataField="lineTotal" caption="Сумма" i18n-caption="@@invoices.lines.total" [width]="100" />
+        <dxi-column caption="Налог %" i18n-caption="@@invoices.lines.taxRate" [width]="80" cellTemplate="taxRateCell" />
+        <dxi-column dataField="taxAmount" caption="Сумма налога" i18n-caption="@@invoices.lines.taxAmount" [width]="105" />
+        <dxi-column dataField="rowTotal" caption="Итого" i18n-caption="@@invoices.lines.rowTotal" [width]="100" />
+
+        <div *dxTemplate="let c of 'taxRateCell'">{{ c.data.taxRate }}%</div>
+
+        <dxo-summary>
+          <dxi-total-item column="quantity" summaryType="sum" [customizeText]="sumQtyText" />
+          <dxi-total-item column="lineTotal" summaryType="sum" [customizeText]="sumMoneyText" />
+          <dxi-total-item column="taxAmount" summaryType="sum" [customizeText]="sumMoneyText" />
+          <dxi-total-item column="rowTotal" summaryType="sum" [customizeText]="sumMoneyText" />
+        </dxo-summary>
+      </dx-data-grid>
+    </div>
+  </div>
+}

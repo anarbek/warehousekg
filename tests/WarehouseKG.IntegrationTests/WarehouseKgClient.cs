@@ -562,6 +562,60 @@ public class WarehouseKgClient
         return await response.Content.ReadFromJsonAsync<JsonElement>();
     }
 
+    // ─── Invoices ─────────────────────────────────────────────────────
+
+    public async Task<string> CreateInvoiceAsync(object body)
+    {
+        var response = await _http.PostAsJsonAsync("/api/v1/invoices", body);
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    public async Task<JsonElement> GetInvoicesAsync()
+    {
+        var response = await _http.GetAsync("/api/v1/invoices");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
+    public async Task<JsonElement> GetInvoiceByIdAsync(Guid id)
+    {
+        var response = await _http.GetAsync($"/api/v1/invoices/{id}");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
+    }
+
+    public async Task IssueInvoiceAsync(string id)
+    {
+        var response = await _http.PostAsync($"/api/v1/invoices/{id}/issue", null);
+        await EnsureSuccessAsync(response);
+    }
+
+    public async Task PrintInvoiceAsync(string id)
+    {
+        var response = await _http.PostAsync($"/api/v1/invoices/{id}/print", null);
+        await EnsureSuccessAsync(response);
+    }
+
+    public async Task SignInvoiceAsync(string id, string? signedByName = null)
+    {
+        var body = new { id = Guid.Parse(id), signedByName };
+        var response = await _http.PostAsJsonAsync($"/api/v1/invoices/{id}/sign", body);
+        await EnsureSuccessAsync(response);
+    }
+
+    public async Task CancelInvoiceAsync(string id)
+    {
+        var response = await _http.PostAsync($"/api/v1/invoices/{id}/cancel", null);
+        await EnsureSuccessAsync(response);
+    }
+
+    public async Task DeleteInvoiceAsync(string id)
+    {
+        var response = await _http.DeleteAsync($"/api/v1/invoices/{id}");
+        await EnsureSuccessAsync(response);
+    }
+
     // ─── Internal helpers ─────────────────────────────────────────────
 
     private static async Task EnsureSuccessAsync(HttpResponseMessage response)

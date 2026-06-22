@@ -4,7 +4,11 @@
 <div class="detail-page">
   <div class="detail-page__toolbar">
     <dx-button icon="arrowleft" stylingMode="text" (onClick)="goBack()"/>
-    <h1 class="detail-page__title">Заказ клиента: {{s.number}}</h1><span class="detail-page__spacer"></span>
+    <h1 class="detail-page__title">Заказ клиента: {{s.number}}</h1>
+    <a [routerLink]="['/invoices/list']" [queryParams]="{salesOrderId: id}">
+      <dx-button text="Счета" icon="columnfield" stylingMode="outlined" hint="Связанные счета" />
+    </a>
+    <span class="detail-page__spacer"></span>
     @if(canTransition('Confirmed')){<dx-button text="Подтвердить" icon="check" type="default" stylingMode="contained" (onClick)="transition('confirm')" [disabled]="saving()"/>}
     @if(canTransition('Shipped')){<dx-button text="Отгрузить" icon="export" type="default" stylingMode="contained" (onClick)="transition('ship')" [disabled]="saving()"/>}
     @if(canTransition('Cancelled')){<dx-button text="Отменить" icon="close" type="danger" stylingMode="outlined" (onClick)="transition('cancel')" [disabled]="saving()"/>}

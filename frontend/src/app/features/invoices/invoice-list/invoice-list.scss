@@ -1,0 +1,41 @@
+.list-page {
+  padding: 16px;
+
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
+
+    h1 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+  }
+
+  &__filters {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  &__error {
+    color: #d32f2f;
+    margin: 8px 0;
+  }
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+
+  &--draft { background: #e0e0e0; color: #616161; }
+  &--issued { background: #bbdefb; color: #1565c0; }
+  &--printed { background: #c8e6c9; color: #2e7d32; }
+  &--signed { background: #d1c4e9; color: #512da8; }
+  &--cancelled { background: #ffcdd2; color: #c62828; }
+}

@@ -52,6 +52,9 @@ public static class Resources
     public const string PreOrders = "pre-orders";
     public const string PaymentTypes = "payment-types";
 
+    // Invoice resources
+    public const string Invoices = "invoices";
+
     // Superadmin resources
     public const string Tenants = "tenants";
 
@@ -66,6 +69,7 @@ public static class Resources
         Vehicles, VehicleTypes, Maintenance, Insurance, Inspections, FuelLogs,
         DeliveryRoutes, DeliveryStops, DeliveryShipments, Geofences,
         PreOrders, PaymentTypes,
+        Invoices,
         Tenants
     };
 }

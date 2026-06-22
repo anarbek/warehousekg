@@ -106,6 +106,9 @@ public class WarehouseKgDbContext
     public DbSet<PreOrder> PreOrders => Set<PreOrder>();
     public DbSet<PreOrderLine> PreOrderLines => Set<PreOrderLine>();
 
+    public DbSet<Invoice> Invoices => Set<Invoice>();
+    public DbSet<InvoiceLine> InvoiceLines => Set<InvoiceLine>();
+
     public Guid CurrentTenantId => _tenantProvider.GetTenantId();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

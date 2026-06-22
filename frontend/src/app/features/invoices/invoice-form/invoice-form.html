@@ -1,0 +1,100 @@
+@if (ready()) {
+<div class="form-page">
+  <div class="dx-card">
+    @if (saving()) {
+      <dx-progress-bar [visible]="true" />
+    }
+    <div class="form-page__header">
+      <h2 i18n="@@invoices.form.title">Новый счёт</h2>
+    </div>
+    <div class="form-page__content">
+      @if (err()) {
+        <p class="form-page__error">{{ err() }}</p>
+      }
+
+      <dx-form [formData]="formData" [colCount]="2" [items]="headerItems()" />
+
+      <form [formGroup]="form">
+        <h3 i18n="@@invoices.form.lines">Позиции</h3>
+        <div formArrayName="lines" class="form-lines">
+          <div class="form-lines__header">
+            <span class="form-lines__label">Товар</span>
+            <span class="form-lines__label">Кол-во</span>
+            <span class="form-lines__label">Цена</span>
+            <span class="form-lines__label">Сумма</span>
+            <span class="form-lines__label">Налог %</span>
+            <span class="form-lines__label">Сумма налога</span>
+            <span class="form-lines__label">Итого</span>
+            <span class="form-lines__spacer"></span>
+          </div>
+          @for (line of lines.controls; track $index) {
+            <div [formGroupName]="$index" class="form-lines__row">
+              <dx-select-box
+                [items]="items()"
+                displayExpr="name"
+                valueExpr="id"
+                [value]="$any($any(line).controls.inventoryItemId.value)"
+                stylingMode="outlined"
+                placeholder="Выберите товар"
+                (onValueChanged)="onItemSelected($event, $index); $any($any(line).controls.inventoryItemId).setValue($event.value)"
+              />
+              <dx-text-box
+                [value]="$any($any(line).controls.quantity.value)"
+                placeholder="0"
+                stylingMode="outlined"
+                (onFocusIn)="onTextBoxFocus($event)"
+                (onValueChanged)="$any($any(line).controls.quantity).setValue($event.value)"
+              />
+              <dx-text-box
+                [value]="$any($any(line).controls.unitPrice.value)"
+                placeholder="0.00"
+                stylingMode="outlined"
+                (onFocusIn)="onTextBoxFocus($event)"
+                (onValueChanged)="$any($any(line).controls.unitPrice).setValue($event.value)"
+              />
+              <span class="form-lines__computed">{{ lineTotals()[$index].lineTotal | number:'1.2-2' }}</span>
+              <dx-text-box
+                [value]="$any($any(line).controls.taxRate.value)"
+                placeholder="0"
+                stylingMode="outlined"
+                (onFocusIn)="onTextBoxFocus($event)"
+                (onValueChanged)="$any($any(line).controls.taxRate).setValue($event.value)"
+              />
+              <span class="form-lines__computed">{{ lineTotals()[$index].taxAmount | number:'1.2-2' }}</span>
+              <span class="form-lines__computed">{{ lineTotals()[$index].rowTotal | number:'1.2-2' }}</span>
+              <dx-button icon="trash" type="danger" stylingMode="text" (onClick)="removeLine($index)" />
+            </div>
+          }
+          <dx-button
+            text="+ Добавить позицию"
+            icon="add"
+            stylingMode="outlined"
+            (onClick)="addLine()"
+          />
+
+          <div class="form-lines__sums">
+            <span></span>
+            <span class="form-lines__computed"><strong>{{ totalQty() }}</strong></span>
+            <span></span>
+            <span class="form-lines__computed"><strong>{{ subtotal() | number:'1.2-2' }}</strong></span>
+            <span></span>
+            <span class="form-lines__computed"><strong>{{ taxTotal() | number:'1.2-2' }}</strong></span>
+            <span class="form-lines__computed"><strong>{{ grandTotal() | number:'1.2-2' }}</strong></span>
+            <span class="form-lines__spacer"></span>
+          </div>
+
+          <div class="form-totals">
+            <div class="form-totals__row"><span i18n="@@invoices.form.subtotal">Сумма без налога:</span><strong>{{ subtotal() | number:'1.2-2' }} {{ formData.currency }}</strong></div>
+            <div class="form-totals__row"><span i18n="@@invoices.form.tax">Сумма налога:</span><strong>{{ taxTotal() | number:'1.2-2' }} {{ formData.currency }}</strong></div>
+            <div class="form-totals__row form-totals__row--grand"><span i18n="@@invoices.form.total">Итого:</span><strong>{{ grandTotal() | number:'1.2-2' }} {{ formData.currency }}</strong></div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <dx-button text="Сохранить" type="default" stylingMode="contained" (onClick)="submit()" />
+          <dx-button text="Отмена" stylingMode="outlined" (onClick)="cancel()" />
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+}

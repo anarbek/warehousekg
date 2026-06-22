@@ -128,6 +128,52 @@ public class CompleteDeliveryStopCommandHandler : IRequestHandler<CompleteDelive
                 }
 
                 await _context.SaveChangesAsync(ct);
+
+                // Auto-create invoices for shipped sales orders
+                foreach (var order in orders)
+                {
+                    var invoice = new Invoice
+                    {
+                        Id = Guid.NewGuid(),
+                        Type = InvoiceType.Sales,
+                        Status = InvoiceStatus.Issued,
+                        SalesOrderId = order.Id,
+                        CustomerId = order.CustomerId,
+                        WarehouseId = order.WarehouseId ?? Guid.Empty,
+                        Currency = order.Currency,
+                        IssuedAtUtc = DateTime.UtcNow,
+                        Notes = $"Auto-generated from SalesOrder {order.Number}",
+                        Lines = order.Lines.Select(l => new InvoiceLine
+                        {
+                            Id = Guid.NewGuid(),
+                            InventoryItemId = l.InventoryItemId,
+                            Quantity = l.Quantity,
+                            UnitPrice = l.UnitPrice,
+                            LineTotal = l.Quantity * l.UnitPrice,
+                            TaxRate = 0m,
+                            TaxAmount = 0m
+                        }).ToList()
+                    };
+
+                    // Generate invoice number
+                    var year = DateTime.UtcNow.Year;
+                    var prefix = $"INV-{year}-";
+                    var lastInvoice = await _context.Invoices
+                        .Where(i => i.Number.StartsWith(prefix))
+                        .OrderByDescending(i => i.Number)
+                        .FirstOrDefaultAsync(ct);
+                    if (lastInvoice is not null && int.TryParse(lastInvoice.Number[prefix.Length..], out var num))
+                        invoice.Number = $"{prefix}{(num + 1):D4}";
+                    else
+                        invoice.Number = $"{prefix}0001";
+
+                    invoice.TotalAmount = invoice.Lines.Sum(l => l.LineTotal);
+                    invoice.TaxAmount = invoice.Lines.Sum(l => l.TaxAmount);
+
+                    _context.Invoices.Add(invoice);
+                }
+
+                await _context.SaveChangesAsync(ct);
             }
         }
 

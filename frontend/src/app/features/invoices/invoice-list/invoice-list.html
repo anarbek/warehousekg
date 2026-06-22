@@ -1,0 +1,101 @@
+<div class="list-page">
+  <div class="list-page__toolbar">
+    <h1 i18n="@@invoices.title">Счета</h1>
+    <dx-button text="Добавить" icon="add" type="default" stylingMode="contained" [routerLink]="['/invoices/new']" />
+  </div>
+
+  <div class="list-page__filters">
+    <dx-select-box
+      [items]="statusOptions"
+      displayExpr="text"
+      valueExpr="value"
+      [(value)]="filterStatus"
+      placeholder="Статус"
+      stylingMode="outlined"
+      [width]="160"
+      (onValueChanged)="onFilterChange()"
+    />
+    <dx-date-box
+      [(value)]="filterDateFrom"
+      placeholder="С даты"
+      stylingMode="outlined"
+      [width]="160"
+      (onValueChanged)="onFilterChange()"
+    />
+    <dx-date-box
+      [(value)]="filterDateTo"
+      placeholder="По дату"
+      stylingMode="outlined"
+      [width]="160"
+      (onValueChanged)="onFilterChange()"
+    />
+  </div>
+
+  @if (loading()) {
+    <dx-progress-bar [visible]="true" />
+  }
+
+  @if (error()) {
+    <p class="list-page__error">{{ error() }}</p>
+  }
+
+  <dx-data-grid
+    [dataSource]="items()"
+    [showBorders]="true"
+    [hoverStateEnabled]="true"
+    [showColumnLines]="true"
+    [showRowLines]="true"
+  >
+    <dxi-column dataField="number" caption="Номер" i18n-caption="@@invoices.col.number" [width]="160" />
+    <dxi-column dataField="customerName" caption="Клиент" i18n-caption="@@invoices.col.customer" />
+    <dxi-column
+      dataField="status"
+      caption="Статус"
+      i18n-caption="@@invoices.col.status"
+      [width]="120"
+      cellTemplate="statusCell"
+    />
+    <dxi-column dataField="currency" caption="Валюта" i18n-caption="@@invoices.col.currency" [width]="70" />
+    <dxi-column
+      dataField="issuedAtUtc"
+      caption="Дата"
+      i18n-caption="@@invoices.col.date"
+      [width]="160"
+      cellTemplate="dateCell"
+      [sortOrder]="'desc'"
+      [sortIndex]="0"
+    />
+    <dxi-column caption="Сумма" i18n-caption="@@invoices.col.amount" [width]="120" cellTemplate="amountCell" />
+
+    <div *dxTemplate="let c of 'amountCell'">{{ c.data.totalAmount + c.data.taxAmount | number:'1.2-2' }}</div>
+    <dxi-column dataField="salesOrderNumber" caption="Заказ" i18n-caption="@@invoices.col.salesOrder" [width]="140" />
+    <dxi-column caption="" [width]="130" cellTemplate="act" />
+
+    <div *dxTemplate="let c of 'statusCell'">
+      <span class="badge" [class.badge--draft]="c.value === 'Draft'"
+        [class.badge--issued]="c.value === 'Issued'"
+        [class.badge--printed]="c.value === 'Printed'"
+        [class.badge--signed]="c.value === 'Signed'"
+        [class.badge--cancelled]="c.value === 'Cancelled'"
+      >{{ statusText(c.value) }}</span>
+    </div>
+
+    <div *dxTemplate="let c of 'dateCell'">
+      {{ c.value | date : 'dd.MM.yyyy, HH:mm' }}
+    </div>
+
+    <div *dxTemplate="let c of 'act'">
+      @if (c.data.status === 'Draft') {
+        <a [routerLink]="['/invoices', c.data.id, 'edit']">
+          <dx-button icon="edit" hint="Edit" stylingMode="text" />
+        </a>
+      }
+      <a [routerLink]="['/invoices', c.data.id]">
+        <dx-button icon="info" hint="View" stylingMode="text" />
+      </a>
+      @if (canDelete) {
+        <dx-button icon="trash" hint="Delete" stylingMode="text" (onClick)="deleteInvoice(c.data.id)" />
+      }
+    </div>
+  </dx-data-grid>
+</div>

@@ -80,6 +80,11 @@ export const routes: Routes = [
           import('./features/preseller/preseller.routes').then((m) => m.presellerRoutes),
       },
       {
+        path: 'invoices',
+        loadChildren: () =>
+          import('./features/invoices/invoice.routes').then((m) => m.invoiceRoutes),
+      },
+      {
         path: 'superadmin',
         canActivate: [superadminGuard],
         loadChildren: () =>

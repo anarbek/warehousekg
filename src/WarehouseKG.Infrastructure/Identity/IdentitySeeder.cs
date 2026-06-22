@@ -59,9 +59,9 @@ public static class IdentitySeeder
         var auditorDelete = new[] { "stock-audits" };
         await SeedPermissionRows(db, tenantId, Roles.Auditor, auditorWrite, auditorDelete, ct);
 
-        // Dispatcher: read all, write purchase-orders+sales-orders+suppliers+customers, delete nothing
-        var dispatcherWrite = new[] { "purchase-orders", "sales-orders", "suppliers", "customers" };
-        var dispatcherDelete = new[] { "purchase-orders", "sales-orders", "suppliers", "customers" };
+        // Dispatcher: read all, write purchase-orders+sales-orders+invoices+suppliers+customers
+        var dispatcherWrite = new[] { "purchase-orders", "sales-orders", "invoices", "suppliers", "customers" };
+        var dispatcherDelete = new[] { "purchase-orders", "sales-orders", "invoices", "suppliers", "customers" };
         // Dispatcher also manages fleet
         var fleetResources = new[] { "vehicles", "vehicle-types", "maintenance", "insurance", "inspections" };
         dispatcherWrite = dispatcherWrite.Concat(fleetResources).ToArray();
@@ -74,7 +74,7 @@ public static class IdentitySeeder
 
         // Driver: read delivery resources, write delivery-routes and delivery-stops, no delete
         var driverWrite = new[] { "delivery-routes", "delivery-stops" };
-        var driverReadOnly = new[] { "delivery-shipments", "geofences", "sales-orders", "customers" };
+        var driverReadOnly = new[] { "delivery-shipments", "geofences", "sales-orders", "invoices", "customers" };
         await SeedPermissionRows(db, tenantId, Roles.Driver, driverWrite.Concat(driverReadOnly).ToArray(), Array.Empty<string>(), ct);
 
         // Preseller: read customers, inventory, warehouses, reports, payment-types; write pre-orders

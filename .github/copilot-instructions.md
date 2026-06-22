@@ -106,11 +106,20 @@ If the DB already exists this is a harmless no-op; if it doesn't, tests will fai
 - **Angular `dx-number-box` select-all** — use `(onFocusIn)` with `setTimeout(() => e.element.querySelector('input').select())`.
 - **Angular route order** — static routes before `:id` param routes
 - **DevExtreme popup footer** — `dx-toolbar` must be INSIDE `*dxTemplate="let data of 'content'"`, not outside
+- **DevExtreme grid column sums** — use `<dxo-summary><dxi-total-item column="field" summaryType="sum" [customizeText]="fn" /></dxo-summary>` for footer sums
+- **DevExtreme `[(value)]` two-way binding** — can bypass `setValue()`. Use `[value]` + `(onValueChanged)="control.setValue($event.value)"` for reactive forms
 - **Stale JWT after backend restart** — sessions are invalidated; flush secure storage and re-login on the mobile device
 - **Seed data must fill all required fields** — `ItemCategory` needs `Code` + `IsActive`; `UnitOfMeasure` needs `Code` + `IsActive`. Missing required fields cause `InternalServerError`.
 - **PUT in tests** — use `PutRawAsync` (HTTP PUT), not `PostRawAsync` (HTTP POST) for update endpoints. `PostRawAsync` returns `405 MethodNotAllowed`.
 - **Capture generated values** — store admin username before creating tenant in tests; don't generate a second random value.
 - **`IgnoreQueryFilters()` for all superadmin queries** — superadmin has `TenantId = Guid.Empty`, so the global tenant filter would exclude everything.
+- **Tax rate `/100`** — user enters `12` meaning 12%. Backend AND frontend must divide: `TaxAmount = lineTotal * taxRate / 100m` (C#) or `lineTotal * tax / 100` (TS). Never use taxRate as a direct multiplier.
+- **Invoice list grand total** — `InvoiceSummaryDto` must include `TaxAmount`. List column shows `totalAmount + taxAmount` (grand total), NOT just `totalAmount` (subtotal).
+- **Angular `DecimalPipe`** — using `| number:'1.2-2'` in templates requires `DecimalPipe` in the component's `imports` array (NG8004 error otherwise).
+- **Angular reactive forms + computed totals** — `computed()` signals don't react to `FormControl` changes. Use `form.valueChanges.subscribe(() => recalcTotals())` to update computed signals.
+- **PDF endpoint pattern** — return HTML as `text/html; charset=utf-8`. Frontend downloads via `HttpClient` (Blob) so JWT auth header is sent; `window.open(url)` would get 401.
+- **Browser login workaround** — DevExtreme trial watermark blocks `click_element`. Inject auth tokens via `page.evaluate()` into `localStorage` keys (`wkg.accessToken`, `wkg.tenantId`, `wkg.user`, etc.), then `page.goto()`.
+- **Column standardization** — use consistent column order across all views (create/edit/detail/PDF): Name → Qty → Price → Total → Tax% → TaxTotal → RowTotal. Include column sums under Qty, Total, TaxTotal, RowTotal.
 
 ## Integration Tests
 
@@ -126,6 +135,6 @@ If the DB already exists this is a harmless no-op; if it doesn't, tests will fai
 
 - Full docs: `docs/obsidian-vault/` (Obsidian vault, 12 topic files + session logs)
 - Key files: `00-Project-Overview.md`, `01-Architecture.md`, `02-Database-Schema.md`, `03-API-Endpoints.md`, `04-Auth-Flow.md`, `08-Mobile-App.md`, `12-Design-Guidelines.md`
-- Session logs: `2026-06-19.md`, `2026-06-20.md`, `2026-06-21.md` — detailed change logs for each session
+- Session logs: `2026-06-19.md`, `2026-06-20.md`, `2026-06-21.md`, `2026-06-22.md` — detailed change logs for each session
 - Dev workflow (restart commands, browser testing): stored in user memory
 - Roadmap: `docs/obsidian-vault/09-Roadmap.md`

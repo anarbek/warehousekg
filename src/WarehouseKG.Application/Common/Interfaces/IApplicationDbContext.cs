@@ -79,5 +79,8 @@ public interface IApplicationDbContext
     DbSet<PreOrder> PreOrders { get; }
     DbSet<PreOrderLine> PreOrderLines { get; }
 
+    DbSet<Invoice> Invoices { get; }
+    DbSet<InvoiceLine> InvoiceLines { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

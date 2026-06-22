@@ -54,6 +54,7 @@ export class Sidenav implements OnInit {
         { id: 'po', icon: 'cart', text: $localize`:@@nav.purchaseOrders:Заказы поставщикам`, path: '/suppliers/purchase-orders', resource: 'purchase-orders' },
         { id: 'customers', icon: 'group', text: $localize`:@@nav.customers:Клиенты`, path: '/customers/customers', resource: 'customers' },
         { id: 'so', icon: 'cart', text: $localize`:@@nav.salesOrders:Заказы клиентов`, path: '/customers/sales-orders', resource: 'sales-orders' },
+        { id: 'invoices', icon: 'columnfield', text: $localize`:@@nav.invoices:Счета`, path: '/invoices/list', resource: 'invoices' },
       ],
     },
     {

@@ -39,6 +39,12 @@ Planned features, milestones, and the prioritized backlog over time.
 - **Mobile preseller module** ✅ — Flutter screens: PreOrderList, PreOrderForm (customer/warehouse/payment-type
   dropdowns, item picker with stock diff, date picker, save), PreOrderDetail (status chip, submit button).
   Dashboard tile "Предзаказы" enabled. See [[2026-06-21]].
+- **Invoice System Phase 1** ✅ — Full backend + frontend + PDF: `Invoice` + `InvoiceLine` entities with `InvoiceType`/`InvoiceStatus`
+  enums. CQRS: Create, Update, Issue, Print, Sign, Cancel, Delete, GetById, GetList with filters. `InvoicesController`
+  at `/api/v1/invoices`. Auto-creation when delivery stop is completed. Sequential numbering `INV-{YEAR}-{NNNN}`.
+  Angular module: list (with filters + grand total column), detail (workflow buttons + column sums), create/edit form
+  (live totals, tax % input, auto-price). PDF endpoint with HTML template, column sums in `<tfoot>`, authenticated
+  blob download. 10 integration tests + 4 E2E scenarios. See [[2026-06-22]].
 
 ## Open items
 - Main site where user can register and create a Tenant himself, there should be basic questionnaire where he should be able to select which features he wants
@@ -70,7 +76,62 @@ use this design approach when adding positions: adjustments/new in pages like: t
 
 ## Invoice System (Detailed Plan)
 
-> *Updated 2026-06-21 based on architecture analysis.*
+> *Updated 2026-06-22 — Phase 1 implemented.*
+
+### Phase 1 — Sales Invoice Core (Priority: HIGH) ✅ COMPLETED (2026-06-22)
+
+**Goal**: Auto-generate a printable invoice when a delivery stop is completed. Office prints it; driver presents to customer for signature.
+
+#### 1a. Domain & Database ✅
+- [x] Add `Invoice`, `InvoiceLine` entities + `InvoiceType`, `InvoiceStatus` enums
+- [x] EF Core configuration + migration (`AddInvoiceEntity`)
+- [x] Sequential invoice numbering (`INV-{YEAR}-{NNNN}`)
+
+#### 1b. Backend — CQRS ✅
+- [x] `CreateInvoiceCommand` — generates invoice with sequential number
+- [x] `IssueInvoiceCommand` — transitions Draft → Issued
+- [x] `PrintInvoiceCommand` — marks as Printed, records `PrintedBy` + `PrintedAtUtc`
+- [x] `SignInvoiceCommand` — marks as Signed (with signer name)
+- [x] `CancelInvoiceCommand` — transitions to Cancelled (only Issued/Printed, not Signed)
+- [x] `GetInvoiceByIdQuery` — full invoice with lines, customer, sales order ref
+- [x] `GetInvoicesQuery` — paginated list with filters (status, customer, date range, warehouse)
+
+#### 1c. Backend — Controller ✅
+- [x] `InvoicesController` at `/api/v1/invoices` with all CRUD + workflow + PDF endpoints
+- [x] Policies: `invoices:read`, `invoices:write`, `invoices:delete`
+- [x] Resource registered in `Resources.All` for auto-policy generation
+- [x] PDF endpoint: `GET /api/v1/invoices/{id}/pdf` — HTML template with column sums in `<tfoot>`
+
+#### 1d. Integration Point ✅
+- [x] `CompleteDeliveryStopCommandHandler` auto-creates `Invoice` (Issued status) when a stop with shipments is completed
+- [x] Invoices are generated from the shipped `SalesOrder` lines
+
+#### 1e. Frontend — Angular Module ✅
+- [x] List: data grid with status badges, filters (status + date range), edit button for Draft, delete with permission check, **grand total column** (`totalAmount + taxAmount`)
+- [x] Detail: full info with workflow buttons (Issue/Print/Sign/Cancel), PDF print via authenticated blob download, edit button for Draft, **grid with column sums** (Qty/Total/Tax/RowTotal)
+- [x] Form: create/edit with customer/warehouse/item dropdowns, currency select, payment type dropdown, live computed totals (signal-based), auto-fill price on item select, select-all on focus, **sum row under columns**
+- [x] SO detail → Invoice navigation: "Счета" button linking to `/invoices/list?salesOrderId=`
+- [x] Nav: "Счета" under "Клиенты и поставщики" sidebar group
+
+#### 1f. Integration Tests ✅ (10 tests)
+- [x] `CreateInvoice_ReturnsId_AndAppearsInList`
+- [x] `GetInvoiceById_ReturnsFullDetail_WithLines`
+- [x] `GetInvoiceById_NotFound_Returns404`
+- [x] `DeleteInvoice_RemovesFromList`
+- [x] `InvoiceWorkflow_DraftToSigned`
+- [x] `InvoiceWorkflow_DraftToCancelled`
+- [x] `CancelInvoice_CannotCancelSigned`
+- [x] `IssueInvoice_CannotIssueTwice`
+- [x] `GetInvoices_FilterByStatus_ReturnsMatchingOnly`
+- [x] `Unauthenticated_CannotAccess_Invoices`
+
+#### 1g. E2E Tests ✅ (4 scenarios)
+- [x] List invoices (filter, status, grand total column)
+- [x] Create invoice with multiple lines, verify numbering, live totals, tax calculation (12 → 12%)
+- [x] Edit invoice: update lines in-place, verify totals recalculate
+- [x] Workflow: Draft → Issue → Print → Sign (with signer name verification) + error cases (double issue, cancel signed)
+- [x] PDF: authenticated download, column sums in `<tfoot>`, tax rate display
+- [x] Column consistency: same column order + sums across create/edit/detail/PDF
 
 ### Domain Context
 
@@ -80,6 +141,8 @@ Two distinct invoice types exist in warehouse distribution:
 |---|---|---|
 | **Direction** | Warehouse → Customer | Producer → Warehouse |
 | **Trigger** | Delivery stop completed / SalesOrder shipped | Goods received from producer |
+
+
 | **Created by** | WarehouseKG backend (auto-generated) | Parsed from producer XML |
 | **Existing entity** | `SalesOrder` (Draft→Confirmed→Shipped) | `PurchaseOrder` / `StockReceipt` |
 | **Goal** | Replace producer-system dependency; own invoices | Import CCI/EFS/Pepsi/Philip Morris XML formats |
@@ -175,21 +238,23 @@ public enum InvoiceStatus { Draft = 0, Issued = 1, Printed = 2, Signed = 3, Canc
 
 **Integration point**: Modify `CompleteDeliveryStopCommandHandler` to **auto-create** an `Invoice` (Draft → auto-Issued) when the stop is completed. This ties invoice generation to the natural delivery workflow.
 
-#### 1c. Backend — Controller
-- [ ] `InvoicesController` at `/api/v1/invoices`
-- [ ] Policies: `invoices:read`, `invoices:write`, `invoices:delete`
-- [ ] PDF download endpoint: `GET /api/v1/invoices/{id}/pdf`
-- [ ] Permissions registered in `TenantPermission` seed
+#### 1c. Backend — Controller ✅
+- [x] `InvoicesController` at `/api/v1/invoices`
+- [x] Policies: `invoices:read`, `invoices:write`, `invoices:delete` (auto-generated from `Resources.All`)
+- [x] PDF download endpoint: `GET /api/v1/invoices/{id}/pdf` — returns HTML invoice (report engine placeholder)
+- [x] Permissions registered in `TenantPermission` seed (Dispatcher: read+write+delete; Driver: read)
 
-#### 1d. Frontend — Angular
-- [ ] `InvoiceListComponent` at `/invoices` — DevExtreme data grid with filters (status, date range, customer, warehouse)
-- [ ] `InvoiceDetailComponent` at `/invoices/:id` — full invoice view, customer info, line items, totals, status badge
-- [ ] Print button → triggers `GET /api/v1/invoices/{id}/pdf` download
-- [ ] "Print & Sign" workflow: Print → Mark as Printed → (customer signs physical copy) → office marks as Signed
-- [ ] Navigation links from SalesOrder detail → related Invoice
-- [ ] Navigation links from Route/Stop detail → related Invoice
+#### 1d. Frontend — Angular ✅
+- [x] `InvoiceListComponent` at `/invoices/list` — DevExtreme data grid with filters (status, date range), status badges, delete with permission check
+- [x] `InvoiceDetailComponent` at `/invoices/:id` — full invoice view, customer info, line items, totals, tax breakdown, status badge, workflow buttons
+- [x] Invoice form at `/invoices/new` — customer/warehouse dropdowns, currency select, payment type dropdown, date picker, labeled line items with auto-fill price on item select, select-all on textbox focus
+- [x] Print button → opens `GET /api/v1/invoices/{id}/pdf` in new tab, auto-marks as Printed
+- [x] "Print & Sign" workflow: Draft → Issue → Print → Sign (with signer name)
+- [x] Navigation links from SalesOrder detail → related Invoice (via `salesOrderId` query param)
+- [x] `salesOrderId` filter in `GetInvoicesQuery` for cross-entity navigation
 
 #### 1e. Mobile — Flutter
+
 - [ ] `InvoiceViewScreen` — view invoice PDF (via `flutter_pdfview` or webview)
 - [ ] Print trigger — send to Bluetooth/network printer (`flutter_bluetooth_serial` or raw socket to dot-matrix printer)
 - [ ] Signature capture — draw signature on canvas, upload via `SignInvoiceCommand`
